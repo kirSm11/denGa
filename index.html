@@ -1439,19 +1439,38 @@ let hawkMode = false;
         </button>
     `;
 
+    // ────────────────────────────────
+    // САМОЕ ВАЖНОЕ МЕСТО — вот сюда вставляем
     document.body.appendChild(modal);
 
-    // Позиция
-    const rect = button.getBoundingClientRect();
+    // Начальное состояние (невидимо и чуть меньше)
     modal.style.position = 'fixed';
-    modal.style.left = `${rect.left + rect.width / 2}px`;
-    modal.style.top = `${rect.bottom + 10}px`;
-    modal.style.transform = 'translateX(-50%)';
+    modal.style.top = '50%';
+    modal.style.left = '50%';
+    modal.style.transform = 'translate(-50%, -50%) scale(0.92)';
+    modal.style.opacity = '0';
+    modal.style.maxHeight = '85vh';
+    modal.style.overflowY = 'auto';
 
-    // Сохраняем текущее модальное окно
+    // Плавная анимация появления
+    modal.style.transition = 
+        'opacity 0.18s ease, ' +
+        'transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1)';
+
+    // Заставляем браузер применить начальные стили
+    void modal.offsetWidth;
+
+    // Запускаем красивую анимацию
+    requestAnimationFrame(() => {
+        modal.style.opacity = '1';
+        modal.style.transform = 'translate(-50%, -50%) scale(1)';
+    });
+    // ──────────────────────────────── конец важного блока
+
     currentModal = modal;
 
-    // Обработчики кнопок
+    // ────────────────────────────────────────────────
+    // Дальше идёт ваш старый код обработчиков кнопок — его не трогаем
     modal.querySelector('[data-action="rename"]').onclick = () => {
         removeActionModal();
         showRenameField(button, index);
@@ -1459,13 +1478,7 @@ let hawkMode = false;
 
     modal.querySelector('[data-action="add-expense"]').onclick = () => {
         removeActionModal();
-        let categories = JSON.parse(localStorage.getItem('categories')) || [];
-        const category = categories[index];
-        let amount = prompt(`Сумма для "${category.name}"`, '0');
-        if (amount !== null && !isNaN(amount)) {
-            amount = parseFloat(amount);
-            // здесь можно вставить остальную логику добавления расхода, если нужно
-        }
+        // ... ваш код внесения расхода ...
     };
 
     modal.querySelector('[data-action="delete"]').onclick = () => {
@@ -1478,7 +1491,7 @@ let hawkMode = false;
         startHawkMode();
     };
 
-    // Самый надёжный способ закрытия по клику вне
+    // Закрытие по клику вне модалки
     const closeOnOutsideClick = (e) => {
         if (!modal.contains(e.target) && !button.contains(e.target)) {
             removeActionModal();
@@ -1486,7 +1499,6 @@ let hawkMode = false;
         }
     };
 
-    // Запускаем с небольшой задержкой, чтобы не срабатывал клик открытия
     setTimeout(() => {
         document.addEventListener('click', closeOnOutsideClick);
     }, 50);
