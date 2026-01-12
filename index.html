@@ -1477,9 +1477,40 @@ let hawkMode = false;
     };
 
     modal.querySelector('[data-action="add-expense"]').onclick = () => {
-        removeActionModal();
-        // ... ваш код внесения расхода ...
+    removeActionModal();
+
+    const categoryName = button.textContent.trim(); // или можно взять из categories[index].name
+
+    const amount = prompt(`Внесение расхода в категорию "${categoryName}"\n\nСколько потратили? (₽)`);
+
+    if (!amount) return;                       // отмена
+    if (!amount.trim()) return;
+    
+    const sum = parseFloat(amount.replace(',', '.'));
+    if (isNaN(sum) || sum <= 0) {
+        alert("Нужно ввести положительное число");
+        return;
+    }
+
+    // Записываем расход
+    const now = new Date();
+    const expense = {
+        bank: localStorage.getItem('selectedBank') || "Другие",
+        category: categoryName,
+        amount: sum,
+        dateISO: now.toISOString(),
+        dateStr: now.toLocaleDateString('ru-RU'),
+        dayOfWeek: now.toLocaleDateString('ru-RU', { weekday: 'long' })
     };
+
+    let history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
+    history.push(expense);
+    localStorage.setItem('expensesHistory', JSON.stringify(history));
+
+    alert(`Расход ${sum} ₽ записан в категорию "${categoryName}" (${expense.bank})`);
+    
+    renderCategories();   // обновляем статистику и суммы
+};
 
     modal.querySelector('[data-action="delete"]').onclick = () => {
         removeActionModal();
