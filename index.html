@@ -754,6 +754,85 @@ nav {
     font-family: Arial, sans-serif;
     z-index: 10;
 }
+/* Подтверждение удаления категории */
+.confirm-delete-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+}
+
+.confirm-delete-modal .modal-content {
+    background: linear-gradient(145deg, #ef5350, #d32f2f);
+    color: white;
+    width: 90%;
+    max-width: 340px;
+    padding: 28px 24px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+.confirm-delete-modal h3 {
+    margin: 0 0 14px 0;
+    font-size: 22px;
+}
+
+.confirm-delete-modal .category-name {
+    font-size: 19px;
+    font-weight: bold;
+    margin: 12px 0 22px 0;
+    padding: 10px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 12px;
+}
+
+.confirm-delete-modal .warning-text {
+    font-size: 14px;
+    opacity: 0.9;
+    margin: 0 0 28px 0;
+    line-height: 1.4;
+}
+
+.confirm-delete-modal .buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
+
+.confirm-delete-modal button {
+    padding: 14px 32px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.confirm-delete-modal .btn-delete {
+    background: #b71c1c;
+    color: white;
+}
+
+.confirm-delete-modal .btn-delete:hover {
+    background: #9a0007;
+    transform: translateY(-1px);
+}
+
+.confirm-delete-modal .btn-cancel {
+    background: rgba(255,255,255,0.25);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.5);
+}
+
+.confirm-delete-modal .btn-cancel:hover {
+    background: rgba(255,255,255,0.4);
+}
 </style>
 </head>
 <body>
@@ -962,10 +1041,60 @@ nav {
         }
 
         function deleteCategory(index) {
-            let categories = JSON.parse(localStorage.getItem('categories')) || [];
-            categories.splice(index, 1);
-            localStorage.setItem('categories', JSON.stringify(categories));
+    let categories = JSON.parse(localStorage.getItem('categories')) || [];
+    
+    if (index < 0 || index >= categories.length) {
+        console.warn("Попытка удаления несуществующей категории");
+        return;
+    }
+
+    const categoryName = categories[index].name;
+
+    // Создаём модальное окно подтверждения
+    const modal = document.createElement('div');
+    modal.className = 'confirm-delete-modal';
+
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h3>Удалить категорию?</h3>
+            <div class="category-name">${categoryName}</div>
+            <div class="warning-text">
+                Это действие нельзя отменить<br>
+                (все расходы останутся в истории)
+            </div>
+            <div class="buttons">
+                <button class="btn-delete">Да, удалить</button>
+                <button class="btn-cancel">Отмена</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Обработчики кнопок
+    modal.querySelector('.btn-delete').addEventListener('click', () => {
+        categories.splice(index, 1);
+        localStorage.setItem('categories', JSON.stringify(categories));
+        modal.remove();
+        renderCategories();
+        
+        // Небольшой фидбек
+        setTimeout(() => {
+            alert(`Категория «${categoryName}» удалена`);
+        }, 80);
+    });
+
+    modal.querySelector('.btn-cancel').addEventListener('click', () => {
+        modal.remove();
+    });
+
+    // Закрытие по клику на фон
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
         }
+    });
+}
 
         function addCategory(button) {
             const container = document.getElementById('newCategoryContainer');
@@ -1288,147 +1417,80 @@ nav {
         }
 
         let currentModal = null;
-        let outsideClickHandler = null;
-        let dragEnabled = false;
-        let hawkMode = false;
+let outsideClickHandler = null;
+let dragEnabled = false;
+let hawkMode = false;
 
         function showActionModal(button, index) {
-            if (hawkMode) return;
-            removeActionModal();
-            const modal = document.createElement('div');
-            modal.className = 'action-modal';
-            Object.assign(modal.style, {
-                position: 'fixed',
-                background: '#fff',
-                padding: '20px',
-                border: '1px solid #000',
-                borderRadius: '8px',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.3)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '10px',
-                zIndex: 9999,
-                opacity: 0,
-                transition: 'opacity 0.2s ease'
-            });
-            const renameBtn = document.createElement('button');
-            renameBtn.textContent = 'Переименовать';
-            renameBtn.onclick = (e) => {
-                e.stopPropagation();
-                removeActionModal();
-                showRenameField(button, index);
-            };
-            const addExpenseBtn = document.createElement('button');
-            addExpenseBtn.textContent = 'Внести расход';
-            addExpenseBtn.onclick = (e) => {
-                e.stopPropagation();
-                removeActionModal();
-                let categories = JSON.parse(localStorage.getItem('categories'));
-                const category = categories[index];
-                let amount = prompt(`Введите сумму расхода для категории "${category.name}"`, '0');
-                if (amount !== null && !isNaN(amount)) {
-                    amount = parseFloat(amount);
-                    const bank = localStorage.getItem('selectedBank') || 'Неизвестно';
-                    const now = new Date();
-                    const dateStr = now.toLocaleDateString('ru-RU');
-                    const days = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
-                    const dayOfWeek = days[now.getDay()];
-                    const dateISO = now.toISOString();
-                    let history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
-                    history.push({
-                        bank: bank,
-                        dateStr: dateStr,
-                        dayOfWeek: dayOfWeek,
-                        amount: amount,
-                        category: category.name,
-                        dateISO: dateISO
-                    });
-                    localStorage.setItem('expensesHistory', JSON.stringify(history));
-                    category.amount += amount;
-                    category.lastUpdate = dateISO;
-                    categories[index] = category;
-                    localStorage.setItem('categories', JSON.stringify(categories));
-                    calculateWeeklyExpenses();
-                    renderCategories();
-                } else {
-                    alert('Некорректная сумма');
-                }
-            };
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Удалить';
-            deleteBtn.onclick = (e) => {
-                e.stopPropagation();
-                deleteCategory(index);
-                removeActionModal();
-                renderCategories();
-            };
-            modal.appendChild(renameBtn);
-            modal.appendChild(addExpenseBtn);
-            modal.appendChild(deleteBtn);
-            const hawkBtn = document.createElement('button');
-            hawkBtn.textContent = 'настроить 🦅';
-            hawkBtn.style.background = 'linear-gradient(135deg, #5A7DE1, #A0D4FA)';
-            hawkBtn.style.color = 'white';
-            hawkBtn.style.fontWeight = 'bold';
-            hawkBtn.style.borderRadius = '38px';
-            hawkBtn.onclick = (e) => {
-                e.stopPropagation();
-                removeActionModal();
-                dragEnabled = true;
-                hawkMode = true;
-                const blocker = document.getElementById('hawkBlocker') || document.createElement('div');
-                blocker.id = 'hawkBlocker';
-                blocker.classList.add('hawk-mode');
-                Object.assign(blocker.style, {
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    background: 'rgba(0,0,0,0.6)',
-                    zIndex: 9998,
-                    pointerEvents: 'auto'
-                });
-                document.body.appendChild(blocker);
-                const exitBtn = document.getElementById('exitHawkBtn') || document.createElement('button');
-                exitBtn.id = 'exitHawkBtn';
-                exitBtn.textContent = 'ОК';
-                Object.assign(exitBtn.style, {
-                    position: 'fixed',
-                    bottom: '20px',
-                    right: '20px',
-                    padding: '15px 25px',
-                    fontSize: '18px',
-                    borderRadius: '12px',
-                    background: 'linear-gradient(135deg, #4CAF50, #81C784)',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    zIndex: 100000
-                });
-                exitBtn.onclick = () => {
-                    document.getElementById('hawkBlocker')?.remove();
-                    exitBtn.remove();
-                    hawkMode = false;
-                    dragEnabled = false;
-                    alert('🦅 ЯСТРЕБ ушёл отдыхать.');
-                };
-                document.body.appendChild(exitBtn);
-                alert('🦅 ЯСТРЕБ взлетел! Можно только перетаскивать категории.');
-            };
-            modal.appendChild(hawkBtn);
-            document.body.appendChild(modal);
-            const rect = modal.getBoundingClientRect();
-            modal.style.left = `calc(50% - ${rect.width / 2}px)`;
-            modal.style.top = `calc(50% - ${rect.height / 2}px)`;
-            requestAnimationFrame(() => {
-                modal.style.opacity = '1';
-            });
-            currentModal = modal;
-            outsideClickHandler = (e) => {
-                if (!modal.contains(e.target)) removeActionModal();
-            };
-            setTimeout(() => document.addEventListener('click', outsideClickHandler), 0);
+    if (hawkMode) return;
+
+    // Удаляем предыдущее модальное окно, если оно есть
+    removeActionModal();
+
+    const modal = document.createElement('div');
+    modal.className = 'action-modal';
+    
+    modal.innerHTML = `
+        <button data-action="rename">Переименовать</button>
+        <button data-action="add-expense">Внести расход</button>
+        <button data-action="delete">Удалить</button>
+        <button data-action="hawk" style="background: linear-gradient(135deg, #5A7DE1, #A0D4FA);">
+            настроить 🦅
+        </button>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Позиция
+    const rect = button.getBoundingClientRect();
+    modal.style.position = 'fixed';
+    modal.style.left = `${rect.left + rect.width / 2}px`;
+    modal.style.top = `${rect.bottom + 10}px`;
+    modal.style.transform = 'translateX(-50%)';
+
+    // Сохраняем текущее модальное окно
+    currentModal = modal;
+
+    // Обработчики кнопок
+    modal.querySelector('[data-action="rename"]').onclick = () => {
+        removeActionModal();
+        showRenameField(button, index);
+    };
+
+    modal.querySelector('[data-action="add-expense"]').onclick = () => {
+        removeActionModal();
+        let categories = JSON.parse(localStorage.getItem('categories')) || [];
+        const category = categories[index];
+        let amount = prompt(`Сумма для "${category.name}"`, '0');
+        if (amount !== null && !isNaN(amount)) {
+            amount = parseFloat(amount);
+            // здесь можно вставить остальную логику добавления расхода, если нужно
         }
+    };
+
+    modal.querySelector('[data-action="delete"]').onclick = () => {
+        removeActionModal();
+        deleteCategory(index);
+    };
+
+    modal.querySelector('[data-action="hawk"]').onclick = () => {
+        removeActionModal();
+        startHawkMode();
+    };
+
+    // Самый надёжный способ закрытия по клику вне
+    const closeOnOutsideClick = (e) => {
+        if (!modal.contains(e.target) && !button.contains(e.target)) {
+            removeActionModal();
+            document.removeEventListener('click', closeOnOutsideClick);
+        }
+    };
+
+    // Запускаем с небольшой задержкой, чтобы не срабатывал клик открытия
+    setTimeout(() => {
+        document.addEventListener('click', closeOnOutsideClick);
+    }, 50);
+}
 
         function removeActionModal() {
             if (currentModal) currentModal.remove();
@@ -1952,6 +2014,56 @@ function loadAppVersion() {
 
 // Вызываем функцию при загрузке страницы
 document.addEventListener('DOMContentLoaded', loadAppVersion);
+
+function startHawkMode() {
+    hawkMode = true;
+    dragEnabled = true;
+
+    // Визуальная обратная связь
+    document.body.style.cursor = 'move';
+    alert('🦅 РЕЖИМ ЯСТРЕБА ВКЛЮЧЁН!\n\n• Зажмите и перетаскивайте категории\n• Для выхода нажмите большую зелёную кнопку внизу справа');
+
+    // Полупрозрачный оверлей
+    let blocker = document.getElementById('hawkBlocker');
+    if (!blocker) {
+        blocker = document.createElement('div');
+        blocker.id = 'hawkBlocker';
+        blocker.style.cssText = `
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+            z-index: 9998; pointer-events: none;
+        `;
+        document.body.appendChild(blocker);
+    }
+
+    // Кнопка выхода
+    let exitBtn = document.getElementById('exitHawkBtn');
+    if (!exitBtn) {
+        exitBtn = document.createElement('button');
+        exitBtn.id = 'exitHawkBtn';
+        exitBtn.textContent = 'ЗАВЕРШИТЬ РЕЖИМ';
+        exitBtn.style.cssText = `
+            position: fixed; bottom: 30px; right: 30px;
+            padding: 16px 32px; font-size: 18px; font-weight: bold;
+            background: #4CAF50; color: white; border: none;
+            border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            z-index: 100000; cursor: pointer;
+        `;
+        document.body.appendChild(exitBtn);
+    }
+
+    exitBtn.onclick = endHawkMode;
+}
+
+function endHawkMode() {
+    hawkMode = false;
+    dragEnabled = false;
+    document.body.style.cursor = 'default';
+
+    document.getElementById('hawkBlocker')?.remove();
+    document.getElementById('exitHawkBtn')?.remove();
+
+    alert('🦅 Режим Ястреба выключен');
+}
     </script>
 </div>
 </body>
