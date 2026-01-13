@@ -833,6 +833,133 @@ nav {
 .confirm-delete-modal .btn-cancel:hover {
     background: rgba(255,255,255,0.4);
 }
+/* ──────────────────────────────────────────────
+   Модалка внесения расхода
+─────────────────────────────────────────────── */
+
+.expense-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.expense-modal-overlay.active {
+    opacity: 1;
+}
+
+.expense-modal {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 24px;
+    width: 90%;
+    max-width: 380px;
+    padding: 28px 24px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    color: white;
+    position: relative;
+    transform: translateY(30px) scale(0.94);
+    opacity: 0;
+    transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.expense-modal.active {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+.expense-modal .bank-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(0,0,0,0.45);
+    backdrop-filter: blur(6px);
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,0.15);
+}
+
+.expense-modal h2 {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: -0.5px;
+}
+
+.expense-modal .form-group {
+    margin-bottom: 20px;
+}
+
+.expense-modal label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+.expense-modal input,
+.expense-modal select {
+    width: 100%;
+    padding: 14px 16px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.13);
+    color: white;
+    font-size: 17px;
+    backdrop-filter: blur(4px);
+}
+
+.expense-modal input::placeholder {
+    color: rgba(255,255,255,0.55);
+}
+
+.expense-modal .buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.expense-modal button {
+    flex: 1;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.expense-modal .btn-primary {
+    background: #4CAF50;
+    color: white;
+}
+
+.expense-modal .btn-primary:hover {
+    background: #43A047;
+    transform: translateY(-1px);
+}
+
+.expense-modal .btn-secondary {
+    background: rgba(255,255,255,0.15);
+    color: white;
+}
+
+.expense-modal .btn-secondary:hover {
+    background: rgba(255,255,255,0.25);
+}
 </style>
 </head>
 <body>
@@ -1198,14 +1325,13 @@ nav {
     localStorage.setItem('categories', JSON.stringify(categories));
             const filteredHistory = getFilteredHistory();
             const categorySums = {};
-            categories.forEach(cat => {
-                categorySums[cat.name] = { amount: 0, limit: cat.limit, limitEnabled: cat.limitEnabled };
-            });
-            filteredHistory.forEach(exp => {
-                if (categorySums[exp.category]) {
-                    categorySums[exp.category].amount += exp.amount;
-                }
-            });
+categories.forEach(cat => {
+    categorySums[cat.name] = {
+        amount: cat.amount || 0,           // берём сохранённую сумму
+        limit: cat.limit,
+        limitEnabled: cat.limitEnabled
+    };
+});
             categories.forEach((cat, idx) => {
                 const catBtn = document.createElement('button');
                 let displayName = cat.name.length > 15 ? cat.name.slice(0,15) : cat.name;
@@ -1471,45 +1597,133 @@ let hawkMode = false;
 
     // ────────────────────────────────────────────────
     // Дальше идёт ваш старый код обработчиков кнопок — его не трогаем
-    modal.querySelector('[data-action="rename"]').onclick = () => {
-        removeActionModal();
-        showRenameField(button, index);
-    };
-
     modal.querySelector('[data-action="add-expense"]').onclick = () => {
     removeActionModal();
 
-    const categoryName = button.textContent.trim(); // или можно взять из categories[index].name
+    const categoryName = button.textContent.trim();
+    const selectedBank = localStorage.getItem('selectedBank') || "Другие";
 
-    const amount = prompt(`Внесение расхода в категорию "${categoryName}"\n\nСколько потратили? (₽)`);
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const timeStr = now.toTimeString().slice(0, 5);
 
-    if (!amount) return;                       // отмена
-    if (!amount.trim()) return;
-    
-    const sum = parseFloat(amount.replace(',', '.'));
-    if (isNaN(sum) || sum <= 0) {
-        alert("Нужно ввести положительное число");
+    const overlay = document.getElementById('expenseModalOverlay');
+    const modalEl = document.getElementById('expenseModal');
+
+    if (!overlay || !modalEl) {
+        console.error("Модальное окно не найдено");
+        alert("Ошибка: модальное окно не найдено");
         return;
     }
 
-    // Записываем расход
-    const now = new Date();
-    const expense = {
-        bank: localStorage.getItem('selectedBank') || "Другие",
-        category: categoryName,
-        amount: sum,
-        dateISO: now.toISOString(),
-        dateStr: now.toLocaleDateString('ru-RU'),
-        dayOfWeek: now.toLocaleDateString('ru-RU', { weekday: 'long' })
-    };
+    // Заполняем поля
+    document.getElementById('selectedBankBadge').textContent = selectedBank;
+    document.getElementById('expenseDate').value = todayStr;
+    document.getElementById('expenseTime').value = timeStr;
+    document.getElementById('expenseAmount').value = '';
+    document.getElementById('expenseAmount').focus();
 
-    let history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
-    history.push(expense);
-    localStorage.setItem('expensesHistory', JSON.stringify(history));
+    overlay.style.display = 'flex';
+    setTimeout(() => {
+        overlay.classList.add('active');
+        modalEl.classList.add('active');
+    }, 10);
 
-    alert(`Расход ${sum} ₽ записан в категорию "${categoryName}" (${expense.bank})`);
-    
-    renderCategories();   // обновляем статистику и суммы
+    // ─── Функции закрытия и сохранения ───────────────────────────────
+
+    function closeModal() {
+        modalEl.classList.remove('active');
+        setTimeout(() => {
+            overlay.classList.remove('active');
+            overlay.style.display = 'none';
+        }, 320);
+    }
+
+    function saveExpense() {
+    const amountInput = document.getElementById('expenseAmount');
+    let amountStr = amountInput?.value?.trim() || '';
+
+    if (!amountStr) {
+        alert("Введите сумму");
+        amountInput?.focus();
+        return;
+    }
+
+    // Заменяем запятую на точку и убираем пробелы
+    amountStr = amountStr.replace(/\s/g, '').replace(',', '.');
+
+    const sum = parseFloat(amountStr);
+    if (isNaN(sum)) {
+        alert("Некорректный формат суммы");
+        amountInput?.focus();
+        return;
+    }
+
+        const dateVal = document.getElementById('expenseDate')?.value;
+        const timeVal = document.getElementById('expenseTime')?.value;
+
+        if (!dateVal || !timeVal) {
+            alert("Выберите дату и время");
+            return;
+        }
+
+        let expenseDate;
+        try {
+            expenseDate = new Date(`${dateVal}T${timeVal}:00`);
+            if (isNaN(expenseDate.getTime())) throw new Error("Invalid date");
+        } catch (e) {
+            alert("Ошибка в дате/времени");
+            return;
+        }
+
+        // ─── СОЗДАЁМ ОБЪЕКТ РАСХОДА ───────────────────────────────
+        const expense = {
+            bank: selectedBank,
+            category: categoryName,
+            amount: sum,
+            dateISO: expenseDate.toISOString(),
+            dateStr: expenseDate.toLocaleDateString('ru-RU'),
+            dayOfWeek: expenseDate.toLocaleDateString('ru-RU', { weekday: 'long' })
+        };
+
+        // 1. Сохраняем в историю
+        let history = JSON.parse(localStorage.getItem('expensesHistory') || '[]');
+        history.push(expense);
+        localStorage.setItem('expensesHistory', JSON.stringify(history));
+
+        // 2. ОБНОВЛЯЕМ СУММУ КАТЕГОРИИ (это и решит проблему с 0)
+        let categories = JSON.parse(localStorage.getItem('categories') || '[]');
+        const categoryIndex = categories.findIndex(cat => cat.name === categoryName);
+        
+        if (categoryIndex !== -1) {
+            categories[categoryIndex].amount = (categories[categoryIndex].amount || 0) + sum;
+            localStorage.setItem('categories', JSON.stringify(categories));
+        } else {
+            console.warn(`Категория "${categoryName}" не найдена`);
+        }
+
+        // 3. Закрываем и обновляем всё
+        closeModal();
+        renderCategories();
+
+        setTimeout(() => {
+            alert(`Записано: ${sum.toFixed(2)} ₽ → ${categoryName} • ${selectedBank}`);
+        }, 100);
+    }
+
+    // Привязываем кнопки (сброс старых слушателей)
+    const saveBtn = document.getElementById('saveExpenseBtn');
+    const cancelBtn = document.getElementById('cancelExpenseBtn');
+
+    saveBtn.replaceWith(saveBtn.cloneNode(true));
+    cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+
+    document.getElementById('saveExpenseBtn').addEventListener('click', saveExpense);
+    document.getElementById('cancelExpenseBtn').addEventListener('click', closeModal);
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeModal();
+    });
 };
 
     modal.querySelector('[data-action="delete"]').onclick = () => {
@@ -2108,6 +2322,42 @@ function endHawkMode() {
     alert('🦅 Режим Ястреба выключен');
 }
     </script>
+</div>
+<!-- Модальное окно внесения расхода -->
+<div id="expenseModalOverlay" class="expense-modal-overlay">
+    <div class="expense-modal" id="expenseModal">
+        <div class="bank-badge" id="selectedBankBadge">—</div>
+        
+        <h2>Новый расход</h2>
+
+        <div class="form-group">
+            <label>Сумма (можно отрицательную)</label>
+            <input 
+                type="tel" 
+                inputmode="decimal" 
+                pattern="[0-9]*[.,]?[0-9]*" 
+                id="expenseAmount" 
+                placeholder="0.00" 
+                step="0.01" 
+                autofocus
+            >
+        </div>
+
+        <div class="form-group">
+            <label>Дата</label>
+            <input type="date" id="expenseDate">
+        </div>
+
+        <div class="form-group">
+            <label>Время</label>
+            <input type="time" id="expenseTime">
+        </div>
+
+        <div class="buttons">
+            <button class="btn-secondary" id="cancelExpenseBtn">Отмена</button>
+            <button class="btn-primary" id="saveExpenseBtn">Сохранить</button>
+        </div>
+    </div>
 </div>
 </body>
 </html>
