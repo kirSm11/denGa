@@ -1048,21 +1048,46 @@ main {
     height: 100vh;
     background: white;
     box-shadow: -15px 0 50px rgba(0, 0, 0, 0.25);
-    padding: 30px 20px 20px;
+    padding: 20px 20px 20px; /* 👈 регулируешь расстояние снизу */
     display: flex;
     flex-direction: column;
-    gap: 12px;
     z-index: 10001;
     border-top-left-radius: 28px;
     border-bottom-left-radius: 28px;
     transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1.35);
-    overflow-y: auto;
+    overflow: hidden;
 }
 
 .side-action-menu.show {
     transform: translateX(-320px);
 }
 
+/* Заголовок */
+.side-action-menu .category-header {
+    text-align: center;
+    padding: 20px 10px 25px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 20px;
+}
+
+.side-action-menu .category-header h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1c1c1e;
+    word-break: break-word;
+}
+
+/* Блок кнопок */
+.side-action-menu .menu-buttons {
+    margin-top: auto; /* 👈 закрепляет (не менять) */
+    margin-bottom: 150px; /* 👈 регулирует кнопки */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Кнопки */
 .side-action-menu button {
     padding: 18px 20px;
     font-size: 17.5px;
@@ -1074,6 +1099,7 @@ main {
     color: #1c1c1e;
     transition: all 0.2s ease;
     box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    width: 100%;
 }
 
 .side-action-menu button:hover {
@@ -1095,7 +1121,6 @@ main {
 
 .side-action-menu button.primary:hover {
     background: linear-gradient(135deg, #43A047, #3d8b40);
-    transform: translateX(4px);
 }
 
 /* Затемнение фона */
@@ -1350,6 +1375,193 @@ main {
     font-size: 16px;
     font-weight: 600;
 }
+/* ====================== APPLE-STYLE: БОКОВОЕ МЕНЮ ====================== */
+.side-action-menu {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 300px;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    box-shadow: -20px 0 40px rgba(0, 0, 0, 0.15);
+    padding: 30px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    z-index: 10001;
+    border-top-left-radius: 28px;
+    border-bottom-left-radius: 28px;
+    transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1.35);
+    overflow: hidden;
+}
+
+.side-action-menu.show {
+    transform: translateX(-320px);
+}
+
+/* Заголовок категории */
+.side-action-menu .category-header {
+    text-align: center;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #e5e5ea;
+    margin-bottom: 30px;
+}
+
+.side-action-menu .category-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1c1c1e;
+    letter-spacing: -0.02em;
+}
+
+/* Блок кнопок */
+.side-action-menu .menu-buttons {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.side-action-menu button {
+    padding: 16px 20px;
+    font-size: 17px;
+    font-weight: 600;
+    border: none;
+    border-radius: 14px;
+    text-align: left;
+    background: #f8f8f8;
+    color: #1c1c1e;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.side-action-menu button:hover {
+    background: #f0f0f0;
+    transform: translateX(6px);
+}
+
+.side-action-menu button:active {
+    transform: scale(0.96);
+    background: #e8e8e8;
+}
+
+.side-action-menu button.primary {
+    background: linear-gradient(135deg, #34c759, #30a14a);
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(52, 199, 89, 0.35);
+}
+
+.side-action-menu button.primary:hover {
+    background: linear-gradient(135deg, #30a14a, #2e8b3d);
+}
+
+/* ====================== APPLE-STYLE: ТАБЛИЦА ИСТОРИИ ====================== */
+/* ====================== ИСТОРИЯ — МАКСИМАЛЬНАЯ ШИРИНА ====================== */
+#history {
+    padding: 12px 0 90px 0;           /* почти без боковых отступов */
+}
+
+.history-filter {
+    margin: 0 8px 20px 8px;           /* небольшой отступ только у фильтров */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+#historyTableContainer {
+    padding: 0 4px;                   /* минимальный отступ */
+    overflow-x: auto;                 /* если не влезет — будет горизонтальная прокрутка */
+}
+
+#historyTable {
+    width: 100%;
+    min-width: 620px;                 /* минимальная ширина, чтобы колонки не сжимались слишком сильно */
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    font-size: 15px;
+    margin: 0 auto;
+}
+
+#historyTable thead th {
+    background: #f2f2f7;
+    padding: 14px 8px;
+    font-weight: 600;
+    color: #555;
+    text-align: left;
+    border-bottom: 1px solid #e5e5ea;
+    white-space: nowrap;
+}
+
+#historyTable td {
+    padding: 13px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+/* Колонки */
+#historyTable td:nth-child(1) { width: 22%; }   /* Банк */
+#historyTable td:nth-child(2) { width: 22%; }   /* Дата */
+#historyTable td:nth-child(3) { width: 18%; }   /* День */
+#historyTable td:nth-child(4) { width: 18%; text-align: right; font-weight: 700; color: #e63946; } /* Сумма */
+#historyTable td:nth-child(5) { width: 20%; }   /* Место */
+#historyTable td:nth-child(6) { width: 8%; text-align: center; }  /* Комментарий */
+#historyTable td:nth-child(7) { width: 22%; }   /* Категория */
+
+.comment-doc {
+    font-size: 21px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+
+.comment-doc:hover {
+    background: #e5f0ff;
+    color: #007aff;
+}
+/* === ФОРСИРОВАННАЯ МАКСИМАЛЬНАЯ ШИРИНА ТАБЛИЦЫ ИСТОРИИ === */
+#history {
+    padding: 12px 0 100px 0 !important;
+}
+
+#historyTableContainer {
+    padding: 0 2px !important;
+    overflow-x: auto;
+}
+
+#historyTable {
+    width: 100% !important;
+    min-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+#historyTable thead th {
+    padding: 14px 6px !important;
+    font-size: 14px !important;
+}
+
+#historyTable td {
+    padding: 13px 6px !important;
+    font-size: 15px !important;
+    white-space: nowrap;
+}
+
+/* Принудительно растягиваем колонки */
+#historyTable td:nth-child(1) { min-width: 90px; }   /* Банк */
+#historyTable td:nth-child(2) { min-width: 95px; }   /* Дата */
+#historyTable td:nth-child(3) { min-width: 70px; }   /* День */
+#historyTable td:nth-child(4) { min-width: 85px; text-align: right; } /* Сумма */
+#historyTable td:nth-child(5) { min-width: 100px; }  /* Место */
+#historyTable td:nth-child(6) { min-width: 40px; text-align: center; } /* Комментарий */
+#historyTable td:nth-child(7) { min-width: 100px; }  /* Категория */
 </style>
 </head>
 <body>
@@ -1382,6 +1594,15 @@ main {
             <div id="newCategoryContainer"></div>
             <div id="categoriesList"></div>
         </section>
+<section id="history">
+    <h2>История расходов</h2>
+    <div class="history-filter" style="margin: 15px 0; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
+        <!-- Фильтры будут добавлены через JS -->
+    </div>
+    <div id="historyTableContainer" style="overflow-x: auto; margin-top: 10px;">
+        <!-- Таблица истории будет генерироваться здесь -->
+    </div>
+</section>
         <section id="stats">
             <h2>Статистика</h2>
             <p></p>
@@ -1414,21 +1635,25 @@ main {
     </main>
     </main>
 
-    <!-- НОВАЯ ТАББАР В СТИЛЕ APPLE -->
+    <!-- ГЛАВНОЕ МЕНЮ В СТИЛЕ APPLE -->
     <div class="bottom-nav">
-        <div class="nav-item active" data-section="expenses" onclick="spring(this); showSection('expenses')">
-            <span class="icon">💰</span>
-            <span class="label">Расходы</span>
-        </div>
-        <div class="nav-item" data-section="stats" onclick="spring(this); showSection('stats')">
-            <span class="icon">📊</span>
-            <span class="label">Статистика</span>
-        </div>
-        <div class="nav-item" data-section="settings" onclick="spring(this); showSection('settings')">
-            <span class="icon">⚙️</span>
-            <span class="label">Настройки</span>
-        </div>
+    <div class="nav-item active" data-section="expenses" onclick="spring(this); showSection('expenses')">
+        <span class="icon">💰</span>
+        <span class="label">Расходы</span>
     </div>
+    <div class="nav-item" data-section="stats" onclick="spring(this); showSection('stats')">
+        <span class="icon">📊</span>
+        <span class="label">Статистика</span>
+    </div>
+    <div class="nav-item" data-section="history" onclick="spring(this); showSection('history')">
+        <span class="icon">📜</span>
+        <span class="label">История</span>
+    </div>
+    <div class="nav-item" data-section="settings" onclick="spring(this); showSection('settings')">
+        <span class="icon">⚙️</span>
+        <span class="label">Настройки</span>
+    </div>
+</div>
 
     <canvas id="sparkCanvas"></canvas>
     <canvas id="sparkCanvas"></canvas>
@@ -1530,13 +1755,13 @@ main {
         function showSection(id) {
     const sections = document.querySelectorAll('main section');
     sections.forEach(sec => sec.style.display = 'none');
+
     const targetSection = document.getElementById(id);
     if (targetSection) {
         targetSection.style.display = 'block';
-    } else {
-        console.warn(`Секция с id "${id}" не найдена`);
     }
 
+    // Показываем/скрываем стопку карт только на вкладке "Расходы"
     if (id === 'expenses') {
         cardStack.style.display = 'block';
     } else {
@@ -1544,14 +1769,10 @@ main {
         if (cardStack.classList.contains('expanded')) {
             cardStack.classList.remove('expanded');
             overlay.style.display = 'none';
-            updateCardStyles();
         }
     }
-    if (id === 'stats') {
-        renderCategories();
-    }
 
-    // ←←← НОВОЕ: подсветка активной вкладки
+    // Обновляем активную кнопку в таббаре
     const navItems = document.querySelectorAll('.bottom-nav .nav-item');
     navItems.forEach(item => {
         item.classList.remove('active');
@@ -1559,6 +1780,11 @@ main {
             item.classList.add('active');
         }
     });
+
+    // Если открыли вкладку "История" — сразу рендерим её
+    if (id === 'history') {
+        renderHistory();
+    }
 }
 
         function spring(button) {
@@ -1968,28 +2194,36 @@ let hawkMode = false;
 function showActionModal(button, index) {
     if (hawkMode) return;
 
-    const categoryName = window.currentExpenseCategory || button.textContent.trim();
+    // Важно: берём название строго из нажатой кнопки
+    const categoryName = button.textContent.trim();
     const selectedBank = localStorage.getItem('selectedBank') || "Другие";
 
-    // Удаляем предыдущее меню, если открыто
+    // Сбрасываем глобальную переменную, чтобы не было "прилипания"
+    window.currentExpenseCategory = categoryName;
+
     removeSideActionMenu();
 
-    // Создаём затемнение
     const overlay = document.createElement('div');
     overlay.className = 'side-action-overlay';
     document.body.appendChild(overlay);
 
-    // Создаём большое боковое меню
     const menu = document.createElement('div');
     menu.className = 'side-action-menu';
+
     menu.innerHTML = `
-        <button class="primary" data-action="add-expense">Внести расход</button>
-        <button data-action="category-card">Карточка категории</button>
-        <button data-action="settings">Настройки</button>
+        <div class="category-header">
+            <h2>${categoryName}</h2>
+        </div>
+        
+        <div class="menu-buttons">
+            <button class="primary" data-action="add-expense">Внести расход</button>
+            <button data-action="category-card">Карточка категории</button>
+            <button data-action="settings">Настройки категории</button>
+        </div>
     `;
+
     document.body.appendChild(menu);
 
-    // Показываем меню с анимацией
     setTimeout(() => {
         overlay.classList.add('show');
         menu.classList.add('show');
@@ -2008,10 +2242,9 @@ function showActionModal(button, index) {
 
     menu.querySelector('[data-action="settings"]').addEventListener('click', () => {
         removeSideActionMenu();
-        alert(`⚙️ Настройки категории: "${categoryName}"\n\n(Переименовать, изменить лимит, удалить и т.д.)`);
+        alert(`⚙️ Настройки категории «${categoryName}»\n\n(Здесь можно будет добавить переименование, лимит и т.д.)`);
     });
 
-    // Закрытие по клику на фон
     overlay.addEventListener('click', removeSideActionMenu);
 }
 // Функция закрытия бокового меню
@@ -2122,198 +2355,7 @@ function openExpenseForCategory(categoryName, selectedBank) {
             outsideClickHandler = null;
         }
 
-        function showHistory() {
-            let startX, startY;
-            let scrollDirection = null;
-            const history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
-            const filters = JSON.parse(localStorage.getItem('historyFilters')) || {};
-            overlay.style.display = 'block';
-            const modal = document.createElement('div');
-            modal.className = 'history-modal';
-            const closeBtn = document.createElement('button');
-            closeBtn.className = 'close-btn';
-            closeBtn.onclick = () => {
-                overlay.style.display = 'none';
-                modal.remove();
-                renderCategories();
-            };
-            const filterDiv = document.createElement('div');
-            filterDiv.className = 'history-filter';
-            const yearSelect = document.createElement('select');
-            yearSelect.id = 'yearFilter';
-            const monthSelect = document.createElement('select');
-            monthSelect.id = 'monthFilter';
-            const daySelect = document.createElement('select');
-            daySelect.id = 'dayFilter';
-            const bankSelect = document.createElement('select');
-            bankSelect.id = 'bankFilter';
-            const categorySelect = document.createElement('select');
-            categorySelect.id = 'categoryFilter';
-            const resetButton = document.createElement('button');
-            resetButton.textContent = 'Сбросить фильтры';
-            resetButton.style.padding = '8px 16px';
-            resetButton.style.background = 'linear-gradient(135deg, #f44336, #ff9999)';
-            resetButton.style.color = 'white';
-            resetButton.style.border = 'none';
-            resetButton.style.borderRadius = '5px';
-            resetButton.style.cursor = 'pointer';
-            const years = [...new Set(history.map(exp => new Date(exp.dateISO).getFullYear()))].sort((a, b) => a - b);
-            yearSelect.innerHTML = '<option value="">Все годы</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
-            yearSelect.value = filters.year || '';
-            const months = [
-                { value: 1, text: 'Январь' }, { value: 2, text: 'Февраль' }, { value: 3, text: 'Март' },
-                { value: 4, text: 'Апрель' }, { value: 5, text: 'Май' }, { value: 6, text: 'Июнь' },
-                { value: 7, text: 'Июль' }, { value: 8, text: 'Август' }, { value: 9, text: 'Сентябрь' },
-                { value: 10, text: 'Октябрь' }, { value: 11, text: 'Ноябрь' }, { value: 12, text: 'Декабрь' }
-            ];
-            monthSelect.innerHTML = '<option value="">Все месяцы</option>' + months.map(m => `<option value="${m.value}">${m.text}</option>`).join('');
-            monthSelect.value = filters.month || '';
-            const days = [...new Set(history.map(exp => new Date(exp.dateISO).getDate()))].sort((a, b) => a - b);
-            daySelect.innerHTML = '<option value="">Все дни</option>' + days.map(d => `<option value="${d}">${d.toString().padStart(2, '0')}</option>`).join('');
-            daySelect.value = filters.day || '';
-            const banks = [...new Set(history.map(exp => exp.bank))].sort();
-            bankSelect.innerHTML = '<option value="">Все банки</option>' + banks.map(b => `<option value="${b}">${b}</option>`).join('');
-            bankSelect.value = filters.bank || '';
-            const categories = [...new Set(history.map(exp => exp.category))].sort();
-            categorySelect.innerHTML = '<option value="">Все категории</option>' + categories.map(c => `<option value="${c}">${c}</option>`).join('');
-            categorySelect.value = filters.category || '';
-            filterDiv.appendChild(yearSelect);
-            filterDiv.appendChild(monthSelect);
-            filterDiv.appendChild(daySelect);
-            filterDiv.appendChild(bankSelect);
-            filterDiv.appendChild(categorySelect);
-            filterDiv.appendChild(resetButton);
-            const table = document.createElement('table');
-            const thead = document.createElement('thead');
-            const tbody = document.createElement('tbody');
-            const headerRow = document.createElement('tr');
-          ['Банк', 'Дата', 'День недели', 'Сумма', 'Место', 'комментарий', 'категория'].forEach(text => {
-                const th = document.createElement('th');
-                th.textContent = text;
-                headerRow.appendChild(th);
-            });
-            thead.appendChild(headerRow);
-
-            function renderHistory(filteredHistory) {
-    tbody.innerHTML = '';
-    filteredHistory.forEach(exp => {
-        const row = document.createElement('tr');
-
-        const cells = [
-            exp.bank,
-            exp.dateStr,
-            exp.dayOfWeek,
-            `${exp.amount.toFixed(2)} ₽`,
-            exp.place || '—',
-            '', // место для комментария
-            exp.category
-        ];
-
-        cells.forEach((text, i) => {
-            const td = document.createElement('td');
-
-            if (i === 5 && exp.comment) { // колонка комментария
-                const docIcon = document.createElement('span');
-                docIcon.className = 'comment-doc';
-                docIcon.innerHTML = '📄';
-                docIcon.title = 'Открыть комментарий';
-                docIcon.onclick = () => showCommentModal(exp.comment);
-                td.appendChild(docIcon);
-            } else {
-                td.textContent = text;
-            }
-
-            row.appendChild(td);
-        });
-
-        tbody.appendChild(row);
-    });
-}
-
-            function filterAndSortHistory() {
-                let filteredHistory = [...history];
-                filters.year = yearSelect.value;
-                filters.month = monthSelect.value;
-                filters.day = daySelect.value;
-                filters.bank = bankSelect.value;
-                filters.category = categorySelect.value;
-                if (filters.year) {
-                    filteredHistory = filteredHistory.filter(exp => new Date(exp.dateISO).getFullYear() == filters.year);
-                }
-                if (filters.month) {
-                    filteredHistory = filteredHistory.filter(exp => new Date(exp.dateISO).getMonth() + 1 == filters.month);
-                }
-                if (filters.day) {
-                    filteredHistory = filteredHistory.filter(exp => new Date(exp.dateISO).getDate() == filters.day);
-                }
-                if (filters.bank) {
-                    filteredHistory = filteredHistory.filter(exp => exp.bank === filters.bank);
-                }
-                if (filters.category) {
-                    filteredHistory = filteredHistory.filter(exp => exp.category === filters.category);
-                }
-                filteredHistory.sort((a, b) => new Date(b.dateISO) - new Date(a.dateISO));
-                localStorage.setItem('historyFilters', JSON.stringify(filters));
-                renderHistory(filteredHistory);
-                renderCategories();
-            }
-
-            resetButton.addEventListener('click', () => {
-                yearSelect.value = '';
-                monthSelect.value = '';
-                daySelect.value = '';
-                bankSelect.value = '';
-                categorySelect.value = '';
-                localStorage.removeItem('historyFilters');
-                filterAndSortHistory();
-            });
-
-            [yearSelect, monthSelect, daySelect, bankSelect, categorySelect].forEach(select => {
-                select.addEventListener('change', filterAndSortHistory);
-            });
-
-            table.addEventListener('touchstart', (e) => {
-                const touch = e.touches[0];
-                startX = touch.clientX;
-                startY = touch.clientY;
-                scrollDirection = null;
-            }, { passive: true });
-
-            table.addEventListener('touchmove', (e) => {
-                if (!scrollDirection) {
-                    const touch = e.touches[0];
-                    const deltaX = Math.abs(touch.clientX - startX);
-                    const deltaY = Math.abs(touch.clientY - startY);
-                    if (deltaX > deltaY && deltaX > 5) {
-                        scrollDirection = 'horizontal';
-                        table.style.touchAction = 'pan-x';
-                    } else if (deltaY > deltaX && deltaY > 5) {
-                        scrollDirection = 'vertical';
-                        table.style.touchAction = 'pan-y';
-                    }
-                }
-            }, { passive: true });
-
-            table.addEventListener('touchend', () => {
-                table.style.touchAction = 'auto';
-                scrollDirection = null;
-            });
-
-            modal.appendChild(closeBtn);
-            modal.appendChild(filterDiv);
-            modal.appendChild(table);
-            table.appendChild(thead);
-            table.appendChild(tbody);
-            document.body.appendChild(modal);
-            filterAndSortHistory();
-            const overlayHandler = () => {
-                overlay.style.display = 'none';
-                modal.remove();
-                overlay.removeEventListener('click', overlayHandler);
-                renderCategories();
-            };
-            overlay.addEventListener('click', overlayHandler);
-        }
+        
 
         function cleanOldExpenses() {
             const history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
@@ -2509,6 +2551,128 @@ function showCategoryCard(categoryName) {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) closeCategoryCard(modal);
     });
+}
+
+function renderHistory() {
+    const container = document.getElementById('historyTableContainer');
+    if (!container) return;
+
+    // Берём историю напрямую из localStorage
+    let history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
+    const filters = JSON.parse(localStorage.getItem('historyFilters')) || {};
+
+    container.innerHTML = `
+        <div class="history-filter" style="margin: 0 8px 18px 8px;">
+            <select id="yearFilter"></select>
+            <select id="monthFilter"></select>
+            <select id="dayFilter"></select>
+            <select id="bankFilter"></select>
+            <select id="categoryFilter"></select>
+            <button id="resetFiltersBtn" style="padding:10px 16px;">Сбросить</button>
+        </div>
+        
+        <table id="historyTable">
+            <thead>
+                <tr>
+                    <th>Банк</th>
+                    <th>Дата</th>
+                    <th>День</th>
+                    <th style="text-align:right">Сумма</th>
+                    <th>Место</th>
+                    <th style="text-align:center">Комм.</th>
+                    <th>Категория</th>
+                </tr>
+            </thead>
+            <tbody id="historyTableBody"></tbody>
+        </table>
+    `;
+
+    const tbody = document.getElementById('historyTableBody');
+    const yearSelect = document.getElementById('yearFilter');
+    const monthSelect = document.getElementById('monthFilter');
+    const daySelect = document.getElementById('dayFilter');
+    const bankSelect = document.getElementById('bankFilter');
+    const categorySelect = document.getElementById('categoryFilter');
+    const resetBtn = document.getElementById('resetFiltersBtn');
+
+    // Заполнение фильтров
+    const years = [...new Set(history.map(exp => new Date(exp.dateISO).getFullYear()))].sort((a,b)=>b-a);
+    yearSelect.innerHTML = '<option value="">Все годы</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+
+    const months = [{v:1,t:'Янв'},{v:2,t:'Фев'},{v:3,t:'Мар'},{v:4,t:'Апр'},{v:5,t:'Май'},{v:6,t:'Июн'},
+                    {v:7,t:'Июл'},{v:8,t:'Авг'},{v:9,t:'Сен'},{v:10,t:'Окт'},{v:11,t:'Ноя'},{v:12,t:'Дек'}];
+    monthSelect.innerHTML = '<option value="">Все месяцы</option>' + months.map(m => `<option value="${m.v}">${m.t}</option>`).join('');
+
+    const days = [...new Set(history.map(exp => new Date(exp.dateISO).getDate()))].sort((a,b)=>a-b);
+    daySelect.innerHTML = '<option value="">Все дни</option>' + days.map(d => `<option value="${d}">${d}</option>`).join('');
+
+    const banks = [...new Set(history.map(exp => exp.bank))].sort();
+    bankSelect.innerHTML = '<option value="">Все банки</option>' + banks.map(b => `<option value="${b}">${b}</option>`).join('');
+
+    const cats = [...new Set(history.map(exp => exp.category))].sort();
+    categorySelect.innerHTML = '<option value="">Все категории</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
+
+    yearSelect.value = filters.year || '';
+    monthSelect.value = filters.month || '';
+    daySelect.value = filters.day || '';
+    bankSelect.value = filters.bank || '';
+    categorySelect.value = filters.category || '';
+
+    // ==================== ГЛАВНАЯ ФУНКЦИЯ ====================
+    function renderTable(data) {
+        tbody.innerHTML = '';
+
+        // Самая надёжная сортировка: новые ВСЕГДА сверху
+        data.sort((a, b) => {
+            return new Date(b.dateISO).getTime() - new Date(a.dateISO).getTime();
+        });
+
+        data.forEach(exp => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${exp.bank}</td>
+                <td>${exp.dateStr}</td>
+                <td>${exp.dayOfWeek}</td>
+                <td style="text-align:right; font-weight:700; color:#e63946;">${exp.amount.toFixed(2)} ₽</td>
+                <td>${exp.place || '—'}</td>
+                <td style="text-align:center">
+                    ${exp.comment ? `<span class="comment-doc" onclick="showCommentModal('${exp.comment.replace(/'/g, "\\'")}')">📄</span>` : '—'}
+                </td>
+                <td>${exp.category}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function applyFilters() {
+        let filtered = [...history];
+
+        if (yearSelect.value) filtered = filtered.filter(exp => new Date(exp.dateISO).getFullYear() == yearSelect.value);
+        if (monthSelect.value) filtered = filtered.filter(exp => new Date(exp.dateISO).getMonth() + 1 == monthSelect.value);
+        if (daySelect.value) filtered = filtered.filter(exp => new Date(exp.dateISO).getDate() == daySelect.value);
+        if (bankSelect.value) filtered = filtered.filter(exp => exp.bank === bankSelect.value);
+        if (categorySelect.value) filtered = filtered.filter(exp => exp.category === categorySelect.value);
+
+        // Сохраняем фильтры
+        filters.year = yearSelect.value;
+        filters.month = monthSelect.value;
+        filters.day = daySelect.value;
+        filters.bank = bankSelect.value;
+        filters.category = categorySelect.value;
+        localStorage.setItem('historyFilters', JSON.stringify(filters));
+
+        renderTable(filtered);
+    }
+
+    [yearSelect, monthSelect, daySelect, bankSelect, categorySelect].forEach(sel => sel.addEventListener('change', applyFilters));
+
+    resetBtn.addEventListener('click', () => {
+        yearSelect.value = monthSelect.value = daySelect.value = bankSelect.value = categorySelect.value = '';
+        localStorage.removeItem('historyFilters');
+        applyFilters();
+    });
+
+    applyFilters();
 }
 
 function closeCategoryCard(modal) {
