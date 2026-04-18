@@ -27,6 +27,8 @@
 .card-stack-btn.expanded {
     z-index: 1001;
 }
+
+
 /* Карта */
 .card {
     position: absolute;
@@ -128,65 +130,7 @@ html, body {
     -moz-user-select: none;
     -ms-user-select: none;
 }
-header {
-    background: linear-gradient(145deg, #4CAF50, #2E7D32);
-    color: white;
-    font-weight: bold;
-    text-align: left;
-    font-size: 32px;
-    padding: 30px 40px;
-    margin: 15px;
-    border-radius: 16px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25), inset 0 2px 6px rgba(255,255,255,0.3);
-    position: relative;
-    overflow: hidden;
-    font-family: 'MedievalSharp', cursive;
-}
-.shine-container {
-    position: absolute;
-    top: 28px;
-    left: 11%;
-    width: 78%;
-    height: 163px;
-    overflow: hidden;
-    pointer-events: none;
-}
-.shine-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -30%;
-    width: 40%;
-    height: 100%;
-    background: linear-gradient(120deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.1) 60%);
-    transform: skewX(-25deg);
-    animation: shine 10s infinite;
-}
-@keyframes shine {
-    0% { left: -120%; opacity: 0; }
-    5% { opacity: 1; }
-    70% { left: 100%; opacity: 0.1; }
-    100% { left: 100%; opacity: 0; }
-}
-header::after {
-    content: '';
-    position: absolute;
-    top: 50px;
-    right: 50px;
-    width: 40px;
-    height: 28px;
-    background: linear-gradient(135deg, #d4af37, #f5e29f);
-    border-radius: 4px;
-    box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
-}
-.header-box {
-    display: inline-block;
-    background: transparent;
-    color: #fff;
-    font-size: 36px;
-    letter-spacing: 1px;
-    text-shadow: 0 0 8px rgba(0,0,0,0.4);
-}
+
 nav {
     display: flex;
     justify-content: space-around;
@@ -341,16 +285,79 @@ section {
     max-width: 600px;
     margin-inline: auto;
 }
+/* ==================== СУПЕР-КОМПАКТНЫЙ БЛОК КАТЕГОРИЙ (10+ на экран) ==================== */
 .stat-item {
-    background: #ffffff;
-    border: 2px solid #4CAF50;
-    border-radius: 10px;
-    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+    padding: 12px 16px;
     margin-bottom: 8px;
-    font-size: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.stat-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: nowrap;
+    gap: 12px;
+}
+
+.stat-name {
+    font-weight: 700;
+    font-size: 16.5px;
+    color: #1c1c1e;
+    letter-spacing: -0.2px;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.stat-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.stat-spent {
+    font-weight: 700;
+    font-size: 17.5px;
+    color: #e63946;
+    white-space: nowrap;
+}
+
+.stat-remaining {
+    padding: 5px 12px;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 13.5px;
+    white-space: nowrap;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid;
+    min-width: 78px;
+    text-align: center;
+}
+
+/* Цвета остатка */
+.stat-remaining.positive {
+    background: #f0fdf4;
+    color: #166534;
+    border-color: #86efac;
+}
+
+.stat-remaining.negative {
+    background: #fef2f2;
+    color: #b91c1c;
+    border-color: #fda4af;
 }
 #settingsSubmenu {
     display: none;
@@ -403,6 +410,81 @@ section {
     margin-top: 15px;
     font-size: 18px;
 }
+/* ====================== МОДНЫЕ ТАБЛИЧКИ СТАТИСТИКИ ====================== */
+.stats-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+    margin: 25px 0 30px 0;
+    padding: 0 10px;
+}
+
+.stat-card {
+    background: linear-gradient(145deg, #2a2a3a, #1f1f2e);
+    border-radius: 24px;
+    padding: 2
+7px 9px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25),
+                inset 0 2px 8px rgba(255,255,255,0.15);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-6px);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 40%;
+    height: 300%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
+    transform: skewX(-25deg);
+    animation: shineStat 6s infinite;
+    pointer-events: none;
+}
+
+@keyframes shineStat {
+    0% { left: -150%; }
+    100% { left: 150%; }
+}
+
+.stat-card .icon {
+    font-size: 42px;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.stat-card .label {
+    font-size: 15px;
+    font-weight: 600;
+    opacity: 0.85;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
+}
+
+.stat-card .value {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+    margin: 8px 0 4px 0;
+}
+
+.stat-card .sub {
+    font-size: 13px;
+    opacity: 0.7;
+    font-weight: 500;
+}
+
+/* Цвета карточек */
+.stat-card.weekly   { background: linear-gradient(145deg, #00c853, #00b140); }
+.stat-card.expenses { background: linear-gradient(145deg, #f44336, #d32f2f); }
+.stat-card.limits   { background: linear-gradient(145deg, #2196f3, #1976d2); }
 #totalsContainer {
     background: #4CAF50;
     border-radius: 12px;
@@ -588,17 +670,7 @@ button {
     background: white;
     z-index: -1;
 }
-#header-layer header {
-    background: linear-gradient(135deg, #E6FFE6, #45A049);
-    color: #0b5ea8;
-    font-weight: bold;
-    text-align: center;
-    font-size: 42px;
-    padding: 25px;
-    border-radius: 0 0 12px 12px;
-    font-family: 'MedievalSharp', cursive;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-}
+
 nav {
     margin-top: 50px;
 }
@@ -608,17 +680,7 @@ nav {
     z-index: -2;
     overflow: visible;
 }
-.header-box {
-    display: inline-block;
-    background: #4CAF50;
-    color: white;
-    padding: 60px 93px;
-    border-radius: 12px;
-    border: 2px solid rgba(255,255,255,0.8);
-    box-shadow: 0 0 10px #4CAF50, 0 0 20px rgba(11,94,168,0.6);
-    font-family: 'MedievalSharp', cursive;
-    font-size: 34px;
-}
+
 #scrollLayer {
     position: fixed;
     top: 0;
@@ -761,16 +823,7 @@ nav {
 #exitHawkBtn {
     pointer-events: auto;
 }
-.version-text {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 12px;
-    color: white;
-    opacity: 0.7;
-    font-family: Arial, sans-serif;
-    z-index: 10;
-}
+
 /* Подтверждение удаления категории */
 .confirm-delete-modal {
     position: fixed;
@@ -1061,6 +1114,61 @@ main {
 .side-action-menu.show {
     transform: translateX(-320px);
 }
+
+/* ====================== НОВАЯ СОВРЕМЕННАЯ ШАПКА ====================== */
+header {
+    background: linear-gradient(135deg, #1e3a2f, #2e7d32, #4ade80);
+    color: white;
+    padding: 32px 20px 26px;
+    margin: 12px 12px 10px 12px;
+    border-radius: 28px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28),
+                inset 0 3px 15px rgba(255,255,255,0.25);
+    position: relative;
+    overflow: hidden;
+    font-family: 'MedievalSharp', cursive;
+    text-align: center;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(255,255,255,0.18) 0%, transparent 40%, rgba(255,255,255,0.12) 100%);
+    pointer-events: none;
+    animation: headerShine 9s linear infinite;
+}
+
+@keyframes headerShine {
+    0%   { transform: translateX(-120%); }
+    100% { transform: translateX(300%); }
+}
+
+.header-box {
+    display: inline-block;
+    font-size: 46px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.45),
+                 0 0 25px rgba(255, 215, 0, 0.7);
+    padding: 10px 36px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.4);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+
+.version-text {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    font-size: 13px;
+    font-family: system-ui, sans-serif;
+    color: rgba(255,255,255,0.8);
+    z-index: 10;
+}
+
 
 /* Заголовок */
 .side-action-menu .category-header {
@@ -1581,7 +1689,6 @@ main {
         <span class="header-box">дѢньга</span>
         <span id="appVersion" class="version-text"></span>
     </header>
-    <div class="shine-container"></div>
 </div>
 <div id="scrollBar"></div>
 <div class="app-container">
@@ -1603,18 +1710,18 @@ main {
         <!-- Таблица истории будет генерироваться здесь -->
     </div>
 </section>
-        <section id="stats">
+            <section id="stats">
             <h2>Статистика</h2>
             <p></p>
             <h3>Категории</h3>
             <div id="statsCategories"></div>
+            
             <h3>Диаграмма расходов</h3>
             <canvas id="statsChart" width="400" height="400"></canvas>
-            <h3>Итого расходов</h3>
-            <div id="totalExpenses" class="totals-box"></div>
-            <h3>Итоговые лимиты</h3>
-            <div id="totalLimits" class="totals-box"></div>
-            <button onclick="spring(this); showHistory()">История расходов</button>
+
+            <!-- НОВЫЕ МОДНЫЕ ТАБЛИЧКИ -->
+            <h3 style="margin-top: 30px;">Итоговые показатели</h3>
+            <div id="statsSummary" class="stats-summary"></div>
         </section>
         <section id="settings">
     <h2>Настройки</h2>
@@ -2044,27 +2151,37 @@ categories.forEach(cat => {
                 }
 
                 list.appendChild(catBtn);
-                if (statsList) {
-                    const statItem = document.createElement('div');
-                    statItem.className = 'stat-item';
-                    statItem.style.display = "flex";
-                    statItem.style.justifyContent = "space-between";
-                    statItem.style.alignItems = "center";
-                    const left = document.createElement('span');
-                    const amount = categorySums[cat.name]?.amount || 0;
-                    left.textContent = `${cat.name}: ${amount.toFixed(2)} ₽`;
-                    statItem.appendChild(left);
-                    if (cat.limit && cat.limit > 0) {
-                        const right = document.createElement('span');
-                        let remaining = cat.limit - amount;
-                        right.textContent = `Остаток: ${remaining.toFixed(2)} ₽`;
-                        if (remaining < 0) {
-                            right.style.color = "red";
-                        }
-                        statItem.appendChild(right);
-                    }
-                    statsList.appendChild(statItem);
-                }
+                          if (statsList) {
+    const statItem = document.createElement('div');
+    statItem.className = 'stat-item';
+
+    const amount = categorySums[cat.name]?.amount || 0;
+    let remainingHTML = '';
+
+    if (cat.limit && cat.limit > 0) {
+        let remaining = cat.limit - amount;
+        const isPositive = remaining >= 0;
+
+        remainingHTML = `
+            <div class="stat-remaining ${isPositive ? 'positive' : 'negative'}">
+                ${remaining.toFixed(2)} ₽
+            </div>
+        `;
+    }
+
+    statItem.innerHTML = `
+        <div class="stat-top">
+            <span class="stat-name">${cat.name}</span>
+            
+            <div class="stat-right">
+                <span class="stat-spent">${amount.toFixed(2)} ₽</span>
+                ${remainingHTML}
+            </div>
+        </div>
+    `;
+
+    statsList.appendChild(statItem);
+}
                 if (settingsList) {
     const row = document.createElement('div');
     row.className = 'settings-row';
@@ -2129,14 +2246,37 @@ categories.forEach(cat => {
                 amount: categorySums[name].amount,
                 limit: categorySums[name].limit
             })));
-
+            // ========== НОВЫЕ МОДНЫЕ ТАБЛИЧКИ СТАТИСТИКИ ==========
             let total = Object.values(categorySums).reduce((sum, c) => sum + c.amount, 0);
             let totalLimits = Object.values(categorySums).reduce((sum, c) => sum + (c.limit || 0), 0);
-            const totalContainer = document.getElementById('totalExpenses');
-            if (totalContainer) {
-                totalContainer.innerHTML = `<p>Всего расходов: ${total.toFixed(2)} ₽</p>
-                <p id="weeklyExpenses">недельные траты: 0 ₽</p>`;
+            let weeklyTotal = parseFloat(localStorage.getItem('weeklyTotal')) || 0;
+
+            const summaryHTML = `
+                <div class="stat-card weekly">
+                    <span class="icon">📅</span>
+                    <div class="label">НЕДЕЛЬНЫЕ ТРАТЫ</div>
+                    <div class="value">${weeklyTotal.toFixed(2)} ₽</div>
+                    <div class="sub">за эту неделю</div>
+                </div>
+                <div class="stat-card expenses">
+                    <span class="icon">💸</span>
+                    <div class="label">ВСЕГО РАСХОДОВ</div>
+                    <div class="value">${total.toFixed(2)} ₽</div>
+                    <div class="sub">за всё время</div>
+                </div>
+                <div class="stat-card limits">
+                    <span class="icon">📌</span>
+                    <div class="label">ВСЕГО ЛИМИТОВ</div>
+                    <div class="value">${totalLimits.toFixed(2)} ₽</div>
+                    <div class="sub">установлено</div>
+                </div>
+            `;
+
+            const summaryContainer = document.getElementById('statsSummary');
+            if (summaryContainer) {
+                summaryContainer.innerHTML = summaryHTML;
             }
+            
             const weeklyElem = document.getElementById('weeklyExpenses');
             if (weeklyElem) {
                 let weeklyTotal = parseFloat(localStorage.getItem('weeklyTotal')) || 0;
