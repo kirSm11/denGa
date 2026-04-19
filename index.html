@@ -3232,34 +3232,36 @@ function addLoyaltyCardManual() {
     processLoyaltyNumber(number.trim());
 }
 
-// === ВАРИАНТ 2: Сфотографировать карту ===
+// === ВАРИАНТ 2: Выбрать фото из галереи + сканирование ZXing ===
 function addLoyaltyCardByPhoto() {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.capture = 'environment';   // задняя камера по умолчанию
+    // capture УДАЛЕН — теперь открывается галерея (фото из библиотеки), а не камера
 
     input.onchange = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Показываем превью пока обрабатываем
         const reader = new FileReader();
         reader.onload = async (ev) => {
-            const imgDataUrl = ev.target.result;
+            const imgDataUrl = ev.target.result;   // base64 для сохранения фото
 
-            // Простое распознавание номера (пока заглушка)
-            // В будущем здесь можно подключить Quagga2 / ZXing для реального чтения штрих-кода с фото
-            const detectedNumber = await fakeBarcodeDetection(file); // заглушка
+            try {
+                const codeReader = new ZXing.BrowserMultiFormatReader();
+                const result = await codeReader.decodeFromImageUrl(imgDataUrl);
+                
+                console.log("✅ ZXing распознал из фото:", result.getText());
+                processLoyaltyNumber(result.getText().trim(), imgDataUrl);
 
-            if (detectedNumber) {
-                alert(`✅ Штрих-код распознан: ${detectedNumber}`);
-                processLoyaltyNumber(detectedNumber, imgDataUrl); // передаём фото
-            } else {
-                // Если не распознали — просим ввести вручную
-                const manualNumber = prompt('Не удалось автоматически прочитать штрих-код.\n\nВведите номер вручную:', '');
-                if (manualNumber) {
-                    processLoyaltyNumber(manualNumber.trim(), imgDataUrl);
+            } catch (err) {
+                console.error("Ошибка сканирования фото:", err);
+                
+                alert('Штрих-код на фото не распознан.\n\nМожно ввести вручную ниже.');
+                
+                const manualNumber = prompt('Номер штрих-кода (13–20 цифр):', '');
+                if (manualNumber && manualNumber.trim()) {
+                    processLoyaltyNumber(manualNumber.trim(), imgDataUrl); // фото всё равно сохраняем
                 }
             }
         };
@@ -3268,19 +3270,6 @@ function addLoyaltyCardByPhoto() {
 
     input.click();
 }
-
-// Заглушка для распознавания (пока просто возвращает "распознанный" номер для теста)
-// Позже заменим на реальную библиотеку
-async function fakeBarcodeDetection(file) {
-    // Здесь в будущем будет Quagga2 или BarcodeDetector
-    return new Promise(resolve => {
-        setTimeout(() => {
-            // Для теста возвращаем случайный номер или просим проверить
-            resolve(null); // поставь строку с номером для теста, например "220123456789012"
-        }, 800);
-    });
-}
-
 // === Общая обработка номера + фото ===
 function processLoyaltyNumber(number, photoDataUrl = null) {
     const cleanNumber = number.replace(/\D/g, '');
@@ -3354,7 +3343,7 @@ async function startBarcodeScanner() {
             </div>
         </div>
         <div class="scanner-footer" style="padding:20px;background:rgba(0,0,0,0.92);text-align:center;color:#fff;font-size:14.5px;">
-            Яркий свет детка • Карта параллельно экрану • Держите 1–3 секунды
+            Яркий свет • Карта параллельно экрану • Держите 1–3 секунды
         </div>
     `;
     document.body.appendChild(modal);
