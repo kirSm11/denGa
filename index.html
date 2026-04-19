@@ -3329,7 +3329,7 @@ function processLoyaltyNumber(number, photoDataUrl = null) {
     alert(`✅ Карта «${finalName.trim()}» добавлена!`);
 }
 
-// ==================== СПЕЦИАЛЬНАЯ ВЕРСИЯ ДЛЯ iOS (iPhone 14) ====================
+// ==================== МАКСИМАЛЬНО АГРЕССИВНАЯ ВЕРСИЯ ДЛЯ iPHONE 14 ====================
 let html5QrCode = null;
 
 async function startBarcodeScanner() {
@@ -3343,31 +3343,31 @@ async function startBarcodeScanner() {
         <div class="scanner-video-container" style="flex:1;position:relative;background:#000;">
             <div id="html5-qrcode-reader" style="width:100%;height:100%;"></div>
             
-            <div style="position:absolute;inset:0;border:4px solid #4CAF50;box-shadow:0 0 0 9999px rgba(0,0,0,0.68);pointer-events:none;display:flex;align-items:center;justify-content:center;">
-                <div style="color:white;background:rgba(0,0,0,0.85);padding:14px 30px;border-radius:9999px;font-size:16px;text-align:center;line-height:1.4;">
-                    Наведите штрих-код<br>в центр рамки
+            <div style="position:absolute;inset:0;border:5px solid #4CAF50;box-shadow:0 0 0 9999px rgba(0,0,0,0.75);pointer-events:none;display:flex;align-items:center;justify-content:center;">
+                <div style="color:white;background:rgba(0,0,0,0.85);padding:16px 32px;border-radius:9999px;font-size:17px;text-align:center;line-height:1.4;">
+                    Наведите штрих-код<br>ровно в центр рамки
                 </div>
             </div>
         </div>
-        <div class="scanner-footer" style="padding:18px;background:rgba(0,0,0,0.9);text-align:center;color:#eee;font-size:14px;">
-            Держите ровно • Яркое освещение • Код должен быть чётким и ровным детка
+        <div class="scanner-footer" style="padding:20px;background:rgba(0,0,0,0.92);text-align:center;color:#fff;font-size:14.5px;">
+            Держите карту параллельно • Яркий свет • Не двигайте 1–2 секунды
         </div>
     `;
     document.body.appendChild(modal);
     setTimeout(() => modal.classList.add('show'), 10);
 
-    html5QrCode = new Html5Qrcode("html5-qrcode-reader", {
+    html5QrCode = new Html5Qrcode("html5-qrcode-reader", { 
         verbose: false,
         experimentalFeatures: { useBarCodeDetectorIfSupported: true }
     });
 
     const config = {
-        fps: 20,                          // выше для iOS
-        qrbox: { width: 420, height: 160 }, // очень широкая рамка — специально для длинных CODE128
+        fps: 25,                                   // максимально быстро для iOS
+        qrbox: { width: 460, height: 140 },        // максимально широкая рамка для длинных кодов
         aspectRatio: 1.0,
         disableFlip: false,
         rememberLastUsedCamera: true,
-        formatsToSupport: ["CODE_128", "EAN_13"]   // явно указываем нужные форматы
+        formatsToSupport: ["CODE_128", "EAN_13", "EAN_8"]
     };
 
     try {
@@ -3375,21 +3375,24 @@ async function startBarcodeScanner() {
             { facingMode: "environment" },
             config,
             (decodedText) => {
-                console.log("✅ Распознано на iPhone:", decodedText);
-                stopHtml5QrcodeScanner();
+                console.log("✅ iPhone поймал код:", decodedText);
                 
+                // Сразу останавливаем видео
+                stopHtml5QrcodeScanner();
+
+                // Показываем подтверждение и добавляем карту
                 setTimeout(() => {
                     alert(`✅ Штрих-код успешно распознан!\n\nНомер: ${decodedText}`);
                     processLoyaltyNumber(decodedText.trim());
-                }, 400);
+                }, 250);
             },
             (error) => {
-                // Просто игнорируем, пока код не пойман
+                // Игнорируем постоянные ошибки "no code found"
             }
         );
     } catch (err) {
-        console.error("Ошибка запуска на iOS:", err);
-        alert("Камера запущена, но возникла ошибка.\n\nПопробуйте:\n• Перезапустить Safari\n• Открыть по HTTPS\n• Навести код максимально ровно");
+        console.error("Ошибка запуска камеры на iPhone:", err);
+        alert("Камера запущена, но сканер не смог стартовать.\n\nПопробуйте:\n1. Перезапустить Safari полностью\n2. Открыть приложение по HTTPS\n3. Навести код очень ровно и неподвижно");
         stopHtml5QrcodeScanner();
     }
 }
@@ -3397,14 +3400,16 @@ async function startBarcodeScanner() {
 function stopHtml5QrcodeScanner() {
     if (html5QrCode) {
         html5QrCode.stop().catch(() => {}).finally(() => {
-            if (html5QrCode) html5QrCode.clear();
-            html5QrCode = null;
+            if (html5QrCode) {
+                html5QrCode.clear();
+                html5QrCode = null;
+            }
         });
     }
     const modal = document.querySelector('.scanner-modal');
     if (modal) {
         modal.classList.remove('show');
-        setTimeout(() => modal.remove(), 400);
+        setTimeout(() => modal.remove(), 450);
     }
 }
         function animateParticles() {
