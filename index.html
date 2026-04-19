@@ -3,6 +3,7 @@
 <head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#4CAF50">
@@ -1700,6 +1701,85 @@ header::before {
 #historyTable td:nth-child(6) { width: 8%; text-align: center; }  /* Комментарий */
 #historyTable td:nth-child(7) { width: 22%; }   /* Категория */
 
+/* ====================== ЖИВОЙ СКАНЕР ШТРИХ-КОДА ====================== */
+.scanner-modal {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 10010;
+    display: none;
+    flex-direction: column;
+}
+
+.scanner-modal.show {
+    display: flex;
+}
+
+.scanner-header {
+    padding: 15px 20px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.scanner-video-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+#scannerVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.scanner-overlay {
+    position: absolute;
+    inset: 0;
+    border: 3px solid rgba(76, 175, 80, 0.8);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scanner-overlay::before {
+    content: 'Наведите штрих-код в рамку';
+    color: white;
+    font-size: 15px;
+    background: rgba(0,0,0,0.6);
+    padding: 6px 16px;
+    border-radius: 9999px;
+    position: absolute;
+    top: 30px;
+}
+
+.scanner-result {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(76, 175, 80, 0.95);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 9999px;
+    font-weight: 700;
+    display: none;
+    white-space: nowrap;
+}
+
+.scanner-footer {
+    padding: 15px;
+    background: rgba(0,0,0,0.7);
+    text-align: center;
+}
+
 .comment-doc {
     font-size: 21px;
     padding: 6px 10px;
@@ -1823,15 +1903,20 @@ header::before {
         <section id="loyalty" style="display: none; padding: 20px 20px 100px 20px;">
             <h2>🛍️ Карты лояльности</h2>
             
-           <div style="display: flex; gap: 12px; margin: 20px 0 30px; justify-content: center; flex-wrap: wrap;">
+         <div style="display: flex; gap: 12px; margin: 20px 0 30px; justify-content: center; flex-wrap: wrap;">
     <button onclick="addLoyaltyCardManual()" 
             style="padding: 14px 24px; font-size: 17px; background: linear-gradient(135deg, #4CAF50, #45A049); color: white; border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(76,175,80,0.3);">
         ✍️ Ввести вручную
     </button>
     
+    <button onclick="startBarcodeScanner()" 
+            style="padding: 14px 24px; font-size: 17px; background: linear-gradient(135deg, #FF5722, #FF9800); color: white; border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(255,87,34,0.4);">
+        📷 Сканировать камерой
+    </button>
+    
     <button onclick="addLoyaltyCardByPhoto()" 
-            style="padding: 14px 24px; font-size: 17px; background: linear-gradient(135deg, #FF9800, #F57C00); color: white; border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(245,124,0,0.3);">
-        📸 Сфотографировать карту
+            style="padding: 14px 24px; font-size: 17px; background: linear-gradient(135deg, #2196F3, #03A9F4); color: white; border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(33,150,243,0.3);">
+        🖼️ Выбрать фото
     </button>
 </div>
             
@@ -3244,6 +3329,90 @@ function processLoyaltyNumber(number, photoDataUrl = null) {
     alert(`✅ Карта «${finalName.trim()}» добавлена!`);
 }
 
+// ==================== УНИВЕРСАЛЬНЫЙ СКАНЕР ШТРИХ-КОДА (Android + iOS) ====================
+let html5QrCode = null;
+
+async function startBarcodeScanner() {
+    // Пробуем сначала нативный BarcodeDetector (быстрее на Android)
+    if ('BarcodeDetector' in window) {
+        try {
+            const detector = new BarcodeDetector({ formats: ["code_128", "ean_13", "ean_8"] });
+            // Если дошли сюда — API поддерживается, используем старый лёгкий сканер
+            startNativeBarcodeScanner();
+            return;
+        } catch (e) {}
+    }
+
+    // Если BarcodeDetector не поддерживается (iOS и др.) — используем html5-qrcode
+    startHtml5QrcodeScanner();
+}
+
+// === Нативный сканер (для Android) ===
+async function startNativeBarcodeScanner() {
+    // Здесь можно оставить старый код с BarcodeDetector, если хочешь
+    // Для простоты я рекомендую сразу перейти на html5-qrcode для единообразия
+    startHtml5QrcodeScanner();
+}
+
+// === Основной сканер на html5-qrcode (работает на iOS + Android) ===
+function startHtml5QrcodeScanner() {
+    const modal = document.createElement('div');
+    modal.className = 'scanner-modal';
+    modal.innerHTML = `
+        <div class="scanner-header">
+            <span>Сканирование штрих-кода</span>
+            <button onclick="stopHtml5QrcodeScanner()" style="background:none;border:none;color:white;font-size:28px;">✕</button>
+        </div>
+        <div class="scanner-video-container" id="readerContainer" style="position:relative;">
+            <div id="html5-qrcode-reader" style="width:100%; height:100%;"></div>
+        </div>
+        <div class="scanner-footer">
+            <small style="color:#aaa;">Наведите штрих-код в центр экрана</small>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
+
+    html5QrCode = new Html5Qrcode("html5-qrcode-reader");
+
+    const config = {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        aspectRatio: 1.0,
+        disableFlip: false
+    };
+
+    html5QrCode.start(
+        { facingMode: "environment" },   // задняя камера
+        config,
+        (decodedText, decodedResult) => {
+            // Успешно отсканировано
+            stopHtml5QrcodeScanner();
+            processLoyaltyNumber(decodedText);
+        },
+        (errorMessage) => {
+            // Ошибки сканирования (не найден код) — просто игнорируем
+        }
+    ).catch(err => {
+        console.error(err);
+        alert('Не удалось запустить камеру. Проверьте разрешения в браузере.');
+        stopHtml5QrcodeScanner();
+    });
+}
+
+function stopHtml5QrcodeScanner() {
+    if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+            html5QrCode.clear();
+            html5QrCode = null;
+        }).catch(err => console.error(err));
+    }
+    const modal = document.querySelector('.scanner-modal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.remove(), 300);
+    }
+}
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach((p, i) => {
