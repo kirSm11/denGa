@@ -2,10 +2,6 @@
 <html lang="ru">
 <head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-
-<script src="https://unpkg.com/@zxing/library@0.20.0/umd/index.min.js"></script>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#4CAF50">
@@ -31,8 +27,6 @@
 .card-stack-btn.expanded {
     z-index: 1001;
 }
-
-
 /* Карта */
 .card {
     position: absolute;
@@ -134,7 +128,65 @@ html, body {
     -moz-user-select: none;
     -ms-user-select: none;
 }
-
+header {
+    background: linear-gradient(145deg, #4CAF50, #2E7D32);
+    color: white;
+    font-weight: bold;
+    text-align: left;
+    font-size: 32px;
+    padding: 30px 40px;
+    margin: 15px;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25), inset 0 2px 6px rgba(255,255,255,0.3);
+    position: relative;
+    overflow: hidden;
+    font-family: 'MedievalSharp', cursive;
+}
+.shine-container {
+    position: absolute;
+    top: 28px;
+    left: 11%;
+    width: 78%;
+    height: 163px;
+    overflow: hidden;
+    pointer-events: none;
+}
+.shine-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -30%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.1) 60%);
+    transform: skewX(-25deg);
+    animation: shine 10s infinite;
+}
+@keyframes shine {
+    0% { left: -120%; opacity: 0; }
+    5% { opacity: 1; }
+    70% { left: 100%; opacity: 0.1; }
+    100% { left: 100%; opacity: 0; }
+}
+header::after {
+    content: '';
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    width: 40px;
+    height: 28px;
+    background: linear-gradient(135deg, #d4af37, #f5e29f);
+    border-radius: 4px;
+    box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
+}
+.header-box {
+    display: inline-block;
+    background: transparent;
+    color: #fff;
+    font-size: 36px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 8px rgba(0,0,0,0.4);
+}
 nav {
     display: flex;
     justify-content: space-around;
@@ -674,7 +726,17 @@ button {
     background: white;
     z-index: -1;
 }
-
+#header-layer header {
+    background: linear-gradient(135deg, #E6FFE6, #45A049);
+    color: #0b5ea8;
+    font-weight: bold;
+    text-align: center;
+    font-size: 42px;
+    padding: 25px;
+    border-radius: 0 0 12px 12px;
+    font-family: 'MedievalSharp', cursive;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
 nav {
     margin-top: 50px;
 }
@@ -684,7 +746,17 @@ nav {
     z-index: -2;
     overflow: visible;
 }
-
+.header-box {
+    display: inline-block;
+    background: #4CAF50;
+    color: white;
+    padding: 60px 93px;
+    border-radius: 12px;
+    border: 2px solid rgba(255,255,255,0.8);
+    box-shadow: 0 0 10px #4CAF50, 0 0 20px rgba(11,94,168,0.6);
+    font-family: 'MedievalSharp', cursive;
+    font-size: 34px;
+}
 #scrollLayer {
     position: fixed;
     top: 0;
@@ -827,7 +899,16 @@ nav {
 #exitHawkBtn {
     pointer-events: auto;
 }
-
+.version-text {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 12px;
+    color: white;
+    opacity: 0.7;
+    font-family: Arial, sans-serif;
+    z-index: 10;
+}
 /* Подтверждение удаления категории */
 .confirm-delete-modal {
     position: fixed;
@@ -1118,61 +1199,6 @@ main {
 .side-action-menu.show {
     transform: translateX(-320px);
 }
-
-/* ====================== НОВАЯ СОВРЕМЕННАЯ ШАПКА ====================== */
-header {
-    background: linear-gradient(135deg, #1e3a2f, #2e7d32, #4ade80);
-    color: white;
-    padding: 32px 20px 26px;
-    margin: 12px 12px 10px 12px;
-    border-radius: 28px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28),
-                inset 0 3px 15px rgba(255,255,255,0.25);
-    position: relative;
-    overflow: hidden;
-    font-family: 'MedievalSharp', cursive;
-    text-align: center;
-}
-
-header::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg, rgba(255,255,255,0.18) 0%, transparent 40%, rgba(255,255,255,0.12) 100%);
-    pointer-events: none;
-    animation: headerShine 9s linear infinite;
-}
-
-@keyframes headerShine {
-    0%   { transform: translateX(-120%); }
-    100% { transform: translateX(300%); }
-}
-
-.header-box {
-    display: inline-block;
-    font-size: 46px;
-    font-weight: bold;
-    letter-spacing: 3px;
-    text-shadow: 0 4px 15px rgba(0,0,0,0.45),
-                 0 0 25px rgba(255, 215, 0, 0.7);
-    padding: 10px 36px;
-    border-radius: 18px;
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(10px);
-    border: 2px solid rgba(255,255,255,0.4);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
-}
-
-.version-text {
-    position: absolute;
-    top: 18px;
-    right: 22px;
-    font-size: 13px;
-    font-family: system-ui, sans-serif;
-    color: rgba(255,255,255,0.8);
-    z-index: 10;
-}
-
 
 /* Заголовок */
 .side-action-menu .category-header {
@@ -1569,83 +1595,6 @@ header::before {
     background: linear-gradient(135deg, #30a14a, #2e8b3d);
 }
 
-/* ====================== МОДАЛКА ШТРИХ-КОДА ====================== */
-.barcode-modal {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(12px);
-    z-index: 10005;
-    display: none;
-    align-items: center;
-    justify-content: center;
-}
-
-.barcode-modal.show {
-    display: flex;
-}
-
-.barcode-modal-content {
-    background: white;
-    width: 92%;
-    max-width: 420px;
-    border-radius: 28px;
-    box-shadow: 0 25px 70px rgba(0,0,0,0.4);
-    overflow: hidden;
-    padding-bottom: 20px;
-}
-
-.barcode-modal-header {
-    background: linear-gradient(135deg, #4CAF50, #45A049);
-    color: white;
-    padding: 20px;
-    text-align: center;
-    position: relative;
-}
-
-.barcode-modal-header h2 {
-    margin: 0;
-    font-size: 22px;
-}
-
-.barcode-modal-close {
-    position: absolute;
-    top: 18px;
-    right: 18px;
-    background: none;
-    border: none;
-    font-size: 32px;
-    color: white;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-}
-
-.barcode-modal-body {
-    padding: 30px 20px 10px;
-    text-align: center;
-}
-
-.barcode-canvas {
-    width: 100%;
-    max-height: 180px;
-    image-rendering: crisp-edges;
-    margin: 15px 0 25px 0;
-}
-
-.barcode-number {
-    font-family: monospace;
-    font-size: 18px;
-    letter-spacing: 4px;
-    font-weight: 700;
-    color: #1c1c1e;
-    background: #f8f8f8;
-    padding: 12px 20px;
-    border-radius: 12px;
-    display: inline-block;
-    margin-bottom: 20px;
-}
-
 /* ====================== APPLE-STYLE: ТАБЛИЦА ИСТОРИИ ====================== */
 /* ====================== ИСТОРИЯ — МАКСИМАЛЬНАЯ ШИРИНА ====================== */
 #history {
@@ -1703,85 +1652,6 @@ header::before {
 #historyTable td:nth-child(6) { width: 8%; text-align: center; }  /* Комментарий */
 #historyTable td:nth-child(7) { width: 22%; }   /* Категория */
 
-/* ====================== ЖИВОЙ СКАНЕР ШТРИХ-КОДА ====================== */
-.scanner-modal {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    z-index: 10010;
-    display: none;
-    flex-direction: column;
-}
-
-.scanner-modal.show {
-    display: flex;
-}
-
-.scanner-header {
-    padding: 15px 20px;
-    background: rgba(0,0,0,0.7);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 17px;
-    font-weight: 600;
-}
-
-.scanner-video-container {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-}
-
-#scannerVideo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.scanner-overlay {
-    position: absolute;
-    inset: 0;
-    border: 3px solid rgba(76, 175, 80, 0.8);
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
-    pointer-events: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.scanner-overlay::before {
-    content: 'Наведите штрих-код в рамку';
-    color: white;
-    font-size: 15px;
-    background: rgba(0,0,0,0.6);
-    padding: 6px 16px;
-    border-radius: 9999px;
-    position: absolute;
-    top: 30px;
-}
-
-.scanner-result {
-    position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(76, 175, 80, 0.95);
-    color: white;
-    padding: 12px 24px;
-    border-radius: 9999px;
-    font-weight: 700;
-    display: none;
-    white-space: nowrap;
-}
-
-.scanner-footer {
-    padding: 15px;
-    background: rgba(0,0,0,0.7);
-    text-align: center;
-}
-
 .comment-doc {
     font-size: 21px;
     padding: 6px 10px;
@@ -1833,7 +1703,6 @@ header::before {
 </style>
 </head>
 <body>
-
 <div id="overlay"></div>
 <div class="card-stack-btn" id="cardStack">
     <div class="card" data-bank="Сбер"><span>Сбер</span><div class="bank-buttons"><button data-bank="Сбер">Сбер</button></div></div>
@@ -1845,12 +1714,12 @@ header::before {
     <div class="card" data-bank="Уралсиб"><span>Урал</span><div class="bank-buttons"><button data-bank="Уралсиб">Уралсиб</button></div></div>
     <div class="card" data-bank="Другие"><span>Другие</span><div class="bank-buttons"><button data-bank="Другие">Другие</button></div></div>
 </div>
-
 <div id="header-layer">
     <header>
         <span class="header-box">дѢньга</span>
         <span id="appVersion" class="version-text"></span>
     </header>
+    <div class="shine-container"></div>
 </div>
 <div id="scrollBar"></div>
 <div class="app-container">
@@ -1901,37 +1770,11 @@ header::before {
     </div>
     <button onclick="forceUpdate()">Обновить приложение</button>
 </section>
-
-        <!-- === СЕКЦИЯ КАРТ ЛОЯЛЬНОСТИ === -->
-        <section id="loyalty" style="display: none; padding: 20px 20px 100px 20px;">
-            <h2>🛍️ Карты лояльности</h2>
-            
-         <div style="display: flex; gap: 12px; margin: 20px 0 30px; justify-content: center; flex-wrap: wrap;">
-    <button onclick="addLoyaltyCardManual()" 
-            style="padding: 14px 24px; font-size: 17px; background: linear-gradient(135deg, #4CAF50, #45A049); color: white; border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(76,175,80,0.3);">
-        ✍️ Ввести вручную
-    </button>
-    
-    <button onclick="startBarcodeScanner()" 
-            style="padding: 14px 24px; font-size: 17px; background: linear-gradient(135deg, #FF5722, #FF9800); color: white; border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(255,87,34,0.4);">
-        📷 Сканировать камерой
-    </button>
-    
-    <button onclick="addLoyaltyCardByPhoto()" 
-            style="padding: 14px 24px; font-size: 17px; background: linear-gradient(135deg, #2196F3, #03A9F4); color: white; border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(33,150,243,0.3);">
-        🖼️ Выбрать фото
-    </button>
-</div>
-            
-            <div id="loyaltyCardsList"></div>
-        </section>
     </main>
     </main>
 
-
-
-  <!-- ГЛАВНОЕ МЕНЮ В СТИЛЕ APPLE -->
-<div class="bottom-nav">
+    <!-- ГЛАВНОЕ МЕНЮ В СТИЛЕ APPLE -->
+    <div class="bottom-nav">
     <div class="nav-item active" data-section="expenses" onclick="spring(this); showSection('expenses')">
         <span class="icon">💰</span>
         <span class="label">Расходы</span>
@@ -1943,10 +1786,6 @@ header::before {
     <div class="nav-item" data-section="history" onclick="spring(this); showSection('history')">
         <span class="icon">📜</span>
         <span class="label">История</span>
-    </div>
-    <div class="nav-item" data-section="loyalty" onclick="spring(this); showSection('loyalty')">
-        <span class="icon">🛍️</span>
-        <span class="label">Лояльность</span>
     </div>
     <div class="nav-item" data-section="settings" onclick="spring(this); showSection('settings')">
         <span class="icon">⚙️</span>
@@ -1992,26 +1831,17 @@ header::before {
             }
 
             function toggleStack() {
-    stack.classList.toggle('expanded');
-    overlay.style.display = stack.classList.contains('expanded') ? 'block' : 'none';
-
-    const walletBtn = document.getElementById('loyaltyWalletBtn');
-
-    if (stack.classList.contains('expanded')) {
-        if (walletBtn) walletBtn.classList.add('show');
-    } else {
-        if (walletBtn) walletBtn.classList.remove('show');
-    }
-
-    if (!stack.classList.contains('expanded')) {
-        updateCardStyles();
-    } else {
-        cards.forEach(card => {
-            card.style.transform = '';
-            card.style.zIndex = '';
-        });
-    }
-}
+                stack.classList.toggle('expanded');
+                overlay.style.display = stack.classList.contains('expanded') ? 'block' : 'none';
+                if (!stack.classList.contains('expanded')) {
+                    updateCardStyles();
+                } else {
+                    cards.forEach(card => {
+                        card.style.transform = '';
+                        card.style.zIndex = '';
+                    });
+                }
+            }
 
             stack.addEventListener('click', e => {
                 if (e.target.closest('button')) return;
@@ -2069,7 +1899,7 @@ header::before {
         targetSection.style.display = 'block';
     }
 
-    // Показываем стопку банков ТОЛЬКО на вкладке "Расходы"
+    // Показываем/скрываем стопку карт только на вкладке "Расходы"
     if (id === 'expenses') {
         cardStack.style.display = 'block';
     } else {
@@ -2078,12 +1908,6 @@ header::before {
             cardStack.classList.remove('expanded');
             overlay.style.display = 'none';
         }
-    }
-
-    // Скрываем кнопку кошелька при переходе на другие разделы
-    const walletBtn = document.getElementById('loyaltyWalletBtn');
-    if (walletBtn) {
-        walletBtn.classList.remove('show');
     }
 
     // Обновляем активную кнопку в таббаре
@@ -2095,12 +1919,9 @@ header::before {
         }
     });
 
+    // Если открыли вкладку "История" — сразу рендерим её
     if (id === 'history') {
         renderHistory();
-    }
-
-    if (id === 'loyalty') {
-        renderLoyaltyCards();
     }
 }
 
@@ -3058,122 +2879,23 @@ function showCommentModal(commentText) {
         }
     });
 }
-  
-// ==================== ОБРАБОТЧИК КНОПКИ-КОШЕЛЬКА ======================
-function initLoyaltyWalletButton() {
-    const walletBtn = document.getElementById('loyaltyWalletBtn');
-    if (!walletBtn) return;
-
-    walletBtn.addEventListener('click', () => {
-        // Закрываем стопку карт
-        const stack = document.getElementById('cardStack');
-        if (stack.classList.contains('expanded')) {
-            stack.classList.remove('expanded');
-            overlay.style.display = 'none';
-        }
-
-        // Переключаемся на раздел карт лояльности
-        showSection('loyalty');
-
-        // Скрываем кнопку кошелька после перехода
-        walletBtn.classList.remove('show');
-    });
-}
-
-// ==================== КАРТЫ ЛОЯЛЬНОСТИ ====================
-
-let loyaltyCards = JSON.parse(localStorage.getItem('loyaltyCards')) || [];
-
-function saveLoyaltyCards() {
-    localStorage.setItem('loyaltyCards', JSON.stringify(loyaltyCards));
-}
-
-function renderLoyaltyCards() {
-    const container = document.getElementById('loyaltyCardsList');
-    if (!container) return;
-    container.innerHTML = '';
-
-    if (loyaltyCards.length === 0) {
-        container.innerHTML = `
-            <div style="text-align:center; padding: 60px 20px; color:#888; font-size:16px;">
-                Пока нет карт лояльности<br>
-                Нажмите кнопку выше, чтобы добавить
-            </div>`;
-        return;
-    }
-
-    loyaltyCards.forEach((card, index) => {
-        const div = document.createElement('div');
-        div.style.cssText = `
-            background: white;
-            border-radius: 20px;
-            padding: 18px 20px;
-            margin-bottom: 16px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            cursor: pointer;
-        `;
-
-        // Делаем всю карточку кликабельной (кроме кнопки удаления)
-        div.innerHTML = `
-    ${card.photo ? 
-    `<img src="${card.photo}" style="width:80px; height:80px; object-fit:cover; border-radius:12px; flex-shrink:0;" alt="Фото карты">` : 
-    `<div style="font-size:52px; flex-shrink:0;">🛍️</div>`
-}
-    <div style="flex:1; min-width:0;">
-        <div style="font-weight:700; font-size:18px; margin-bottom:4px;">${card.name}</div>
-        ${card.number ? `<div style="color:#555; font-size:15px; word-break:break-all;">${card.number}</div>` : ''}
-        ${card.comment ? `<div style="color:#777; font-size:14px; margin-top:6px;">${card.comment}</div>` : ''}
-    </div>
-    <button onclick="deleteLoyaltyCard(${index}); event.stopPropagation();" 
-            style="background:#ef5350; color:white; border:none; width:44px; height:44px; border-radius:50%; font-size:22px; flex-shrink:0;">
-        ×
-    </button>
-`;
-
-        // Клик по карточке → показываем штрих-код
-        div.addEventListener('click', (e) => {
-            if (e.target.tagName === 'BUTTON') return; // не реагируем на кнопку удаления
-            showLoyaltyBarcode(index);
+  document.addEventListener('DOMContentLoaded', () => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => console.log('SW registered: ', registration))
+                    .catch(error => console.log('SW registration failed: ', error));
+            }
+            if (!localStorage.getItem('weeklyTotal')) {
+                localStorage.setItem('weeklyTotal', '0');
+            }
+            cleanOldExpenses();
+            autoResetMonthlyExpenses();
+            autoResetWeeklyExpenses();
+            initCards();
+            showSection('expenses');
+            renderCategories();
         });
 
-        container.appendChild(div);
-    });
-}
-
-
-function deleteLoyaltyCard(index) {
-    if (confirm('Удалить эту карту лояльности?')) {
-        loyaltyCards.splice(index, 1);
-        saveLoyaltyCards();
-        renderLoyaltyCards();
-    }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/service-worker.js')
-            .then(registration => console.log('SW registered: ', registration))
-            .catch(error => console.log('SW registration failed: ', error));
-    }
-
-    if (!localStorage.getItem('weeklyTotal')) {
-        localStorage.setItem('weeklyTotal', '0');
-    }
-
-    cleanOldExpenses();
-    autoResetMonthlyExpenses();
-    autoResetWeeklyExpenses();
-    initCards();
-    initLoyaltyWalletButton();     // ← важно: вызываем здесь
-
-    showSection('expenses');
-    renderCategories();
-    renderLoyaltyCards();          // ← теперь внутри, после создания секции
-});
-    renderLoyaltyCards();        // ← добавь эту строку
         const canvas = document.getElementById('sparkCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -3224,193 +2946,6 @@ document.addEventListener('DOMContentLoaded', () => {
             for (let i = 0; i < 3; i++) particles.push(new Particle(e.clientX, e.clientY));
         });
 
-// === ВАРИАНТ 1: Ввести вручную (как было раньше) ===
-function addLoyaltyCardManual() {
-    const number = prompt('Введите номер карты / штрих-код (13–20 цифр):') || '';
-    if (!number.trim()) return;
-
-    processLoyaltyNumber(number.trim());
-}
-
-// === ВАРИАНТ 2: Выбрать фото из галереи + сканирование ZXing ===
-function addLoyaltyCardByPhoto() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    // capture УДАЛЕН — теперь открывается галерея (фото из библиотеки), а не камера
-
-    input.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = async (ev) => {
-            const imgDataUrl = ev.target.result;   // base64 для сохранения фото
-
-            try {
-                const codeReader = new ZXing.BrowserMultiFormatReader();
-                const result = await codeReader.decodeFromImageUrl(imgDataUrl);
-                
-                console.log("✅ ZXing распознал из фото:", result.getText());
-                processLoyaltyNumber(result.getText().trim(), imgDataUrl);
-
-            } catch (err) {
-                console.error("Ошибка сканирования фото:", err);
-                
-                alert('Штрих-код на фото не распознан.\n\nМожно ввести вручную ниже.');
-                
-                const manualNumber = prompt('Номер штрих-кода (13–20 цифр):', '');
-                if (manualNumber && manualNumber.trim()) {
-                    processLoyaltyNumber(manualNumber.trim(), imgDataUrl); // фото всё равно сохраняем
-                }
-            }
-        };
-        reader.readAsDataURL(file);
-    };
-
-    input.click();
-}
-// === Общая обработка номера + фото ===
-async function processLoyaltyNumber(number, initialPhotoDataUrl = null) {
-    const cleanNumber = number.replace(/\D/g, '');
-    if (cleanNumber.length < 8) {
-        alert('Номер слишком короткий!');
-        return;
-    }
-
-    // Автоопределение названия магазина
-    let suggestedName = '';
-    const n = cleanNumber;
-    if (n.startsWith('290') || n.startsWith('291') || (n.length === 13 && n.startsWith('46'))) {
-        suggestedName = 'Пятёрочка';
-    } else if (n.startsWith('220') || n.startsWith('221') || n.startsWith('222') || (n.startsWith('460') && n.length === 13)) {
-        suggestedName = 'Магнит';
-    } else if (n.startsWith('200') || n.startsWith('201')) {
-        suggestedName = 'Ашан';
-    } else if (n.startsWith('280') || n.startsWith('281')) {
-        suggestedName = 'Лента';
-    } else if (n.startsWith('250')) {
-        suggestedName = 'Перекрёсток';
-    }
-
-    const finalName = prompt(
-        `Распознанный номер: ${cleanNumber}\n\n` +
-        `Предлагаемое название: ${suggestedName || 'Моя карта'}\n\n` +
-        `Введите название карты:`,
-        suggestedName || 'Моя карта'
-    );
-
-    if (!finalName || !finalName.trim()) return;
-
-    const comment = prompt('Комментарий (необязательно):') || '';
-
-    // === НОВОЕ: Вместо эмодзи — фото карты ===
-    let photoDataUrl = initialPhotoDataUrl;
-
-    if (!photoDataUrl) {
-        const wantPhoto = confirm('Прикрепить фото карты? (рекомендуется)');
-        if (wantPhoto) {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-
-            await new Promise((resolve) => {
-                input.onchange = (e) => {
-                    const file = e.target.files[0];
-                    if (!file) {
-                        resolve();
-                        return;
-                    }
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        photoDataUrl = ev.target.result;
-                        resolve();
-                    };
-                    reader.readAsDataURL(file);
-                };
-                input.click();
-            });
-        }
-    }
-
-    loyaltyCards.push({
-        name: finalName.trim(),
-        number: cleanNumber,
-        comment: comment.trim(),
-        photo: photoDataUrl
-    });
-
-    saveLoyaltyCards();
-    renderLoyaltyCards();
-
-    alert(`✅ Карта «${finalName.trim()}» добавлена!`);
-}
-
-// ==================== ZXING СКАНЕР — ОПТИМИЗИРОВАНО ДЛЯ iPHONE ====================
-let codeReader = null;
-
-async function startBarcodeScanner() {
-    const modal = document.createElement('div');
-    modal.className = 'scanner-modal';
-    modal.innerHTML = `
-        <div class="scanner-header">
-            <span>Сканирование штрих-кода</span>
-            <button onclick="stopBarcodeScanner()" style="background:none;border:none;color:white;font-size:28px;line-height:1;">✕</button>
-        </div>
-        <div class="scanner-video-container" style="flex:1;position:relative;background:#000;">
-            <video id="zxing-video" style="width:100%; height:100%; object-fit:cover;"></video>
-            
-            <!-- Широкая рамка для длинных штрих-кодов -->
-            <div style="position:absolute;inset:0;border:5px solid #4CAF50;box-shadow:0 0 0 9999px rgba(0,0,0,0.72);pointer-events:none;display:flex;align-items:center;justify-content:center;">
-                <div style="color:white;background:rgba(0,0,0,0.85);padding:16px 32px;border-radius:9999px;font-size:17px;text-align:center;line-height:1.4;">
-                    Наведите штрих-код<br>ровно в центр рамки<br>и держите неподвижно
-                </div>
-            </div>
-        </div>
-        <div class="scanner-footer" style="padding:20px;background:rgba(0,0,0,0.92);text-align:center;color:#fff;font-size:14.5px;">
-            Яркий свет • Карта параллельно экрану • Держите 1–3 секунды
-        </div>
-    `;
-    document.body.appendChild(modal);
-    setTimeout(() => modal.classList.add('show'), 10);
-
-    const videoElement = document.getElementById('zxing-video');
-    codeReader = new ZXing.BrowserMultiFormatReader();
-
-    try {
-        await codeReader.decodeFromVideoDevice(
-            undefined,           // используем дефолтную камеру
-            'zxing-video',       // id видео элемента
-            (result, err) => {
-                if (result) {
-                    console.log("✅ ZXing распознал:", result.getText());
-                    stopBarcodeScanner();
-
-                    setTimeout(() => {
-                        alert(`✅ Штрих-код успешно распознан!\n\nНомер: ${result.getText()}`);
-                        processLoyaltyNumber(result.getText().trim());
-                    }, 300);
-                }
-            }
-        );
-    } catch (err) {
-        console.error("Ошибка ZXing:", err);
-        alert("Не удалось запустить сканер.\n\nПроверьте разрешение на камеру и попробуйте снова.");
-        stopBarcodeScanner();
-    }
-}
-
-function stopBarcodeScanner() {
-    if (codeReader) {
-        codeReader.reset();
-        codeReader = null;
-    }
-    const modal = document.querySelector('.scanner-modal');
-    if (modal) {
-        modal.classList.remove('show');
-        setTimeout(() => modal.remove(), 450);
-    }
-}
         function animateParticles() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             particles.forEach((p, i) => {
@@ -3432,65 +2967,6 @@ function stopBarcodeScanner() {
                 if (adminSubmenu) adminSubmenu.style.display = 'none';
             }
         }
-
-
-// ==================== ПОКАЗАТЬ ШТРИХ-КОД ====================
-function showLoyaltyBarcode(index) {
-    const card = loyaltyCards[index];
-    if (!card || !card.number) {
-        alert('Для этой карты не указан номер!');
-        return;
-    }
-
-    const modal = document.createElement('div');
-    modal.className = 'barcode-modal';
-
-    modal.innerHTML = `
-        <div class="barcode-modal-content">
-            <div class="barcode-modal-header">
-                <h2>${card.name}</h2>
-                <button class="barcode-modal-close">×</button>
-            </div>
-            <div class="barcode-modal-body">
-                <div class="barcode-number">${card.number}</div>
-                <canvas id="barcodeCanvas" class="barcode-canvas"></canvas>
-                <p style="color:#666; font-size:14px; margin-top:10px;">Поднеси к сканеру</p>
-            </div>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    // Показываем модалку
-    setTimeout(() => modal.classList.add('show'), 10);
-
-    // Генерируем штрих-код
-    const canvas = document.getElementById('barcodeCanvas');
-    JsBarcode(canvas, card.number, {
-        format: "CODE128",
-        lineColor: "#1c1c1e",
-        width: 3,
-        height: 120,
-        displayValue: false,        // номер уже показан выше
-        fontSize: 18,
-        margin: 20
-    });
-
-    // Закрытие
-    modal.querySelector('.barcode-modal-close').onclick = () => {
-        modal.classList.remove('show');
-        setTimeout(() => modal.remove(), 300);
-    };
-
-    // Закрытие по клику на фон
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.classList.remove('show');
-            setTimeout(() => modal.remove(), 300);
-        }
-    });
-}
-
 
         function toggleAdminSubmenu() {
             const adminSubmenu = document.getElementById('adminSubmenu');
@@ -3774,6 +3250,5 @@ function endHawkMode() {
         </div>
     </div>
 </div>
-
 </body>
 </html>
