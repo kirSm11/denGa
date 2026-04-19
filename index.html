@@ -3119,9 +3119,9 @@ function renderLoyaltyCards() {
         // Делаем всю карточку кликабельной (кроме кнопки удаления)
         div.innerHTML = `
     ${card.photo ? 
-        `<img src="${card.photo}" style="width:80px; height:80px; object-fit:cover; border-radius:12px; flex-shrink:0;" alt="Фото карты">` : 
-        `<div style="font-size:52px; flex-shrink:0;">${card.emoji || '🛍️'}</div>`
-    }
+    `<img src="${card.photo}" style="width:80px; height:80px; object-fit:cover; border-radius:12px; flex-shrink:0;" alt="Фото карты">` : 
+    `<div style="font-size:52px; flex-shrink:0;">🛍️</div>`
+}
     <div style="flex:1; min-width:0;">
         <div style="font-weight:700; font-size:18px; margin-bottom:4px;">${card.name}</div>
         ${card.number ? `<div style="color:#555; font-size:15px; word-break:break-all;">${card.number}</div>` : ''}
@@ -3271,29 +3271,27 @@ function addLoyaltyCardByPhoto() {
     input.click();
 }
 // === Общая обработка номера + фото ===
-function processLoyaltyNumber(number, photoDataUrl = null) {
+async function processLoyaltyNumber(number, initialPhotoDataUrl = null) {
     const cleanNumber = number.replace(/\D/g, '');
     if (cleanNumber.length < 8) {
         alert('Номер слишком короткий!');
         return;
     }
 
-    // Автоопределение названия (та же логика, что раньше)
+    // Автоопределение названия магазина
     let suggestedName = '';
-    let suggestedEmoji = '🛍️';
     const n = cleanNumber;
-
     if (n.startsWith('290') || n.startsWith('291') || (n.length === 13 && n.startsWith('46'))) {
-        suggestedName = 'Пятёрочка'; suggestedEmoji = '🛒';
+        suggestedName = 'Пятёрочка';
     } else if (n.startsWith('220') || n.startsWith('221') || n.startsWith('222') || (n.startsWith('460') && n.length === 13)) {
-        suggestedName = 'Магнит'; suggestedEmoji = '🧲';
+        suggestedName = 'Магнит';
     } else if (n.startsWith('200') || n.startsWith('201')) {
-        suggestedName = 'Ашан'; suggestedEmoji = '🏬';
+        suggestedName = 'Ашан';
     } else if (n.startsWith('280') || n.startsWith('281')) {
-        suggestedName = 'Лента'; suggestedEmoji = '🛒';
+        suggestedName = 'Лента';
     } else if (n.startsWith('250')) {
-        suggestedName = 'Перекрёсток'; suggestedEmoji = '🛍️';
-    } // добавляй другие сети сюда
+        suggestedName = 'Перекрёсток';
+    }
 
     const finalName = prompt(
         `Распознанный номер: ${cleanNumber}\n\n` +
@@ -3304,15 +3302,42 @@ function processLoyaltyNumber(number, photoDataUrl = null) {
 
     if (!finalName || !finalName.trim()) return;
 
-    const emoji = prompt('Эмодзи для карты:', suggestedEmoji) || suggestedEmoji;
     const comment = prompt('Комментарий (необязательно):') || '';
+
+    // === НОВОЕ: Вместо эмодзи — фото карты ===
+    let photoDataUrl = initialPhotoDataUrl;
+
+    if (!photoDataUrl) {
+        const wantPhoto = confirm('Прикрепить фото карты? (рекомендуется)');
+        if (wantPhoto) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+
+            await new Promise((resolve) => {
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (!file) {
+                        resolve();
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        photoDataUrl = ev.target.result;
+                        resolve();
+                    };
+                    reader.readAsDataURL(file);
+                };
+                input.click();
+            });
+        }
+    }
 
     loyaltyCards.push({
         name: finalName.trim(),
         number: cleanNumber,
-        emoji: emoji.trim(),
         comment: comment.trim(),
-        photo: photoDataUrl   // сохраняем фото как base64
+        photo: photoDataUrl
     });
 
     saveLoyaltyCards();
