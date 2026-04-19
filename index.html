@@ -3329,11 +3329,10 @@ function processLoyaltyNumber(number, photoDataUrl = null) {
     alert(`✅ Карта «${finalName.trim()}» добавлена!`);
 }
 
-// ==================== УЛУЧШЕННЫЙ УНИВЕРСАЛЬНЫЙ СКАНЕР (Android + iOS) ====================
+// ==================== ОПТИМИЗИРОВАННЫЙ СКАНЕР ДЛЯ КАРТ ЛОЯЛЬНОСТИ ====================
 let html5QrCode = null;
 
 async function startBarcodeScanner() {
-    // Показываем модалку сразу
     const modal = document.createElement('div');
     modal.className = 'scanner-modal';
     modal.innerHTML = `
@@ -3343,27 +3342,31 @@ async function startBarcodeScanner() {
         </div>
         <div class="scanner-video-container" style="flex:1;position:relative;background:#000;">
             <div id="html5-qrcode-reader" style="width:100%;height:100%;"></div>
-            <div class="scanner-overlay" style="position:absolute;inset:0;border:3px solid rgba(76,175,80,0.9);box-shadow:0 0 0 9999px rgba(0,0,0,0.6);pointer-events:none;display:flex;align-items:center;justify-content:center;">
-                <div style="color:white;background:rgba(0,0,0,0.7);padding:8px 20px;border-radius:9999px;font-size:15px;">Наведите штрих-код в рамку</div>
+            
+            <!-- Улучшенная рамка -->
+            <div style="position:absolute;inset:0;border:3px solid #4CAF50;box-shadow:0 0 0 9999px rgba(0,0,0,0.65);pointer-events:none;display:flex;align-items:center;justify-content:center;">
+                <div style="color:white;background:rgba(0,0,0,0.75);padding:10px 24px;border-radius:9999px;font-size:15px;text-align:center;">
+                    Наведите штрих-код<br>в центр рамки
+                </div>
             </div>
         </div>
-        <div class="scanner-footer" style="padding:15px;background:rgba(0,0,0,0.8);text-align:center;color:#ccc;font-size:13px;">
-            Хорошее освещение • Держите ровно • Код должен быть чётким
+        <div class="scanner-footer" style="padding:15px;background:rgba(0,0,0,0.85);text-align:center;color:#ddd;font-size:13px;">
+            Хорошее освещение • Код должен быть чётким • Расстояние 15–30 см
         </div>
     `;
     document.body.appendChild(modal);
     setTimeout(() => modal.classList.add('show'), 10);
 
-    const readerElement = document.getElementById("html5-qrcode-reader");
+    const readerDiv = document.getElementById("html5-qrcode-reader");
 
-    html5QrCode = new Html5Qrcode("html5-qrcode-reader", { 
-        verbose: false, 
-        experimentalFeatures: { useBarCodeDetectorIfSupported: true } 
+    html5QrCode = new Html5Qrcode("html5-qrcode-reader", {
+        verbose: false,
+        experimentalFeatures: { useBarCodeDetectorIfSupported: true }
     });
 
     const config = {
-        fps: 12,                    // чуть ниже — стабильнее на слабых устройствах
-        qrbox: { width: 280, height: 280 },   // большая рамка — легче попасть
+        fps: 15,                          // повысили для лучшей отзывчивости
+        qrbox: { width: 320, height: 180 }, // широкая горизонтальная рамка — лучше для длинных штрих-кодов
         aspectRatio: 1.0,
         disableFlip: false,
         rememberLastUsedCamera: true
@@ -3371,21 +3374,23 @@ async function startBarcodeScanner() {
 
     try {
         await html5QrCode.start(
-            { facingMode: "environment" },   // задняя камера
+            { facingMode: "environment" },
             config,
             (decodedText) => {
-                // Успешно!
-                console.log("Распознано:", decodedText);
+                console.log("✅ Распознано:", decodedText);
                 stopHtml5QrcodeScanner();
-                processLoyaltyNumber(decodedText.trim());
+                // Небольшая задержка для плавности
+                setTimeout(() => {
+                    processLoyaltyNumber(decodedText.trim());
+                }, 300);
             },
-            (error) => {
-                // Это нормально — просто нет кода в кадре
+            (errorMessage) => {
+                // Игнорируем постоянные сообщения "No MultiFormat Readers were able to detect the code"
             }
         );
     } catch (err) {
-        console.error("Ошибка запуска сканера:", err);
-        alert("Не удалось запустить камеру.\n\nПроверьте:\n• Разрешение на камеру\n• HTTPS (или localhost)\n• Попробуйте перезапустить браузер");
+        console.error("Ошибка запуска камеры:", err);
+        alert("Не удалось запустить камеру.\n\nВозможные причины:\n• Нет разрешения на камеру\n• Сайт открыт не по HTTPS\n• Попробуйте перезапустить браузер");
         stopHtml5QrcodeScanner();
     }
 }
@@ -3393,14 +3398,16 @@ async function startBarcodeScanner() {
 function stopHtml5QrcodeScanner() {
     if (html5QrCode) {
         html5QrCode.stop().catch(() => {}).finally(() => {
-            if (html5QrCode) html5QrCode.clear();
-            html5QrCode = null;
+            if (html5QrCode) {
+                html5QrCode.clear();
+                html5QrCode = null;
+            }
         });
     }
     const modal = document.querySelector('.scanner-modal');
     if (modal) {
         modal.classList.remove('show');
-        setTimeout(() => modal.remove(), 350);
+        setTimeout(() => modal.remove(), 400);
     }
 }
         function animateParticles() {
