@@ -3350,24 +3350,28 @@ async function startBarcodeScanner() {
             </div>
         </div>
         <div class="scanner-footer" style="padding:20px;background:rgba(0,0,0,0.92);text-align:center;color:#fff;font-size:14.5px;">
-            Держите карту параллельно • Яркий свет • Не двигайте 1–2 секунды
+            Держите карту параллельно • Яркий свет вот • Не двигайте 1–2 секунды
         </div>
     `;
     document.body.appendChild(modal);
     setTimeout(() => modal.classList.add('show'), 10);
 
     html5QrCode = new Html5Qrcode("html5-qrcode-reader", { 
-        verbose: false,
-        experimentalFeatures: { useBarCodeDetectorIfSupported: true }
+        verbose: false
+        // УБРАЛИ experimentalFeatures — ломает Safari
     });
 
     const config = {
-        fps: 25,                                   // максимально быстро для iOS
-        qrbox: { width: 460, height: 140 },        // максимально широкая рамка для длинных кодов
-        aspectRatio: 1.0,
+        fps: 10, // было 25 → на iPhone хуже работает
+        qrbox: { width: 300, height: 120 }, // было слишком большое
+        // УБРАЛ aspectRatio — ломает камеру iOS
         disableFlip: false,
         rememberLastUsedCamera: true,
-        formatsToSupport: ["CODE_128", "EAN_13", "EAN_8"]
+        formatsToSupport: [
+            Html5QrcodeSupportedFormats.CODE_128,
+            Html5QrcodeSupportedFormats.EAN_13,
+            Html5QrcodeSupportedFormats.EAN_8
+        ]
     };
 
     try {
@@ -3375,19 +3379,20 @@ async function startBarcodeScanner() {
             { facingMode: "environment" },
             config,
             (decodedText) => {
+                // защита от мусора (часто на iPhone)
+                if (!decodedText || decodedText.length < 6) return;
+
                 console.log("✅ iPhone поймал код:", decodedText);
                 
-                // Сразу останавливаем видео
                 stopHtml5QrcodeScanner();
 
-                // Показываем подтверждение и добавляем карту
                 setTimeout(() => {
                     alert(`✅ Штрих-код успешно распознан!\n\nНомер: ${decodedText}`);
                     processLoyaltyNumber(decodedText.trim());
-                }, 250);
+                }, 200);
             },
-            (error) => {
-                // Игнорируем постоянные ошибки "no code found"
+            () => {
+                // игнорируем "no code found"
             }
         );
     } catch (err) {
