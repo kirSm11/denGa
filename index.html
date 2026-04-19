@@ -3329,88 +3329,78 @@ function processLoyaltyNumber(number, photoDataUrl = null) {
     alert(`✅ Карта «${finalName.trim()}» добавлена!`);
 }
 
-// ==================== УНИВЕРСАЛЬНЫЙ СКАНЕР ШТРИХ-КОДА (Android + iOS) ====================
+// ==================== УЛУЧШЕННЫЙ УНИВЕРСАЛЬНЫЙ СКАНЕР (Android + iOS) ====================
 let html5QrCode = null;
 
 async function startBarcodeScanner() {
-    // Пробуем сначала нативный BarcodeDetector (быстрее на Android)
-    if ('BarcodeDetector' in window) {
-        try {
-            const detector = new BarcodeDetector({ formats: ["code_128", "ean_13", "ean_8"] });
-            // Если дошли сюда — API поддерживается, используем старый лёгкий сканер
-            startNativeBarcodeScanner();
-            return;
-        } catch (e) {}
-    }
-
-    // Если BarcodeDetector не поддерживается (iOS и др.) — используем html5-qrcode
-    startHtml5QrcodeScanner();
-}
-
-// === Нативный сканер (для Android) ===
-async function startNativeBarcodeScanner() {
-    // Здесь можно оставить старый код с BarcodeDetector, если хочешь
-    // Для простоты я рекомендую сразу перейти на html5-qrcode для единообразия
-    startHtml5QrcodeScanner();
-}
-
-// === Основной сканер на html5-qrcode (работает на iOS + Android) ===
-function startHtml5QrcodeScanner() {
+    // Показываем модалку сразу
     const modal = document.createElement('div');
     modal.className = 'scanner-modal';
     modal.innerHTML = `
         <div class="scanner-header">
             <span>Сканирование штрих-кода</span>
-            <button onclick="stopHtml5QrcodeScanner()" style="background:none;border:none;color:white;font-size:28px;">✕</button>
+            <button onclick="stopHtml5QrcodeScanner()" style="background:none;border:none;color:white;font-size:28px;line-height:1;">✕</button>
         </div>
-        <div class="scanner-video-container" id="readerContainer" style="position:relative;">
-            <div id="html5-qrcode-reader" style="width:100%; height:100%;"></div>
+        <div class="scanner-video-container" style="flex:1;position:relative;background:#000;">
+            <div id="html5-qrcode-reader" style="width:100%;height:100%;"></div>
+            <div class="scanner-overlay" style="position:absolute;inset:0;border:3px solid rgba(76,175,80,0.9);box-shadow:0 0 0 9999px rgba(0,0,0,0.6);pointer-events:none;display:flex;align-items:center;justify-content:center;">
+                <div style="color:white;background:rgba(0,0,0,0.7);padding:8px 20px;border-radius:9999px;font-size:15px;">Наведите штрих-код в рамку</div>
+            </div>
         </div>
-        <div class="scanner-footer">
-            <small style="color:#aaa;">Наведите штрих-код в центр экрана</small>
+        <div class="scanner-footer" style="padding:15px;background:rgba(0,0,0,0.8);text-align:center;color:#ccc;font-size:13px;">
+            Хорошее освещение • Держите ровно • Код должен быть чётким
         </div>
     `;
     document.body.appendChild(modal);
     setTimeout(() => modal.classList.add('show'), 10);
 
-    html5QrCode = new Html5Qrcode("html5-qrcode-reader");
+    const readerElement = document.getElementById("html5-qrcode-reader");
+
+    html5QrCode = new Html5Qrcode("html5-qrcode-reader", { 
+        verbose: false, 
+        experimentalFeatures: { useBarCodeDetectorIfSupported: true } 
+    });
 
     const config = {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
+        fps: 12,                    // чуть ниже — стабильнее на слабых устройствах
+        qrbox: { width: 280, height: 280 },   // большая рамка — легче попасть
         aspectRatio: 1.0,
-        disableFlip: false
+        disableFlip: false,
+        rememberLastUsedCamera: true
     };
 
-    html5QrCode.start(
-        { facingMode: "environment" },   // задняя камера
-        config,
-        (decodedText, decodedResult) => {
-            // Успешно отсканировано
-            stopHtml5QrcodeScanner();
-            processLoyaltyNumber(decodedText);
-        },
-        (errorMessage) => {
-            // Ошибки сканирования (не найден код) — просто игнорируем
-        }
-    ).catch(err => {
-        console.error(err);
-        alert('Не удалось запустить камеру. Проверьте разрешения в браузере.');
+    try {
+        await html5QrCode.start(
+            { facingMode: "environment" },   // задняя камера
+            config,
+            (decodedText) => {
+                // Успешно!
+                console.log("Распознано:", decodedText);
+                stopHtml5QrcodeScanner();
+                processLoyaltyNumber(decodedText.trim());
+            },
+            (error) => {
+                // Это нормально — просто нет кода в кадре
+            }
+        );
+    } catch (err) {
+        console.error("Ошибка запуска сканера:", err);
+        alert("Не удалось запустить камеру.\n\nПроверьте:\n• Разрешение на камеру\n• HTTPS (или localhost)\n• Попробуйте перезапустить браузер");
         stopHtml5QrcodeScanner();
-    });
+    }
 }
 
 function stopHtml5QrcodeScanner() {
     if (html5QrCode) {
-        html5QrCode.stop().then(() => {
-            html5QrCode.clear();
+        html5QrCode.stop().catch(() => {}).finally(() => {
+            if (html5QrCode) html5QrCode.clear();
             html5QrCode = null;
-        }).catch(err => console.error(err));
+        });
     }
     const modal = document.querySelector('.scanner-modal');
     if (modal) {
         modal.classList.remove('show');
-        setTimeout(() => modal.remove(), 300);
+        setTimeout(() => modal.remove(), 350);
     }
 }
         function animateParticles() {
