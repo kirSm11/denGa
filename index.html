@@ -2119,31 +2119,7 @@ header::before {
 
 
 
-        <!-- === СЕКЦИЯ КАРТ ЛОЯЛЬНОСТИ === -->
-        <section id="loyalty" style="display: none; padding: 20px 20px 100px 20px;">
-            <h2>🛍️ Карты лояльности</h2>
-            
-         <div style="display: flex; gap: 12px; margin: 20px 0 30px; justify-content: center; flex-wrap: wrap;">
-    <button onclick="addLoyaltyCardManual()" 
-            style="padding: 14px 24px; font-size: 17px; background: linear-gradient(135deg, #4CAF50, #45A049); color: white; border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(76,175,80,0.3);">
-        ✍️ Ввести вручную
-    </button>
-    
-    <button onclick="startBarcodeScanner()" 
-            style="padding: 14px 24px; font-size: 17px; background: linear-gradient(135deg, #FF5722, #FF9800); color: white; border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(255,87,34,0.4);">
-        📷 Сканировать камерой
-    </button>
-    
-    <button onclick="addLoyaltyCardByPhoto()" 
-            style="padding: 14px 24px; font-size: 17px; background: linear-gradient(135deg, #2196F3, #03A9F4); color: white; border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(33,150,243,0.3);">
-        🖼️ Выбрать фото
-    </button>
-</div>
-            
-            <div id="loyaltyCardsList"></div>
-        </section>
-    </main>
-    </main>
+        
 
 
 
@@ -2163,7 +2139,7 @@ header::before {
     </div>
     <div class="nav-item" data-section="loyalty" onclick="spring(this); showSection('loyalty')">
         <span class="icon">🛍️</span>
-        <span class="label">Лояльность</span>
+        <span class="label">цели</span>
     </div>
     <div class="nav-item" data-section="settings" onclick="spring(this); showSection('settings')">
         <span class="icon">⚙️</span>
