@@ -35,109 +35,9 @@
 <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
 
 
-
-<!-- ================================часть вторая. стили ================================-->
-
-
-
 <style>
 
-/* ~~~~~~~СтРаНиЦа~~~~~~~~ */
-
-/* адаптация под телефон */
-
-@media (max-width: 600px) {
-    .app-container {
-        padding-left: 8px;
-        padding-right: 8px;
-        border-left: 2px solid #0b5ea8;
-        border-right: 2px solid #0b5ea8;
-    }
-}
-
-/* ОбЩиЕ нАсТрОйКи СтРаНиЦы */
-
-
-html, body {
-    overflow-x: hidden;
-    touch-action: pan-y;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-}
-
-/* основная разметка страницы */
-
-main {
-    padding: 20px 20px 110px 20px; /* 110px — отступ снизу под таббар */
-    text-align: center;
-}
-section {
-    display: none;
-}
-#categoriesList {
-    display: block;
-    margin-top: 20px;
-    padding: 0 10px;
-}
-
-
-/* скрытые часы */
-
-#clock {
-    opacity: 0;
-    background: transparent !important;
-    box-shadow: none !important;
-    color: transparent !important;
-}
-
-/* ~~~~~~~КнОпКи~~~~~~~~ */
-
-
-/* КнОпКи КаТеГоРиЙ */
-
-
-/* основной стиль кнопок категорий */
-
-#categoriesList button {
-    display: flex;
-    align-items: center;
-    width: 88%;
-    max-width: 230px;
-    margin: 12px 0;
-    padding: 20px 22px;
-    font-size: 18px;
-    font-weight: 600;
-    border-radius: 22px;
-    background: linear-gradient(135deg, #2E1A47, #6B4EFF);
-    color: white;
-    border: none;
-    box-shadow: 0 6px 20px rgba(74, 124, 255, 0.3),
-                inset 0 2px 0 rgba(255,255,255,0.35);
-    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-/* ховевер эффект кнопок категорий */
-
-#categoriesList button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(74, 124, 255, 0.4);
-}
-
-#categoriesList button:active {
-    transform: scale(0.97);
-}
-
-
-/* КнОпКи КаРт */
-
+/* КоНтЕйНеР сТоПкИ */
 
 /* главный контейнер кнопки с картами */
 
@@ -181,6 +81,18 @@ section {
 }
 
 
+
+/* цвета банков */
+
+.card[data-bank="Сбер"] { background-color: #0f9d58; }
+.card[data-bank="Яндекс"] { background-color: #ff6eb4; }
+.card[data-bank="Тинькофф"] { background-color: #FFD700; color:#000; }
+.card[data-bank="Альфа"] { background-color: #FF0000; }
+.card[data-bank="ВТБ"] { background-color: #1E90FF; }
+.card[data-bank="Халва"] { background-color: #A9A9A9; color:#000; }
+.card[data-bank="Уралсиб"] { background-color: #800080; }
+.card[data-bank="Другие"] { background-color: #000000; }
+
 /* Положение карт в сложенном состоянии */
 
 .card-stack-btn:not(.expanded) .card:nth-child(1) { transform: translate(0, 0) rotate(0deg); z-index: 8; }
@@ -223,7 +135,8 @@ section {
 .card-stack-btn.expanded .card:nth-child(8) { transform: translate(0, -490px) rotate(-4deg) scale(1.05); z-index: 8; }
 
 
-/* контейнер КНОПОК у карт */
+
+/* контейнер кнопок у карты */
 
 .card .bank-buttons {
     position: absolute;
@@ -237,7 +150,7 @@ section {
     transition: opacity 0.3s;
 }
 
-/* КНОПКИ карт при раскрытии стопки */
+/* кнопки при раскрытии стопки */
 
 .card-stack-btn.expanded .card .bank-buttons {
     opacity: 0;
@@ -245,39 +158,29 @@ section {
 }
 
 
-/* основные кнопки настроек */
+/* стили кнопок */
 
-#settings button {
-    display: block;
-    width: 100%;
-    margin-bottom: 10px;
-    padding: 10px 15px;
-    background: linear-gradient(135deg, #5A7DE1, #A0D4FA);
-    color: #fff;
+.bank-buttons button {
+    background: none;
     border: none;
-    border-radius: 6px;
-    text-align: left;
+    color: transparent;
+    opacity: 0;
+    width: 40px;
+    height: 40px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: opacity 0.3s, color 0.3s;
+}
+
+/* кнопки при раскрытии */
+
+.card-stack-btn.expanded .card .bank-buttons button {
+    opacity: 0;
+    color: transparent;
 }
 
 
 
-/* ~~~~эффекты и анимация~~~~*/
-
-
-
-/* холст для визуальных эффектов*/
-
-#sparkCanvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 1000;
-}
-
-/* затемнение экрана при раскрытии карт */
+/* затемнение экрана */
 
 
 #overlay {
@@ -291,8 +194,60 @@ section {
     z-index: 1000;
 }
 
+/* общие настройки страницы */
 
-/* АнИмАцИя КнОпОк ГлАвНоГо МеНю */
+
+html, body {
+    overflow-x: hidden;
+    touch-action: pan-y;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+
+/* навигация */
+
+nav {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+/* кнопки навигации. главное меню */
+
+nav button {
+    padding: 12px 22px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 10px;
+    border: 2px solid #0b5ea8;
+    background: white;
+    color: #4CAF50;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    z-index: 1;
+}
+
+/* эффект при наведении мышкой на кнопки. ховер */
+
+nav button:hover {
+    background: linear-gradient(135deg, #A8E6A2, #45A049);
+    color: white;
+}
+
+/* общий ховер */
+
+button:hover {
+    background-color: #0b7dda;
+}
+
+/* АнИмАцИя КнОпОк */
 
 @keyframes spring {
     0% { transform: scale(1); }
@@ -310,6 +265,69 @@ section {
 .springing {
     animation: spring 0.95s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
+
+
+/* ОсНоВнАя РаЗмЕтКа СтРаНиЦы */
+
+main {
+    padding: 20px 20px 110px 20px; /* 110px — отступ снизу под таббар */
+    text-align: center;
+}
+section {
+    display: none;
+}
+#categoriesList {
+    display: block;
+    margin-top: 20px;
+    padding: 0 10px;
+}
+
+
+/* КнОпКи КаТеГоРиЙ */
+
+
+/* основной стиль кнопок категорий */
+
+#categoriesList button {
+    display: flex;
+    align-items: center;
+    width: 88%;
+    max-width: 230px;
+    margin: 12px 0;
+    padding: 20px 22px;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #2E1A47, #6B4EFF);
+    color: white;
+    border: none;
+    box-shadow: 0 6px 20px rgba(74, 124, 255, 0.3),
+                inset 0 2px 0 rgba(255,255,255,0.35);
+    transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* ховевер эффект кнопок категорий */
+
+#categoriesList button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(74, 124, 255, 0.4);
+}
+
+#categoriesList button:active {
+    transform: scale(0.97);
+}
+
+/* Иконка слева. не понял что это */
+
+#categoriesList button::before {
+    content: "";
+    font-size: 26px;
+    margin-right: 16px;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+}
+
 
 /* ЭфФеКт ПрИ нАжАтИи нА кАтЕгОрИю */
 
@@ -341,28 +359,17 @@ section {
     transition: left 0.6s;
 }
 
-/* блестящий эффект поверх карточек итогов (карточки итогов)*/
+/* ===CaNvAs ДлЯ эФфЕкТоВ. чИсТыЙ лИсТ=== */
 
-.stat-card::before {
-    content: '';
+/* холст для визуальных эффектов*/
+
+#sparkCanvas {
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 40%;
-    height: 300%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
-    transform: skewX(-25deg);
-    animation: shineStat 6s infinite; /* анимация блика */
+    top: 0;
+    left: 0;
     pointer-events: none;
+    z-index: 1000;
 }
-
-/* анимация блика на карточках итогов */
-
-@keyframes shineStat {
-    0% { left: -150%; }
-    100% { left: 150%; }
-}
-
 
 
 /* ===ПеРеТаСкИвАнИе=== */
@@ -385,15 +392,9 @@ section {
     pointer-events: none;
 }
 
+/* ===СтАтИсТиКа=== */
 
-
-
-
-/* ~~~КоНтЕйНеРы И рАмКи ~~~*/
-
-
-
-/* контейнер для строк статистики */
+/* контейнер статистики */
 
 #statsCategories {
     margin-top: 10px;
@@ -402,7 +403,68 @@ section {
     margin-inline: auto;
 }
 
-/* рамка остатка */
+/* строка статистики */
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 16px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+/* ховевер какрточки статистики */
+
+.stat-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* название плюс суммы */
+
+.stat-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 12px;
+}
+
+/* название категории */
+
+.stat-name {
+    font-weight: 700;
+    font-size: 16.5px;
+    color: #1c1c1e;
+    letter-spacing: -0.2px;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* сумма справа */
+
+.stat-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* потрачено */
+
+.stat-spent {
+    font-weight: 700;
+    font-size: 17.5px;
+    color: #e63946;
+    white-space: nowrap;
+}
+
+/* остаток */
 
 .stat-remaining {
     padding: 5px 12px;
@@ -416,45 +478,149 @@ section {
     text-align: center;
 }
 
-/* столбики статистики */
+/* если остаток положительный */
 
-.stat-item {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 16px;
-    padding: 12px 16px;
-    margin-bottom: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
+.stat-remaining.positive {
+    background: #f0fdf4;
+    color: #166534;
+    border-color: #86efac;
 }
 
-/* контейнер карточек итогов статистики (карточки итогов) */
+/* если остаток отрицательный */
 
+.stat-remaining.negative {
+    background: #fef2f2;
+    color: #b91c1c;
+    border-color: #fda4af;
+}
+
+
+/* ===НаСтРоЙкИ=== */
+
+/* подменю настроек */
+
+#settingsSubmenu {
+    display: none;
+    margin-top: 15px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+/* кнопки категорий в настройках */
+
+#settingsCategories button {
+    display: block;
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    background: #2196F3;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+/* ховевер кнопок настроек категорий */
+
+#settingsCategories button:hover {
+    background: #0b7dda;
+}
+
+/* основные кнопки настроек */
+
+#settings button {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #5A7DE1, #A0D4FA);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+/* ховевер настроек */
+
+#settings button:hover {
+    background: #0b7dda;
+}
+
+
+/* ===БлОк ИтОгОв=== */
+
+/* общая сумма */
+
+.totals-box {
+    background: #4CAF50;
+    border-radius: 12px;
+    padding: 15px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+
+
+
+
+
+
+
+
+
+/* ===СтИлИ сТаТиСтИкИ. ЗаГоЛоВоК бЛоКа=== */
 .stats-summary {
 
-    display: grid; /* делаем сетку */
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); /* авто-колонки */
-    gap: 18px; /* расстояние между карточками */
-    margin: 25px 0 30px 0; /* внешние отступы */
-    padding: 0 10px; /* внутренний отступ по бокам */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+    margin: 25px 0 30px 0;
+    padding: 0 10px;
 }
 
-
-/* рамка карточек итогов (карточки итогов)*/
-
-
 .stat-card {
-    background: linear-gradient(145deg, #2a2a3a, #1f1f2e); /* фон карточки */
-    border-radius: 24px; /* скругление */
+    background: linear-gradient(145deg, #2a2a3a, #1f1f2e);
+    border-radius: 24px;
     padding: 2
-7px 9px; /* внутренние отступы (у тебя тут разрыв строки — это ошибка) */
-    color: white; /* цвет текста */
+7px 9px;
+    color: white;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25),
-                inset 0 2px 8px rgba(255,255,255,0.15); /* тени */
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* анимация */
-    position: relative; /* для псевдоэлементов */
-    overflow: hidden; /* обрезает эффекты */
+                inset 0 2px 8px rgba(255,255,255,0.15);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-6px);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 40%;
+    height: 300%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
+    transform: skewX(-25deg);
+    animation: shineStat 6s infinite;
+    pointer-events: none;
+}
+
+@keyframes shineStat {
+    0% { left: -150%; }
+    100% { left: 150%; }
 }
 
 .stat-card .icon {
@@ -463,76 +629,13 @@ section {
     display: block;
 }
 
-
-
-/* ~~~~РаСпОлОжЕнИе ТеКсТа~~~~*/
-
-
-/* местоположение названий и сумм в стоке статистики */
-
-.stat-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: 12px;
+.stat-card .label {
+    font-size: 15px;
+    font-weight: 600;
+    opacity: 0.85;
+    letter-spacing: -0.3px;
+    margin-bottom: 4px;
 }
-
-/* местоположение суммы расходов */
-
-.stat-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
-}
-
-
-
-/* ~~~~~~~ШрИфТы~~~~~~~*/
-
-
-/* шрифт названия категорий */
-
-.stat-name {
-    font-weight: 700;
-    font-size: 16.5px;
-    color: #1c1c1e;
-    letter-spacing: -0.2px;
-    flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-
-/* шрифт суммы расходов */
-
-.stat-spent {
-    font-weight: 700;
-    font-size: 17.5px;
-    color: #e63946;
-    white-space: nowrap;
-}
-
-/* когда остаток положительный */
-
-.stat-remaining.positive {
-    background: #f0fdf4;
-    color: #166534;
-    border-color: #86efac;
-}
-
-
-/* когда остаток отрицательный */
-
-.stat-remaining.negative {
-    background: #fef2f2;
-    color: #b91c1c;
-    border-color: #fda4af;
-}
-
-/* шрифт в карточках итогов */
 
 .stat-card .value {
     font-size: 32px;
@@ -541,50 +644,161 @@ section {
     margin: 8px 0 4px 0;
 }
 
+.stat-card .sub {
+    font-size: 13px;
+    opacity: 0.7;
+    font-weight: 500;
+}
 
-/* шрифт заглловка карточки итогов */
-
+/* Цвета карточек */
+.stat-card.weekly   { background: linear-gradient(145deg, #00c853, #00b140); }
+.stat-card.expenses { background: linear-gradient(145deg, #f44336, #d32f2f); }
+.stat-card.limits   { background: linear-gradient(145deg, #2196f3, #1976d2); }
+#totalsContainer {
+    background: #4CAF50;
+    border-radius: 12px;
+    padding: 20px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+}
 #totalsContainer h3 {
     margin-top: 0;
     font-size: 20px;
 }
-
-/* шрифт суммы карточки итогов */
-
 #totalsContainer p {
     margin: 8px 0;
     font-size: 18px;
 }
-
-
-
-/* ~~~~~~~ЦвЕтА~~~~~~~*/
-
-
-
-/* Цвета карточек итогов */
-
-.stat-card.weekly   { background: linear-gradient(145deg, #00c853, #00b140); } /* неделя */
-.stat-card.expenses { background: linear-gradient(145deg, #f44336, #d32f2f); } /* расходы */
-.stat-card.limits   { background: linear-gradient(145deg, #2196f3, #1976d2); } /* лимиты */
-
-
-/* цвета банковских карт */
-
-.card[data-bank="Сбер"] { background-color: #0f9d58; }
-.card[data-bank="Яндекс"] { background-color: #ff6eb4; }
-.card[data-bank="Тинькофф"] { background-color: #FFD700; color:#000; }
-.card[data-bank="Альфа"] { background-color: #FF0000; }
-.card[data-bank="ВТБ"] { background-color: #1E90FF; }
-.card[data-bank="Халва"] { background-color: #A9A9A9; color:#000; }
-.card[data-bank="Уралсиб"] { background-color: #800080; }
-.card[data-bank="Другие"] { background-color: #000000; }
-
-
-
-
-/* фон */
-
+.app-container {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+    max-width: 1200px;
+    border-left: 5px solid #0b5ea8;
+    border-right: 5px solid #0b5ea8;
+    box-sizing: border-box;
+    background-color: #f2f2f2;
+}
+@media (max-width: 600px) {
+    .app-container {
+        padding-left: 8px;
+        padding-right: 8px;
+        border-left: 2px solid #0b5ea8;
+        border-right: 2px solid #0b5ea8;
+    }
+}
+#clock {
+    opacity: 0;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: transparent !important;
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 26px;
+    vertical-align: middle;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .3s;
+    border-radius: 34px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+}
+input:checked + .slider {
+    background-color: #4CAF50;
+}
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+.limit-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    margin-left: 8px;
+    background: #f0f0f0;
+    border-radius: 12px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1);
+    font-size: 14px;
+    font-weight: bold;
+    color: #4CAF50;
+    min-width: 50px;
+    text-align: center;
+    transition: background 0.3s, transform 0.2s;
+    cursor: pointer;
+}
+.limit-badge:hover {
+    background: #e0ffe0;
+    transform: scale(1.05);
+}
+.limit-badge.active {
+    background: #4CAF50;
+    color: white;
+}
+.limit-badge:active {
+    animation: pressAnimation 0.2s ease-out;
+}
+@keyframes pressAnimation {
+    0% { transform: scale(1); background: #d0d0d0; }
+    50% { transform: scale(0.9); background: #b0b0b0; }
+    100% { transform: scale(1); background: #f0f0f0; }
+}
+.limit-badge.active:active {
+    animation: pressAnimationActive 0.2s ease-out;
+}
+@keyframes pressAnimationActive {
+    0% { transform: scale(1); background: #4CAF50; }
+    50% { transform: scale(0.9); background: #3d8b40; }
+    100% { transform: scale(1); background: #4CAF50; }
+}
+.settings-row {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+}
+.settings-row .name {
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+.limit-badge {
+    margin: 0 10px;
+    min-width: 60px;
+    text-align: center;
+}
+.settings-row .switch {
+    flex-shrink: 0;
+}
 #background {
     position: fixed;
     top: 0;
@@ -594,9 +808,6 @@ section {
     background: white;
     z-index: -1;
 }
-
-/* убираем фон у блоков */
-
 body,
 .app-container,
 header,
@@ -609,12 +820,264 @@ section,
     background: transparent !important;
     box-shadow: none !important;
 }
+button {
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.3);
+}
+.action-modal {
+    background: rgba(255,255,255,0.15) !important;
+    backdrop-filter: blur(10px);
+    box-shadow: none !important;
+}
+#background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    z-index: -1;
+}
+
+nav {
+    margin-top: 50px;
+}
+#header-layer {
+    position: relative;
+    width: 100%;
+    z-index: -2;
+    overflow: visible;
+}
+
+#scrollLayer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    pointer-events: none;
+    z-index: 1000000;
+}
+#scrollBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background: linear-gradient(180deg, #4CAF50, #81C784);
+    z-index: -1;
+    pointer-events: none;
+    transition: height 0.1s ease-out;
+}
 
 
-/* МоДаЛкА дЛя ВнЕсЕнИя РаСхОдОв
- */
 
-/* затемнение фона модалки расхода */
+/* Стили для модалки истории */
+.history-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    z-index: 1001;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: auto;
+}
+.history-modal table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 15px;
+    table-layout: fixed;
+    display: block;
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 60vh;
+    white-space: nowrap;
+    touch-action: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.history-modal th,
+.history-modal td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    box-sizing: border-box;
+    max-width: 100px;
+}
+.history-modal th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+.history-modal button {
+    padding: 10px 20px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+.history-modal button:hover {
+    background: #45a049;
+}
+.history-filter {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.history-filter select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    background: #f9f9f9;
+    font-size: 14px;
+}
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+.close-btn:hover {
+    color: #f44336;
+}
+.close-btn::before,
+.close-btn::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 2px;
+    background: currentColor;
+}
+.close-btn::before {
+    transform: rotate(45deg);
+}
+.close-btn::after {
+    transform: rotate(-45deg);
+}
+#hawkBlocker {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 9998;
+    pointer-events: auto;
+}
+#hawkBlocker:not(.hawk-mode) {
+    display: none;
+}
+#categoriesList button {
+    pointer-events: auto;
+}
+#exitHawkBtn {
+    pointer-events: auto;
+}
+
+/* Подтверждение удаления категории */
+.confirm-delete-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+}
+
+.confirm-delete-modal .modal-content {
+    background: linear-gradient(145deg, #ef5350, #d32f2f);
+    color: white;
+    width: 90%;
+    max-width: 340px;
+    padding: 28px 24px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+.confirm-delete-modal h3 {
+    margin: 0 0 14px 0;
+    font-size: 22px;
+}
+
+.confirm-delete-modal .category-name {
+    font-size: 19px;
+    font-weight: bold;
+    margin: 12px 0 22px 0;
+    padding: 10px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 12px;
+}
+
+.confirm-delete-modal .warning-text {
+    font-size: 14px;
+    opacity: 0.9;
+    margin: 0 0 28px 0;
+    line-height: 1.4;
+}
+
+.confirm-delete-modal .buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
+
+.confirm-delete-modal button {
+    padding: 14px 32px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.18s;
+}
+
+.confirm-delete-modal .btn-delete {
+    background: #b71c1c;
+    color: white;
+}
+
+.confirm-delete-modal .btn-delete:hover {
+    background: #9a0007;
+    transform: translateY(-1px);
+}
+
+.confirm-delete-modal .btn-cancel {
+    background: rgba(255,255,255,0.25);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.5);
+}
+
+.confirm-delete-modal .btn-cancel:hover {
+    background: rgba(255,255,255,0.4);
+}
+/* /* ──────────────────────────────────────────────
+   Модалка внесения расхода — в стиле карточки категории
+─────────────────────────────────────────────── */
 
 .expense-modal-overlay {
     position: fixed;
@@ -629,13 +1092,9 @@ section,
     transition: opacity 0.3s ease;
 }
 
-/* активное открытие фона модалки */
-
 .expense-modal-overlay.active {
     opacity: 1;
 }
-
-/* основная карточка модалки расхода */
 
 .expense-modal {
     background: rgba(255, 255, 255, 0.95);
@@ -652,22 +1111,17 @@ section,
     opacity: 0;
     transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 
-    /*  исправление чего то */
-
+    /* ====================== ИСПРАВЛЕНИЕ ====================== */
     max-height: 92vh;           /* не даём модалке вылезти за экран */
     overflow-y: auto;           /* включаем прокрутку */
     display: flex;
     flex-direction: column;     /* чтобы кнопки остались внизу */
 }
 
-/* активное состояние модалки */
-
 .expense-modal.active {
     transform: translateY(0) scale(1);
     opacity: 1;
 }
-
-/* бейдж банка в правом верхнем углу */
 
 .expense-modal .bank-badge {
     position: absolute;
@@ -682,8 +1136,6 @@ section,
     border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
-/* заголовок модалки */
-
 .expense-modal h2 {
     margin: 0 0 24px 0;
     font-size: 24px;
@@ -692,13 +1144,9 @@ section,
     color: #1c1c1e;
 }
 
-/* блок одного поля формы */
-
 .expense-modal .form-group {
     margin-bottom: 22px;
 }
-
-/* подписи полей */
 
 .expense-modal label {
     display: block;
@@ -707,8 +1155,6 @@ section,
     font-weight: 600;
     color: #555;
 }
-
-/* поля ввода и select */
 
 .expense-modal input,
 .expense-modal select {
@@ -722,23 +1168,17 @@ section,
     transition: border 0.2s;
 }
 
-/* фокус на поле */
-
 .expense-modal input:focus,
 .expense-modal select:focus {
     border-color: #4CAF50;
     outline: none;
 }
 
-/* контейнер кнопок */
-
 .expense-modal .buttons {
     display: flex;
     gap: 12px;
     margin-top: 30px;
 }
-
-/* общие стили кнопок */
 
 .expense-modal button {
     flex: 1;
@@ -751,37 +1191,25 @@ section,
     transition: all 0.2s;
 }
 
-/* главная кнопка подтверждения */
-
 .expense-modal .btn-primary {
     background: linear-gradient(135deg, #4CAF50, #45A049);
     color: white;
 }
-
-/* hover главной кнопки */
 
 .expense-modal .btn-primary:hover {
     background: linear-gradient(135deg, #43A047, #3d8b40);
     transform: translateY(-1px);
 }
 
-/* вторичная кнопка отмены */
-
 .expense-modal .btn-secondary {
     background: #f1f1f1;
     color: #333;
 }
 
-/* hover вторичной кнопки */
-
 .expense-modal .btn-secondary:hover {
     background: #e0e0e0;
 }
-
-/* КнОпКи МеНю */
-
-/* нижняя панель навигации */
-
+/* ────── ЧИСТАЯ ТАББАР + НОВОЕ БОКОВОЕ МЕНЮ ────── */
 .bottom-nav {
     position: fixed;
     bottom: 0;
@@ -801,8 +1229,6 @@ section,
     z-index: 1000;
 }
 
-/* один пункт навигации */
-
 .nav-item {
     display: flex;
     flex-direction: column;
@@ -814,29 +1240,20 @@ section,
     font-weight: 500;
 }
 
-/* иконка внутри кнопки навигации */
-
 .nav-item .icon {
     font-size: 24px;
     margin-bottom: 2px;
 }
 
-/* активная кнопка навигации */
-
 .nav-item.active {
     color: #4CAF50;
 }
-
-/* активная иконка */
 
 .nav-item.active .icon {
     transform: scale(1.12);
 }
 
-/* ПоДнИмАеМ кНоПкУ кАрТ */
-
-/* кнопка стопки карт */
-
+/* Поднимаем стопку карт над таббаром */
 .card-stack-btn {
     position: fixed !important;
     bottom: 125px !important;
@@ -849,17 +1266,11 @@ section,
 }
 
 /* Отступ для контента */
-
-/* основной контент страницы */
-
 main {
     padding: 20px 20px 98px 20px;
 }
 
-/* СтИлЬ бОкОвОгО мЕнЮ */
-
-/* боковое выезжающее меню */
-
+/* Красивое боковое меню — в стиле карточки категории */
 .side-action-menu {
     position: fixed;
     top: 0;
@@ -878,16 +1289,11 @@ main {
     overflow: hidden;
 }
 
-/* открытое состояние меню */
-
 .side-action-menu.show {
     transform: translateX(-320px);
 }
 
-/* ШаПкА пРиЛоЖеНиЯ */
-
-/* верхняя шапка сайта */
-
+/* ====================== НОВАЯ СОВРЕМЕННАЯ ШАПКА ====================== */
 header {
     background: linear-gradient(135deg, #1e3a2f, #2e7d32, #4ade80);
     color: white;
@@ -902,8 +1308,6 @@ header {
     text-align: center;
 }
 
-/* анимационный блеск шапки */
-
 header::before {
     content: '';
     position: absolute;
@@ -913,14 +1317,10 @@ header::before {
     animation: headerShine 9s linear infinite;
 }
 
-/* анимация блеска */
-
 @keyframes headerShine {
     0%   { transform: translateX(-120%); }
     100% { transform: translateX(300%); }
 }
-
-/* главный логотип/название */
 
 .header-box {
     display: inline-block;
@@ -937,8 +1337,6 @@ header::before {
     box-shadow: 0 6px 20px rgba(0,0,0,0.35);
 }
 
-/* текст версии приложения */
-
 .version-text {
     position: absolute;
     top: 18px;
@@ -950,18 +1348,13 @@ header::before {
 }
 
 
-/* ЗаГоЛоВоК */
-
-/* верхний заголовок бокового меню */
-
+/* Заголовок */
 .side-action-menu .category-header {
     text-align: center;
     padding: 20px 10px 25px;
     border-bottom: 1px solid #eee;
     margin-bottom: 20px;
 }
-
-/* текст заголовка */
 
 .side-action-menu .category-header h2 {
     margin: 0;
@@ -971,9 +1364,7 @@ header::before {
     word-break: break-word;
 }
 
-/* БлОк КнОпОк */
-
-/* контейнер всех кнопок меню */
+/* Блок кнопок */
 .side-action-menu .menu-buttons {
     margin-top: auto; /* 👈 закрепляет (не менять) */
     margin-bottom: 150px; /* 👈 регулирует кнопки */
@@ -982,10 +1373,7 @@ header::before {
     gap: 12px;
 }
 
-/* КнОпКи */
-
-/* обычные кнопки бокового меню */
-
+/* Кнопки */
 .side-action-menu button {
     padding: 18px 20px;
     font-size: 17.5px;
@@ -1000,21 +1388,15 @@ header::before {
     width: 100%;
 }
 
-/* hover кнопок */
-
 .side-action-menu button:hover {
     background: #f0f2f5;
     transform: translateX(4px);
 }
 
-/* нажатие кнопки */
-
 .side-action-menu button:active {
     transform: scale(0.97);
     background: #e9ecef;
 }
-
-/* главная зелёная кнопка */
 
 .side-action-menu button.primary {
     background: linear-gradient(135deg, #4CAF50, #45A049);
@@ -1023,16 +1405,11 @@ header::before {
     box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
 }
 
-/* hover главной кнопки */
-
 .side-action-menu button.primary:hover {
     background: linear-gradient(135deg, #43A047, #3d8b40);
 }
 
 /* Затемнение фона */
-
-/* затемнение заднего фона при открытии меню */
-
 .side-action-overlay {
     position: fixed;
     inset: 0;
@@ -1044,17 +1421,11 @@ header::before {
     transition: opacity 0.3s ease;
 }
 
-/* активное затемнение */
-
 .side-action-overlay.show {
     opacity: 1;
     pointer-events: auto;
 }
-
-/* КаРтОчКа КаТеГоРиИ */
-
-/* затемнение фона карточки категории */
-
+/* ==================== КАРТОЧКА КАТЕГОРИИ ==================== */
 .category-card-modal {
     position: fixed;
     inset: 0;
@@ -1066,13 +1437,9 @@ header::before {
     justify-content: center;
 }
 
-/* открытое состояние карточки */
-
 .category-card-modal.show {
     display: flex;
 }
-
-/* основная карточка категории */
 
 .category-card-content {
     background: white;
@@ -1086,8 +1453,6 @@ header::before {
     flex-direction: column;
 }
 
-/* верхняя шапка карточки */
-
 .category-card-header {
     background: linear-gradient(135deg, #4CAF50, #45A049);
     color: white;
@@ -1096,15 +1461,11 @@ header::before {
     position: relative;
 }
 
-/* заголовок внутри карточки */
-
 .category-card-header h2 {
     margin: 0;
     font-size: 22px;
     font-weight: 700;
 }
-
-/* кнопка закрытия карточки */
 
 .category-card-close {
     position: absolute;
@@ -1121,16 +1482,12 @@ header::before {
     opacity: 0.9;
 }
 
-/* основное тело карточки */
-
 .category-card-body {
     padding: 20px;
     flex: 1;
     overflow-y: auto;
     font-size: 16px;
 }
-
-/* одна строка данных */
 
 .category-card-row {
     display: flex;
@@ -1140,27 +1497,19 @@ header::before {
     border-bottom: 1px solid #eee;
 }
 
-/* последняя строка без линии */
-
 .category-card-row:last-child {
     border-bottom: none;
 }
-
-/* название параметра */
 
 .category-card-label {
     color: #666;
     font-weight: 500;
 }
 
-/* значение параметра */
-
 .category-card-value {
     font-weight: 700;
     color: #1c1c1e;
 }
-
-/* поле переименования */
 
 .rename-input {
     width: 100%;
@@ -1171,16 +1520,12 @@ header::before {
     margin-top: 8px;
 }
 
-/* нижний блок кнопок */
-
 .category-card-footer {
     padding: 16px 20px;
     border-top: 1px solid #eee;
     display: flex;
     gap: 12px;
 }
-
-/* кнопки внизу карточки */
 
 .category-card-footer button {
     flex: 1;
@@ -1192,31 +1537,22 @@ header::before {
     cursor: pointer;
 }
 
-/* кнопка удаления */
-
 .category-card-footer .btn-delete {
     background: #ef5350;
     color: white;
 }
-
-/* кнопка сохранения */
 
 .category-card-footer .btn-save {
     background: #4CAF50;
     color: white;
 }
 
-/* кнопка отмены */
-
 .category-card-footer .btn-cancel {
     background: #f0f0f0;
     color: #333;
 }
 
-/* ПрОсТоЕ мЕнЮ пРи НаЖаТиИ нА кАтЕгОрИю */
-
-/* всплывающее меню действий */
-
+/* Простое меню при нажатии на категорию */
 .category-action-menu {
     position: fixed;
     bottom: 140px;
@@ -1230,8 +1566,6 @@ header::before {
     display: none;
 }
 
-/* кнопки внутри меню действий */
-
 .category-action-menu button {
     width: 100%;
     padding: 14px 20px;
@@ -1242,25 +1576,18 @@ header::before {
     color: #1c1c1e;
 }
 
-/* hover и нажатие */
-
 .category-action-menu button:hover,
 .category-action-menu button:active {
     background: rgba(76, 175, 80, 0.1);
     color: #4CAF50;
 }
 
-/* главная кнопка меню */
-
 .category-action-menu button.primary {
     font-weight: 700;
     color: #4CAF50;
 }
 
-/* ИкОнКа МеНю ИсТоРиИ */
-
-/* иконка комментария-документа */
-
+/* Иконка документа в истории */
 .comment-doc {
     display: inline-flex;
     align-items: center;
@@ -1274,16 +1601,12 @@ header::before {
     transition: all 0.2s;
 }
 
-/* hover иконки */
 .comment-doc:hover {
     background: #e0f0ff;
     transform: scale(1.1);
 }
 
-/* МоДаЛкА кОмМеНтАрИя */
-
-/* затемнение фона просмотра комментария */
-
+/* Модалка просмотра комментария */
 .comment-view-modal {
     position: fixed;
     inset: 0;
@@ -1295,13 +1618,9 @@ header::before {
     justify-content: center;
 }
 
-/* открытая модалка */
-
 .comment-view-modal.show {
     display: flex;
 }
-
-/* основная карточка просмотра */
 
 .comment-view-content {
     background: white;
@@ -1314,15 +1633,11 @@ header::before {
     overflow-y: auto;
 }
 
-/* заголовок комментария */
-
 .comment-view-content h3 {
     margin: 0 0 16px 0;
     font-size: 20px;
     color: #333;
 }
-
-/* текст комментария */
 
 .comment-view-text {
     white-space: pre-wrap;
@@ -1335,8 +1650,6 @@ header::before {
     border-left: 4px solid #4CAF50;
 }
 
-/* кнопка закрытия */
-
 .comment-view-close {
     margin-top: 20px;
     width: 100%;
@@ -1348,19 +1661,183 @@ header::before {
     font-size: 16px;
     font-weight: 600;
 }
+/* ====================== APPLE-STYLE: БОКОВОЕ МЕНЮ ====================== */
+.side-action-menu {
+    position: fixed;
+    top: 0;
+    right: -320px;
+    width: 300px;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    box-shadow: -20px 0 40px rgba(0, 0, 0, 0.15);
+    padding: 30px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    z-index: 10001;
+    border-top-left-radius: 28px;
+    border-bottom-left-radius: 28px;
+    transition: transform 0.45s cubic-bezier(0.32, 0.72, 0, 1.35);
+    overflow: hidden;
+}
 
+.side-action-menu.show {
+    transform: translateX(-320px);
+}
 
-/*  ТаБлИцА иСтОрИи */
+/* Заголовок категории */
+.side-action-menu .category-header {
+    text-align: center;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #e5e5ea;
+    margin-bottom: 30px;
+}
 
+.side-action-menu .category-header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1c1c1e;
+    letter-spacing: -0.02em;
+}
 
-/* Контейнер таблицы истории */
+/* Блок кнопок */
+.side-action-menu .menu-buttons {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.side-action-menu button {
+    padding: 16px 20px;
+    font-size: 17px;
+    font-weight: 600;
+    border: none;
+    border-radius: 14px;
+    text-align: left;
+    background: #f8f8f8;
+    color: #1c1c1e;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.side-action-menu button:hover {
+    background: #f0f0f0;
+    transform: translateX(6px);
+}
+
+.side-action-menu button:active {
+    transform: scale(0.96);
+    background: #e8e8e8;
+}
+
+.side-action-menu button.primary {
+    background: linear-gradient(135deg, #34c759, #30a14a);
+    color: white;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(52, 199, 89, 0.35);
+}
+
+.side-action-menu button.primary:hover {
+    background: linear-gradient(135deg, #30a14a, #2e8b3d);
+}
+
+/* ====================== МОДАЛКА ШТРИХ-КОДА ====================== */
+.barcode-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    z-index: 10005;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.barcode-modal.show {
+    display: flex;
+}
+
+.barcode-modal-content {
+    background: white;
+    width: 92%;
+    max-width: 420px;
+    border-radius: 28px;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.4);
+    overflow: hidden;
+    padding-bottom: 20px;
+}
+
+.barcode-modal-header {
+    background: linear-gradient(135deg, #4CAF50, #45A049);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.barcode-modal-header h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.barcode-modal-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: white;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.barcode-modal-body {
+    padding: 30px 20px 10px;
+    text-align: center;
+}
+
+.barcode-canvas {
+    width: 100%;
+    max-height: 180px;
+    image-rendering: crisp-edges;
+    margin: 15px 0 25px 0;
+}
+
+.barcode-number {
+    font-family: monospace;
+    font-size: 18px;
+    letter-spacing: 4px;
+    font-weight: 700;
+    color: #1c1c1e;
+    background: #f8f8f8;
+    padding: 12px 20px;
+    border-radius: 12px;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+/* ====================== APPLE-STYLE: ТАБЛИЦА ИСТОРИИ ====================== */
+/* ====================== ИСТОРИЯ — МАКСИМАЛЬНАЯ ШИРИНА ====================== */
+#history {
+    padding: 12px 0 90px 0;           /* почти без боковых отступов */
+}
+
+.history-filter {
+    margin: 0 8px 20px 8px;           /* небольшой отступ только у фильтров */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
 
 #historyTableContainer {
     padding: 0 4px;                   /* минимальный отступ */
     overflow-x: auto;                 /* если не влезет — будет горизонтальная прокрутка */
 }
-
-/* Основная таблица истории */
 
 #historyTable {
     width: 100%;
@@ -1375,8 +1852,6 @@ header::before {
     margin: 0 auto;
 }
 
-/* Заголовки таблицы */
-
 #historyTable thead th {
     background: #f2f2f7;
     padding: 14px 8px;
@@ -1387,127 +1862,178 @@ header::before {
     white-space: nowrap;
 }
 
+#historyTable td {
+    padding: 13px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
 /* Колонки */
+#historyTable td:nth-child(1) { width: 22%; }   /* Банк */
+#historyTable td:nth-child(2) { width: 22%; }   /* Дата */
+#historyTable td:nth-child(3) { width: 18%; }   /* День */
+#historyTable td:nth-child(4) { width: 18%; text-align: right; font-weight: 700; color: #e63946; } /* Сумма */
+#historyTable td:nth-child(5) { width: 20%; }   /* Место */
+#historyTable td:nth-child(6) { width: 8%; text-align: center; }  /* Комментарий */
+#historyTable td:nth-child(7) { width: 22%; }   /* Категория */
 
-#historyTable td:nth-child(1) {
-    width: 22%;   /* Банк */
+/* ====================== ЖИВОЙ СКАНЕР ШТРИХ-КОДА ====================== */
+.scanner-modal {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 10010;
+    display: none;
+    flex-direction: column;
 }
 
-#historyTable td:nth-child(2) {
-    width: 22%;   /* Дата */
+.scanner-modal.show {
+    display: flex;
 }
 
-#historyTable td:nth-child(3) {
-    width: 18%;
-    text-align: left !important;
+.scanner-header {
+    padding: 15px 20px;
+    background: rgba(0,0,0,0.7);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.scanner-video-container {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+#scannerVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.scanner-overlay {
+    position: absolute;
+    inset: 0;
+    border: 3px solid rgba(76, 175, 80, 0.8);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scanner-overlay::before {
+    content: 'Наведите штрих-код в рамку';
+    color: white;
+    font-size: 15px;
+    background: rgba(0,0,0,0.6);
+    padding: 6px 16px;
+    border-radius: 9999px;
+    position: absolute;
+    top: 30px;
+}
+
+.scanner-result {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(76, 175, 80, 0.95);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 9999px;
     font-weight: 700;
-    color: #e63946;   /* Сумма */
+    display: none;
+    white-space: nowrap;
 }
 
-#historyTable td:nth-child(4) {
-    width: 18%;   /* День */
+.scanner-footer {
+    padding: 15px;
+    background: rgba(0,0,0,0.7);
+    text-align: center;
 }
 
-#historyTable td:nth-child(5) {
-    width: 18%;
-    text-align: left !important;   /* Место */
+.comment-doc {
+    font-size: 21px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    transition: all 0.2s;
 }
 
-#historyTable td:nth-child(6) {
-    width: 8%;
-    text-align: center;   /* Комментарий */
+.comment-doc:hover {
+    background: #e5f0ff;
+    color: #007aff;
+}
+/* === ФОРСИРОВАННАЯ МАКСИМАЛЬНАЯ ШИРИНА ТАБЛИЦЫ ИСТОРИИ === */
+#history {
+    padding: 12px 0 100px 0 !important;
 }
 
-#historyTable td:nth-child(7) {
-    width: 18%;
-    text-align: left !important;   /* Категория */
+#historyTableContainer {
+    padding: 0 2px !important;
+    overflow-x: auto;
 }
 
-/* Ячейки таблицы */
+#historyTable {
+    width: 100% !important;
+    min-width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+#historyTable thead th {
+    padding: 14px 6px !important;
+    font-size: 14px !important;
+}
+
 #historyTable td {
     padding: 13px 6px !important;
     font-size: 15px !important;
     white-space: nowrap;
 }
 
-
-</style> <!-- конец стилей -->
-
-</head> <!-- конец head -->
-
-<body> <!-- начало body -->
-
-<!-- Затемнение фона -->
+/* Принудительно растягиваем колонки */
+#historyTable td:nth-child(1) { min-width: 90px; }   /* Банк */
+#historyTable td:nth-child(2) { min-width: 95px; }   /* Дата */
+#historyTable td:nth-child(3) { min-width: 70px; }   /* День */
+#historyTable td:nth-child(4) { min-width: 85px; text-align: right; } /* Сумма */
+#historyTable td:nth-child(5) { min-width: 100px; }  /* Место */
+#historyTable td:nth-child(6) { min-width: 40px; text-align: center; } /* Комментарий */
+#historyTable td:nth-child(7) { min-width: 100px; }  /* Категория */
+</style>
+</head>
+<body>
 
 <div id="overlay"></div>
-
-<!-- СтОпКа БаНкОвСкИх КаРт -->
-
 <div class="card-stack-btn" id="cardStack">
-
-    <!-- Карта Сбер -->
-
     <div class="card" data-bank="Сбер"><span>Сбер</span><div class="bank-buttons"><button data-bank="Сбер">Сбер</button></div></div>
-
-    <!-- Карта Яндекс -->
-
     <div class="card" data-bank="Яндекс"><span>Я</span><div class="bank-buttons"><button data-bank="Яндекс">Яндекс</button></div></div>
-
-    <!-- Карта Тинькофф -->
-
     <div class="card" data-bank="Тинькофф"><span>Т</span><div class="bank-buttons"><button data-bank="Тинькофф">Тинькофф</button></div></div>
-
-    <!-- Карта Альфа -->
-
     <div class="card" data-bank="Альфа"><span>А</span><div class="bank-buttons"><button data-bank="Альфа">Альфа</button></div></div>
-
-    <!-- Карта ВТБ -->
-
     <div class="card" data-bank="ВТБ"><span>ВТБ</span><div class="bank-buttons"><button data-bank="ВТБ">ВТБ</button></div></div>
-
-    <!-- Карта Халва -->
-
     <div class="card" data-bank="Халва"><span>Халва</span><div class="bank-buttons"><button data-bank="Халва">Халва</button></div></div>
-
-    <!-- Карта Уралсиб -->
-
     <div class="card" data-bank="Уралсиб"><span>Урал</span><div class="bank-buttons"><button data-bank="Уралсиб">Уралсиб</button></div></div>
-
-    <!-- Карта Другие -->
-
     <div class="card" data-bank="Другие"><span>Другие</span><div class="bank-buttons"><button data-bank="Другие">Другие</button></div></div>
-
 </div>
-
-<!-- ШаПкА -->
 
 <div id="header-layer">
     <header>
-
-  <!-- Название приложения -->
-
         <span class="header-box">дѢньга</span>
-
-    <!-- Версия приложения -->
-
         <span id="appVersion" class="version-text"></span>
-
     </header>
 </div>
-
-<!-- ЗеЛеНаЯ пОлОсА ПрОкРуТкИ -->
-
 <div id="scrollBar"></div>
-
-<!-- Главный контейнер приложения -->
-
 <div class="app-container">
+
     <main>
        <section id="expenses">
     <h2>Бюджет</h2>
     
     <!-- Переключатель Расходы / Доходы -->
-
     <div id="budgetToggle" style="display:flex; justify-content:center; margin:25px 0 35px; background:#f1f1f1; border-radius:9999px; padding:5px; width:fit-content; margin-left:auto; margin-right:auto; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
         <button id="modeExpenseBtn" onclick="setBudgetMode('expense')" 
                 style="padding:12px 36px; border:none; border-radius:9999px; font-weight:700; font-size:17px; transition:all 0.3s; background:#4CAF50; color:white;">
@@ -1525,7 +2051,6 @@ header::before {
     <div id="categoriesList"></div>
 
     <!-- Кнопки "Все долги" и "Все кредиты" — всегда в самом низу списка -->
-
     <div id="specialButtons" style="margin: 35px 0 40px; display: flex; flex-direction: column; align-items: flex-start; padding-left: 10px; gap: 14px;">
         <button onclick="showAllDebts()" 
                 style="width: 88%; max-width: 230px; padding: 20px 22px; font-size: 18px; font-weight: 600; border-radius: 22px; 
@@ -1545,14 +2070,10 @@ header::before {
 <section id="history">
     <h2>История расходов</h2>
     <div class="history-filter" style="margin: 15px 0; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;">
-
         <!-- Фильтры будут добавлены через JS -->
-
     </div>
     <div id="historyTableContainer" style="overflow-x: auto; margin-top: 10px;">
-
-<!-- ГеНеРаЦиЯ СтАтИсТиКи-->
-
+        <!-- Таблица истории будет генерироваться здесь -->
     </div>
 </section>
             <section id="stats">
@@ -1564,13 +2085,9 @@ header::before {
             <h3>Диаграмма расходов</h3>
             <canvas id="statsChart" width="400" height="400"></canvas>
 
-   <!-- ИтОгОвЫе ПоКаЗаТеЛи -->
-
+            <!-- НОВЫЕ МОДНЫЕ ТАБЛИЧКИ -->
             <h3 style="margin-top: 30px;">Итоговые показатели</h3>
             <div id="statsSummary" class="stats-summary"></div>
-
- <!-- СеКцИя НаСтРоЕк -->
-
         </section>
         <section id="settings">
     <h2>Настройки</h2>
@@ -1583,468 +2100,290 @@ header::before {
     <button onclick="toggleAdminSubmenu()">управление данными</button>
     <div id="adminSubmenu" style="display: none; margin-top: 15px; padding: 10px; background: #fff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
         <h3>Управление данными</h3>
-        <button onclick="if(confirm('Ты увере, что хочешь сделать с лимитами то, что хочешь?')) clearLimits();">Удалить все лимиты</button>
-        <button onclick="if(confirm('Ты уверен, что хочешь сделать с расходами то, что хочешь?')) clearExpenses();">Удалить все расходы</button>
+        <button onclick="if(confirm('Ты уверен, что хочешь удалить все лимиты?')) clearLimits();">Удалить все лимиты</button>
+        <button onclick="if(confirm('Ты уверен, что хочешь удалить все расходы?')) clearExpenses();">Удалить все расходы</button>
     </div>
     <button onclick="forceUpdate()">Обновить приложение</button>
+
+    <!-- Кнопки резервного копирования -->
+    <button onclick="exportBackup()" 
+            style="background: linear-gradient(135deg, #FF9800, #F57C00); color: white; margin-top: 15px; width: 100%;">
+        💾 Сохранить резервную копию (deNga.json)
+    </button>
+
+    <button onclick="importBackup()" 
+            style="background: linear-gradient(135deg, #2196F3, #1976D2); color: white; margin-top: 10px; width: 100%;">
+        📂 Загрузить резервную копию (deNga.json)
+    </button>
 </section>
-        
+
+
+
+        <!-- === СЕКЦИЯ КАРТ ЛОЯЛЬНОСТИ === -->
+        <section id="loyalty" style="display: none; padding: 20px 20px 100px 20px;">
+            <h2>🛍️ Карты лояльности</h2>
+            
+         <div style="display: flex; gap: 12px; margin: 20px 0 30px; justify-content: center; flex-wrap: wrap;">
+    <button onclick="addLoyaltyCardManual()" 
+            style="padding: 14px 24px; font-size: 17px; background: linear-gradient(135deg, #4CAF50, #45A049); color: white; border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(76,175,80,0.3);">
+        ✍️ Ввести вручную
+    </button>
+    
+    <button onclick="startBarcodeScanner()" 
+            style="padding: 14px 24px; font-size: 17px; background: linear-gradient(135deg, #FF5722, #FF9800); color: white; border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(255,87,34,0.4);">
+        📷 Сканировать камерой
+    </button>
+    
+    <button onclick="addLoyaltyCardByPhoto()" 
+            style="padding: 14px 24px; font-size: 17px; background: linear-gradient(135deg, #2196F3, #03A9F4); color: white; border: none; border-radius: 16px; box-shadow: 0 4px 15px rgba(33,150,243,0.3);">
+        🖼️ Выбрать фото
+    </button>
+</div>
+            
+            <div id="loyaltyCardsList"></div>
+        </section>
     </main>
     </main>
 
 
-  <!-- ГлАвНоЕ мЕнЮ -->
 
-
-<!-- нижняя навигационная панель приложения (фиксированная, используется как основной переключатель разделов) -->
-
+  <!-- ГЛАВНОЕ МЕНЮ В СТИЛЕ APPLE -->
 <div class="bottom-nav">
-
-    <!-- пункт меню: расходы (активный по умолчанию) -->
     <div class="nav-item active" data-section="expenses" onclick="spring(this); showSection('expenses')">
         <span class="icon">💰</span>
         <span class="label">Расходы</span>
     </div>
-
-    <!-- пункт меню: статистика -->
-
     <div class="nav-item" data-section="stats" onclick="spring(this); showSection('stats')">
         <span class="icon">📊</span>
         <span class="label">Статистика</span>
     </div>
-
-    <!-- пункт меню: история операций -->
-
     <div class="nav-item" data-section="history" onclick="spring(this); showSection('history')">
         <span class="icon">📜</span>
         <span class="label">История</span>
     </div>
-
-    <!-- пункт меню: цели -->
-
     <div class="nav-item" data-section="loyalty" onclick="spring(this); showSection('loyalty')">
         <span class="icon">🛍️</span>
-        <span class="label">цели</span>
+        <span class="label">Лояльность</span>
     </div>
-
-    <!-- пункт меню: настройки приложения -->
-
     <div class="nav-item" data-section="settings" onclick="spring(this); showSection('settings')">
         <span class="icon">⚙️</span>
         <span class="label">Настройки</span>
     </div>
-
 </div>
 
-<!-- канвас для визуальных эффектов (spark-анимации) -->
+    <canvas id="sparkCanvas"></canvas>
+    <canvas id="sparkCanvas"></canvas>
+    <script>
+        let cards = [];
+        const stack = document.getElementById('cardStack');
+        const overlay = document.getElementById('overlay');
+        const cardStack = document.getElementById('cardStack');
+        let chartInstance = null;
 
-<canvas id="sparkCanvas"></canvas>
-<canvas id="sparkCanvas"></canvas>
-
-<script>
-
-// ================================
-// ГЛОБАЛЬНОЕ СОСТОЯНИЕ КАРТ И UI
-// ================================
-
-// массив всех карт (банковских элементов интерфейса)
-let cards = [];
-
-// контейнер стека карт
-const stack = document.getElementById('cardStack');
-
-// затемняющий слой при раскрытом стеке
-const overlay = document.getElementById('overlay');
-
-// дублирующая ссылка на контейнер стека (используется в разных частях логики)
-const cardStack = document.getElementById('cardStack');
-
-// экземпляр графика (Chart.js), если используется
-let chartInstance = null;
-
-// текущий режим операций (расход / доход)
 let currentMode = 'expense';           // текущий режим: 'expense' или 'income'
-
-// режим транзакции (отдельное состояние, может отличаться от currentMode)
 let currentTransactionMode = 'expense';
 
 
-// ================================
-// ИНИЦИАЛИЗАЦИЯ КАРТОЧНОГО СТЕКА
-// ================================
+        function initCards() {
+            if (!stack || !overlay) {
+                console.error('Элементы stack или overlay не найдены');
+                return;
+            }
+            const getCards = () => Array.from(stack.querySelectorAll('.card'));
+            cards = getCards();
 
-function initCards() {
+            function moveCardToTop(bankName) {
+                if (cards.length === 0) return;
+                const card = cards.find(c => c.dataset.bank === bankName);
+                if (!card) return;
+                stack.prepend(card);
+                cards = [card, ...cards.filter(c => c !== card)];
+                localStorage.setItem('selectedBank', bankName);
+                if (!stack.classList.contains('expanded')) {
+                    updateCardStyles();
+                }
+                initCardListeners();
+            }
 
-    // защита от отсутствующих DOM-элементов
-    if (!stack || !overlay) {
-        console.error('Элементы stack или overlay не найдены');
-        return;
+            function updateCardStyles() {
+                cards.forEach((card, index) => {
+                    card.style.zIndex = cards.length - index;
+                    card.style.transform = `translate(0, ${-index * 5}px) rotate(0deg)`;
+                });
+            }
+
+            function toggleStack() {
+    stack.classList.toggle('expanded');
+    overlay.style.display = stack.classList.contains('expanded') ? 'block' : 'none';
+
+    const walletBtn = document.getElementById('loyaltyWalletBtn');
+
+    if (stack.classList.contains('expanded')) {
+        if (walletBtn) walletBtn.classList.add('show');
+    } else {
+        if (walletBtn) walletBtn.classList.remove('show');
     }
 
-    // функция получения всех карт внутри стека
-    const getCards = () => Array.from(stack.querySelectorAll('.card'));
-
-    // первичная инициализация массива карт
-    cards = getCards();
-
-    // ================================
-    // ПЕРЕНОС КАРТЫ В ВЕРХ СТЕКА
-    // ================================
-    function moveCardToTop(bankName) {
-
-        // если карт нет — выход
-        if (cards.length === 0) return;
-
-        // поиск карты по имени банка
-        const card = cards.find(c => c.dataset.bank === bankName);
-
-        // если карта не найдена — выход
-        if (!card) return;
-
-        // перемещение DOM-элемента в начало контейнера
-        stack.prepend(card);
-
-        // обновление массива карт (новый порядок)
-        cards = [card, ...cards.filter(c => c !== card)];
-
-        // сохранение выбранного банка в localStorage
-        localStorage.setItem('selectedBank', bankName);
-
-        // если стек не раскрыт — обновляем стили
-        if (!stack.classList.contains('expanded')) {
-            updateCardStyles();
-        }
-
-        // повторная инициализация обработчиков
-        initCardListeners();
-    }
-
-    // ================================
-    // ОБНОВЛЕНИЕ ВИЗУАЛЬНОГО СОСТОЯНИЯ КАРТ
-    // ================================
-    function updateCardStyles() {
-
-        // проход по всем картам с перерасчётом позиций
-        cards.forEach((card, index) => {
-
-            // порядок наложения
-            card.style.zIndex = cards.length - index;
-
-            // базовое смещение стопкой
-            card.style.transform = `translate(0, ${-index * 5}px) rotate(0deg)`;
-        });
-    }
-
-    // ================================
-    // ПЕРЕКЛЮЧЕНИЕ СОСТОЯНИЯ СТЕКА
-    // ================================
-    function toggleStack() {
-
-        // переключение режима expanded
-        stack.classList.toggle('expanded');
-
-        // управление затемняющим слоем
-        overlay.style.display = stack.classList.contains('expanded') ? 'block' : 'none';
-
-        // кнопка кошелька лояльности
-        const walletBtn = document.getElementById('loyaltyWalletBtn');
-
-        // если стек открыт — показать кнопку
-        if (stack.classList.contains('expanded')) {
-            if (walletBtn) walletBtn.classList.add('show');
-        } else {
-            if (walletBtn) walletBtn.classList.remove('show');
-        }
-
-        // если закрыт — вернуть стопку
-        if (!stack.classList.contains('expanded')) {
-            updateCardStyles();
-        } else {
-            // если открыт — сброс трансформаций для свободного раскрытия
-            cards.forEach(card => {
-                card.style.transform = '';
-                card.style.zIndex = '';
-            });
-        }
-    }
-
-    // ================================
-    // КЛИК ПО СТЕКУ КАРТ
-    // ================================
-    stack.addEventListener('click', e => {
-
-        // игнор кликов по кнопкам внутри
-        if (e.target.closest('button')) return;
-
-        toggleStack();
-    });
-
-    // ================================
-    // КЛИК ПО ОВЕРЛЕЮ (ЗАКРЫТИЕ)
-    // ================================
-    overlay.addEventListener('click', () => {
-
-        stack.classList.remove('expanded');
-        overlay.style.display = 'none';
+    if (!stack.classList.contains('expanded')) {
         updateCardStyles();
-    });
-
-    // ================================
-    // КНОПКИ БАНКОВ ВНУТРИ СТЕКА
-    // ================================
-    stack.querySelectorAll('.bank-buttons button').forEach(btn => {
-
-        btn.addEventListener('click', e => {
-
-            e.stopPropagation();
-
-            const bankName = btn.dataset.bank || btn.textContent.trim();
-
-            moveCardToTop(bankName);
-
-            stack.classList.remove('expanded');
-            overlay.style.display = 'none';
-            updateCardStyles();
+    } else {
+        cards.forEach(card => {
+            card.style.transform = '';
+            card.style.zIndex = '';
         });
-    });
-
-    // ================================
-    // ИНИЦИАЛИЗАЦИЯ КЛИКОВ ПО КАРТАМ
-    // ================================
-    function initCardListeners() {
-
-        getCards().forEach(card => {
-
-            card.removeEventListener('click', handleCardClick);
-            card.addEventListener('click', handleCardClick);
-        });
-    }
-
-    // ================================
-    // ОБРАБОТЧИК КЛИКА ПО КАРТЕ
-    // ================================
-    function handleCardClick(e) {
-
-        // работает только в раскрытом состоянии
-        if (!stack.classList.contains('expanded')) return;
-
-        e.stopPropagation();
-
-        const bankName = this.dataset.bank;
-
-        moveCardToTop(bankName);
-
-        stack.classList.remove('expanded');
-        overlay.style.display = 'none';
-        updateCardStyles();
-    }
-
-    // первичный запуск логики
-    initCardListeners();
-    updateCardStyles();
-
-    // восстановление последнего выбранного банка
-    const savedBank = localStorage.getItem('selectedBank');
-
-    if (savedBank) {
-        setTimeout(() => moveCardToTop(savedBank), 100);
     }
 }
 
-        // ================================
-// ПЕРЕКЛЮЧЕНИЕ ОСНОВНЫХ РАЗДЕЛОВ ПРИЛОЖЕНИЯ
-// ================================
-function showSection(id) {
+            stack.addEventListener('click', e => {
+                if (e.target.closest('button')) return;
+                toggleStack();
+            });
 
-    // получаем все секции внутри main
+            overlay.addEventListener('click', () => {
+                stack.classList.remove('expanded');
+                overlay.style.display = 'none';
+                updateCardStyles();
+            });
+
+            stack.querySelectorAll('.bank-buttons button').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.stopPropagation();
+                    const bankName = btn.dataset.bank || btn.textContent.trim();
+                    moveCardToTop(bankName);
+                    stack.classList.remove('expanded');
+                    overlay.style.display = 'none';
+                    updateCardStyles();
+                });
+            });
+
+            function initCardListeners() {
+                getCards().forEach(card => {
+                    card.removeEventListener('click', handleCardClick);
+                    card.addEventListener('click', handleCardClick);
+                });
+            }
+
+            function handleCardClick(e) {
+                if (!stack.classList.contains('expanded')) return;
+                e.stopPropagation();
+                const bankName = this.dataset.bank;
+                moveCardToTop(bankName);
+                stack.classList.remove('expanded');
+                overlay.style.display = 'none';
+                updateCardStyles();
+            }
+
+            initCardListeners();
+            updateCardStyles();
+            const savedBank = localStorage.getItem('selectedBank');
+            if (savedBank) {
+                setTimeout(() => moveCardToTop(savedBank), 100);
+            }
+        }
+
+        function showSection(id) {
     const sections = document.querySelectorAll('main section');
-
-    // скрываем все секции перед показом нужной
     sections.forEach(sec => sec.style.display = 'none');
 
-    // целевая секция по id
     const targetSection = document.getElementById(id);
-
-    // показываем выбранную секцию
     if (targetSection) {
         targetSection.style.display = 'block';
     }
 
-    // ================================
-    // ЛОГИКА ОТОБРАЖЕНИЯ СТЕКА БАНКОВ
-    // ================================
-
-    // показываем стек только в разделе расходов
+    // Показываем стопку банков ТОЛЬКО на вкладке "Расходы"
     if (id === 'expenses') {
         cardStack.style.display = 'block';
     } else {
-
-        // скрываем стек в остальных разделах
         cardStack.style.display = 'none';
-
-        // если стек был раскрыт — принудительно закрываем
         if (cardStack.classList.contains('expanded')) {
             cardStack.classList.remove('expanded');
             overlay.style.display = 'none';
         }
     }
 
-    // ================================
-    // КНОПКА КОШЕЛЬКА ЛОЯЛЬНОСТИ
-    // ================================
-
-    // на других вкладках скрываем кнопку кошелька
+    // Скрываем кнопку кошелька при переходе на другие разделы
     const walletBtn = document.getElementById('loyaltyWalletBtn');
-
     if (walletBtn) {
         walletBtn.classList.remove('show');
     }
 
-    // ================================
-    // АКТИВНОЕ СОСТОЯНИЕ НАВИГАЦИИ
-    // ================================
-
-    // все пункты нижнего меню
+    // Обновляем активную кнопку в таббаре
     const navItems = document.querySelectorAll('.bottom-nav .nav-item');
-
     navItems.forEach(item => {
-
-        // сброс активного состояния
         item.classList.remove('active');
-
-        // установка активного пункта
         if (item.dataset.section === id) {
             item.classList.add('active');
         }
     });
 
-    // ================================
-    // ДОПОЛНИТЕЛЬНЫЕ РАЗДЕЛЫ С ЛОГИКОЙ
-    // ================================
-
-    // история операций
     if (id === 'history') {
         renderHistory();
     }
 
-    // раздел лояльности
     if (id === 'loyalty') {
         renderLoyaltyCards();
     }
 }
 
+        function spring(button) {
+            if (!button) return;
+            button.classList.remove('springing');
+            void button.offsetWidth;
+            button.classList.add('springing');
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+        }
 
-// ================================
-// АНИМАЦИЯ НАЖАТИЯ КНОПКИ (SPRING EFFECT)
-// ================================
-function spring(button) {
-
-    // защита от null
-    if (!button) return;
-
-    // перезапуск анимации
-    button.classList.remove('springing');
-
-    // форсирование перерисовки
-    void button.offsetWidth;
-
-    // запуск анимации
-    button.classList.add('springing');
-
-    // виброотклик (если поддерживается устройством)
-    if ('vibrate' in navigator) {
-        navigator.vibrate(50);
-    }
-}
-
-
-// ================================
-// СОХРАНЕНИЕ НОВОЙ КАТЕГОРИИ
-// ================================
-function saveCategory(name) {
-
-    // выбор хранилища в зависимости от режима
+        function saveCategory(name) {
     const key = currentMode === 'expense' ? 'expenseCategories' : 'incomeCategories';
-
-    // загрузка существующих категорий
     let categories = JSON.parse(localStorage.getItem(key)) || [];
 
-    // ================================
-    // СТРУКТУРА НОВОЙ КАТЕГОРИИ
-    // ================================
+    // НОВАЯ РАСШИРЕННАЯ СТРУКТУРА КАТЕГОРИИ
     const newCategory = {
         name: name,
-        amount: 0,                    // текущие траты / доходы
-        limit: 0,                    // лимит категории
-        limitEnabled: false,        // включён ли лимит
-        type: 'simple',             // тип категории: simple / debt / credit
-
-        debtTo: '',                 // кому должен (если долг)
-        creditAmount: 0,            // сумма кредита
-        creditTermMonths: 0,        // срок кредита
-        creditInterestRate: 0,      // процентная ставка
-        creditPayments: [],        // история платежей
-        currentBalance: 0,         // текущий баланс кредита
-
+        amount: 0,                    // уже потрачено / получено
+        limit: 0,
+        limitEnabled: false,
+        type: 'simple',               // 'simple' | 'debt' | 'credit'
+        debtTo: '',                   // для долгов — кому должен
+        creditAmount: 0,              // начальная сумма кредита
+        creditTermMonths: 0,          // срок в месяцах
+        creditInterestRate: 0,        // годовая процентная ставка (%)
+        creditPayments: [],           // массив платежей [{dateISO, amount}]
+        currentBalance: 0,            // текущий остаток кредита
         lastUpdate: new Date().toISOString()
     };
 
-    // добавление в список
     categories.push(newCategory);
-
-    // сохранение в localStorage
     localStorage.setItem(key, JSON.stringify(categories));
 
-    // перерисовка интерфейса категорий
+    // Сразу после создания открываем расширенную карточку
     renderCategories();
-
-    // открытие карточки новой категории с задержкой
     setTimeout(() => {
-        showCategoryCard(name);
+        showCategoryCard(name);   // открываем карточку новой категории
     }, 100);
 }
+        function updateCategory(index, newName) {
+            let categories = JSON.parse(localStorage.getItem('categories')) || [];
+            categories[index].name = newName.length > 15 ? newName.slice(0,15) : newName;
+            localStorage.setItem('categories', JSON.stringify(categories));
+        }
 
-
-// ================================
-// ОБНОВЛЕНИЕ КАТЕГОРИИ
-// ================================
-function updateCategory(index, newName) {
-
-    // загрузка категорий (ОБРАТИ ВНИМАНИЕ: другой ключ)
+        function deleteCategory(index) {
     let categories = JSON.parse(localStorage.getItem('categories')) || [];
-
-    // изменение имени с ограничением длины
-    categories[index].name = newName.length > 15 ? newName.slice(0,15) : newName;
-
-    // сохранение изменений
-    localStorage.setItem('categories', JSON.stringify(categories));
-}
-
-
-// ================================
-// УДАЛЕНИЕ КАТЕГОРИИ С ПОДТВЕРЖДЕНИЕМ
-// ================================
-function deleteCategory(index) {
-
-    // загрузка категорий
-    let categories = JSON.parse(localStorage.getItem('categories')) || [];
-
-    // проверка валидности индекса
+    
     if (index < 0 || index >= categories.length) {
         console.warn("Попытка удаления несуществующей категории");
         return;
     }
 
-    // имя удаляемой категории
     const categoryName = categories[index].name;
 
-    // ================================
-    // МОДАЛЬНОЕ ОКНО ПОДТВЕРЖДЕНИЯ
-    // ================================
+    // Создаём модальное окно подтверждения
     const modal = document.createElement('div');
     modal.className = 'confirm-delete-modal';
 
-    // структура модального окна
     modal.innerHTML = `
         <div class="modal-content">
             <h3>Удалить категорию?</h3>
@@ -2060,78 +2399,50 @@ function deleteCategory(index) {
         </div>
     `;
 
-    // добавление в DOM
     document.body.appendChild(modal);
 
-    // ================================
-    // ПОДТВЕРЖДЕНИЕ УДАЛЕНИЯ
-    // ================================
+    // Обработчики кнопок
     modal.querySelector('.btn-delete').addEventListener('click', () => {
-
-        // удаление элемента
         categories.splice(index, 1);
-
-        // сохранение
         localStorage.setItem('categories', JSON.stringify(categories));
-
-        // закрытие модалки
         modal.remove();
-
-        // обновление интерфейса
         renderCategories();
-
-        // небольшая задержка перед уведомлением
+        
+        // Небольшой фидбек
         setTimeout(() => {
             alert(`Категория «${categoryName}» удалена`);
         }, 80);
     });
 
-    // ================================
-    // ОТМЕНА УДАЛЕНИЯ
-    // ================================
     modal.querySelector('.btn-cancel').addEventListener('click', () => {
         modal.remove();
     });
 
-    // ================================
-    // ЗАКРЫТИЕ ПО КЛИКУ НА ФОН
-    // ================================
+    // Закрытие по клику на фон
     modal.addEventListener('click', (e) => {
-
         if (e.target === modal) {
             modal.remove();
         }
     });
 }
-                // ================================
-// СОЗДАНИЕ КАТЕГОРИИ (ДОЛГ / КРЕДИТ / ОБЫЧНАЯ)
-// ================================
-function addCategory(button) {
 
-    // создание модального окна
+                // ==================== ДОБАВИТЬ ДОЛГ ====================
+function addCategory(button) {
     const modal = document.createElement('div');
     modal.className = 'category-card-modal';
-
-    // структура формы создания категории
     modal.innerHTML = `
         <div class="category-card-content" style="max-width:420px;">
-
-            <!-- заголовок модального окна -->
             <div class="category-card-header">
                 <h2>Новая категория</h2>
                 <button class="category-card-close">×</button>
             </div>
-
-            <!-- тело формы -->
             <div class="category-card-body" style="padding:25px 20px;">
 
-                <!-- название категории -->
                 <div class="form-group">
                     <label>Название категории</label>
                     <input type="text" id="newCatName" placeholder="Например: Продукты или Долг Ивану" style="width:100%; padding:14px; border-radius:14px; border:2px solid #e0e0e0; font-size:17px;">
                 </div>
 
-                <!-- выбор типа категории -->
                 <div class="form-group" style="margin-top:25px;">
                     <label>Тип категории</label>
                     <select id="newCatType" style="width:100%; padding:14px; border-radius:14px; border:2px solid #e0e0e0; font-size:17px;">
@@ -2141,25 +2452,20 @@ function addCategory(button) {
                     </select>
                 </div>
 
-                <!-- ================================ -->
-                <!-- ПОЛЯ ДЛЯ ДОЛГА -->
-                <!-- ================================ -->
+                <!-- Поле только для долга -->
                 <div id="newDebtFields" style="display:none; margin-top:20px;">
                     <label>Кому должен</label>
                     <input type="text" id="newDebtTo" placeholder="Например: Иван Иванов" style="width:100%; padding:14px; border-radius:14px; border:2px solid #e0e0e0; font-size:17px;">
                 </div>
 
-                <!-- ================================ -->
-                <!-- ПОЛЯ ДЛЯ КРЕДИТА -->
-                <!-- ================================ -->
+                               <!-- Поля только для кредита -->
                 <div id="newCreditFields" style="display:none; margin-top:20px;">
-
                     <label>Сумма кредита (руб)</label>
                     <input type="number" id="newCreditAmount" placeholder="200000" style="width:100%; padding:14px; border-radius:14px; border:2px solid #e0e0e0; font-size:17px;">
-
+                    
                     <label style="margin-top:15px;display:block;">Срок (месяцев)</label>
                     <input type="number" id="newCreditTerm" placeholder="24" style="width:100%; padding:14px; border-radius:14px; border:2px solid #e0e0e0; font-size:17px;">
-
+                    
                     <label style="margin-top:15px;display:block;">Годовая ставка (%)</label>
                     <input type="number" step="0.1" id="newCreditRate" placeholder="12.5" style="width:100%; padding:14px; border-radius:14px; border:2px solid #e0e0e0; font-size:17px;">
 
@@ -2171,25 +2477,16 @@ function addCategory(button) {
                 </div>
 
             </div>
-
-            <!-- футер с действиями -->
             <div class="category-card-footer">
                 <button class="btn-cancel" id="cancelNewCat">Отмена</button>
                 <button class="btn-save" id="saveNewCat">Создать</button>
             </div>
-
         </div>
     `;
 
-    // добавление модального окна в DOM
     document.body.appendChild(modal);
-
-    // запуск анимации появления
     setTimeout(() => modal.classList.add('show'), 10);
 
-    // ================================
-    // ЛОГИКА ПЕРЕКЛЮЧЕНИЯ ПОЛЕЙ ПО ТИПУ
-    // ================================
     const typeSelect = modal.querySelector('#newCatType');
     const debtFields = modal.querySelector('#newDebtFields');
     const creditFields = modal.querySelector('#newCreditFields');
@@ -2199,14 +2496,8 @@ function addCategory(button) {
         creditFields.style.display = typeSelect.value === 'credit' ? 'block' : 'none';
     });
 
-    // ================================
-    // СОХРАНЕНИЕ НОВОЙ КАТЕГОРИИ
-    // ================================
     modal.querySelector('#saveNewCat').addEventListener('click', () => {
-
         const name = modal.querySelector('#newCatName').value.trim();
-
-        // защита от пустого имени
         if (!name) {
             alert('Введите название');
             return;
@@ -2214,89 +2505,53 @@ function addCategory(button) {
 
         const type = typeSelect.value;
 
-        // ================================
-        // РАСЧЁТ ОБЩЕЙ СУММЫ КРЕДИТА С ПРОЦЕНТАМИ
-        // ================================
-        let totalRepaymentAmount = 0;
+                                // Расчёт полной суммы к возврату (основной долг + все проценты)
+                let totalRepaymentAmount = 0;
+                if (type === 'credit') {
+                    const principal = parseFloat(modal.querySelector('#newCreditAmount').value) || 0;
+                    const months = parseFloat(modal.querySelector('#newCreditTerm').value) || 0;
+                    const rate = parseFloat(modal.querySelector('#newCreditRate').value) || 0;
+                    if (months > 0) {
+                        const monthlyPayment = calculateMonthlyPayment(principal, months, rate);
+                        totalRepaymentAmount = monthlyPayment * months;
+                    }
+                }
 
-        if (type === 'credit') {
-
-            const principal = parseFloat(modal.querySelector('#newCreditAmount').value) || 0;
-            const months = parseFloat(modal.querySelector('#newCreditTerm').value) || 0;
-            const rate = parseFloat(modal.querySelector('#newCreditRate').value) || 0;
-
-            if (months > 0) {
-                const monthlyPayment = calculateMonthlyPayment(principal, months, rate);
-                totalRepaymentAmount = monthlyPayment * months;
-            }
-        }
-
-        // ================================
-        // ОБЪЕКТ НОВОЙ КАТЕГОРИИ
-        // ================================
-        const newCat = {
+                const newCat = {
             name: name,
             amount: 0,
             limit: 0,
             limitEnabled: false,
             type: type,
-
             debtTo: type === 'debt' ? modal.querySelector('#newDebtTo').value.trim() : '',
-
             creditAmount: type === 'credit' ? parseFloat(modal.querySelector('#newCreditAmount').value) || 0 : 0,
             creditTermMonths: type === 'credit' ? parseFloat(modal.querySelector('#newCreditTerm').value) || 0 : 0,
             creditInterestRate: type === 'credit' ? parseFloat(modal.querySelector('#newCreditRate').value) || 0 : 0,
-
             monthlyDueDay: type === 'credit' ? parseInt(modal.querySelector('#newCreditDueDay').value) || 18 : null,
             fixedMonthlyPayment: type === 'credit' ? parseFloat(modal.querySelector('#newCreditMonthlyPayment').value) || 0 : 0,
-
             totalRepaymentAmount: totalRepaymentAmount,
-
             creditPayments: [],
             currentBalance: type === 'credit' ? parseFloat(modal.querySelector('#newCreditAmount').value) || 0 : 0,
-
             lastUpdate: new Date().toISOString()
         };
 
-        // выбор хранилища
         const key = currentMode === 'expense' ? 'expenseCategories' : 'incomeCategories';
-
-        // загрузка существующих категорий
         let categories = JSON.parse(localStorage.getItem(key)) || [];
-
-        // добавление новой
         categories.push(newCat);
-
-        // сохранение
         localStorage.setItem(key, JSON.stringify(categories));
 
-        // закрытие окна
         closeCategoryCard(modal);
-
-        // обновление интерфейса
         renderCategories();
-
-        // уведомление
         alert(`✅ ${type === 'debt' ? 'Долг' : type === 'credit' ? 'Кредит' : 'Категория'} «${name}» создана`);
     });
 
-    // отмена
     modal.querySelector('#cancelNewCat').addEventListener('click', () => closeCategoryCard(modal));
-
-    // закрытие крестиком
     modal.querySelector('.category-card-close').addEventListener('click', () => closeCategoryCard(modal));
 }
 
-
-// ================================
-// ОТОБРАЖЕНИЕ ВСЕХ ДОЛГОВ
-// ================================
 function showAllDebts() {
-
     const key = currentMode === 'expense' ? 'expenseCategories' : 'incomeCategories';
     let categories = JSON.parse(localStorage.getItem(key)) || [];
-
-    // фильтр долгов
     const debts = categories.filter(c => c.type === 'debt');
 
     if (debts.length === 0) {
@@ -2304,9 +2559,7 @@ function showAllDebts() {
         return;
     }
 
-    // список HTML
     let listHTML = '<div style="padding:15px;">';
-
     debts.forEach(debt => {
         listHTML += `
             <button onclick="openCategoryMenu('${debt.name}')" 
@@ -2314,13 +2567,10 @@ function showAllDebts() {
                 💸 ${debt.name} ${debt.debtTo ? '(' + debt.debtTo + ')' : ''}
             </button>`;
     });
-
     listHTML += '</div>';
 
-    // модальное окно
     const modal = document.createElement('div');
     modal.className = 'category-card-modal';
-
     modal.innerHTML = `
         <div class="category-card-content">
             <div class="category-card-header">
@@ -2334,22 +2584,14 @@ function showAllDebts() {
     `;
 
     document.body.appendChild(modal);
-
     setTimeout(() => modal.classList.add('show'), 10);
 
     modal.querySelector('.category-card-close').onclick = () => closeCategoryCard(modal);
 }
 
-
-// ================================
-// ОТОБРАЖЕНИЕ ВСЕХ КРЕДИТОВ
-// ================================
 function showAllCredits() {
-
     const key = currentMode === 'expense' ? 'expenseCategories' : 'incomeCategories';
     let categories = JSON.parse(localStorage.getItem(key)) || [];
-
-    // фильтр кредитов
     const credits = categories.filter(c => c.type === 'credit');
 
     if (credits.length === 0) {
@@ -2358,7 +2600,6 @@ function showAllCredits() {
     }
 
     let listHTML = '<div style="padding:15px;">';
-
     credits.forEach(credit => {
         listHTML += `
             <button onclick="openCategoryMenu('${credit.name}')" 
@@ -2366,12 +2607,10 @@ function showAllCredits() {
                 🏦 ${credit.name} (${credit.currentBalance || credit.creditAmount} ₽)
             </button>`;
     });
-
     listHTML += '</div>';
 
     const modal = document.createElement('div');
     modal.className = 'category-card-modal';
-
     modal.innerHTML = `
         <div class="category-card-content">
             <div class="category-card-header">
@@ -2385,15 +2624,11 @@ function showAllCredits() {
     `;
 
     document.body.appendChild(modal);
-
     setTimeout(() => modal.classList.add('show'), 10);
 
     modal.querySelector('.category-card-close').onclick = () => closeCategoryCard(modal);
 }
 
-// ================================
-// ОТКРЫТИЕ МЕНЮ КАТЕГОРИИ
-// ================================
 function openCategoryMenu(categoryName) {
     // Закрываем текущий список
     const openModals = document.querySelectorAll('.category-card-modal.show');
@@ -2412,48 +2647,29 @@ function openCategoryMenu(categoryName) {
     }, 400);
 }
 
-        // ================================
-        // ФИЛЬТРАЦИЯ ИСТОРИИ ОПЕРАЦИЙ
-        // ================================
         function getFilteredHistory() {
             const history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
             const filters = JSON.parse(localStorage.getItem('historyFilters')) || {};
-
-            // копия истории для безопасной фильтрации
             let filteredHistory = [...history];
-
-            // фильтр по году
             if (filters.year) {
                 filteredHistory = filteredHistory.filter(exp => new Date(exp.dateISO).getFullYear() == filters.year);
             }
-
-            // фильтр по месяцу
             if (filters.month) {
                 filteredHistory = filteredHistory.filter(exp => new Date(exp.dateISO).getMonth() + 1 == filters.month);
             }
-
-            // фильтр по дню
             if (filters.day) {
                 filteredHistory = filteredHistory.filter(exp => new Date(exp.dateISO).getDate() == filters.day);
             }
-
-            // фильтр по банку
             if (filters.bank) {
                 filteredHistory = filteredHistory.filter(exp => exp.bank === filters.bank);
             }
-
-            // фильтр по категории
             if (filters.category) {
                 filteredHistory = filteredHistory.filter(exp => exp.category === filters.category);
             }
-
             const sortField = filters.sortField || 'dateISO';
             const sortOrder = filters.sortOrder || 'desc';
-
-            // сортировка истории
             filteredHistory.sort((a, b) => {
                 let valueA, valueB;
-
                 if (sortField === 'dateISO') {
                     valueA = new Date(a.dateISO);
                     valueB = new Date(b.dateISO);
@@ -2461,18 +2677,11 @@ function openCategoryMenu(categoryName) {
                     valueA = a[sortField].toLowerCase();
                     valueB = b[sortField].toLowerCase();
                 }
-
-                return sortOrder === 'asc'
-                    ? (valueA > valueB ? 1 : -1)
-                    : (valueA < valueB ? 1 : -1);
+                return sortOrder === 'asc' ? (valueA > valueB ? 1 : -1) : (valueA < valueB ? 1 : -1);
             });
-
             return filteredHistory;
         }
 
-                                        // ================================
-                                        // РЕНДЕР КАТЕГОРИЙ В ИНТЕРФЕЙСЕ
-                                        // ================================
                                         function renderCategories() {
             const list = document.getElementById('categoriesList');
             const statsList = document.getElementById('statsCategories');
@@ -2489,16 +2698,11 @@ function openCategoryMenu(categoryName) {
 
                         const activeCats = currentMode === 'expense' ? expenseCats : incomeCats;
 
-            // ================================
-            // ОТОБРАЖЕНИЕ ТОЛЬКО SIMPLE КАТЕГОРИЙ
-            // ================================
+            // Показываем ТОЛЬКО простые категории (type === 'simple' или без типа)
             activeCats.forEach((cat, idx) => {
-
-                // пропуск долгов и кредитов
                 if (cat.type === 'debt' || cat.type === 'credit') return; // пропускаем долги и кредиты
 
                 const catBtn = document.createElement('button');
-
                 let displayName = cat.name.length > 15 ? cat.name.slice(0,15) : cat.name;
 
                 catBtn.textContent = displayName;
@@ -2511,44 +2715,33 @@ function openCategoryMenu(categoryName) {
                 list.appendChild(catBtn);
             });
 
-            // ================================
-            // СТАТИСТИКА РАСХОДОВ
-            // ================================
+                       // Статистика: обычные категории + ОДНА общая строка «Кредиты»
             if (currentMode === 'expense' && statsList) {
-
                 let totalCreditPaidThisMonth = 0;
                 let totalFixedMonthlyPayments = 0;
                 let hasCredits = false;
 
                 expenseCats.forEach((cat) => {
-
-                    // кредитные категории
                     if (cat.type === 'credit') {
                         hasCredits = true;
                         totalCreditPaidThisMonth += getCurrentCyclePaid(cat);
-
                         if (cat.fixedMonthlyPayment) {
                             totalFixedMonthlyPayments += cat.fixedMonthlyPayment;
                         }
 
-                    } else {
 
-                        // ================================
-                        // ОБЫЧНЫЕ КАТЕГОРИИ РАСХОДОВ
-                        // ================================
+
+
+                    } else {
+                        // Обычные категории расходов
                         const statItem = document.createElement('div');
                         statItem.className = 'stat-item';
-
                         const amount = cat.amount || 0;
-
                         let remainingHTML = '';
-
-                        // расчёт остатка лимита
                         if (cat.limit && cat.limit > 0) {
                             let rem = cat.limit - amount;
                             remainingHTML = `<div class="stat-remaining ${rem >= 0 ? 'positive' : 'negative'}">${rem.toFixed(2)} ₽</div>`;
                         }
-
                         statItem.innerHTML = `
                             <div class="stat-top">
                                 <span class="stat-name">${cat.name}</span>
@@ -2558,23 +2751,16 @@ function openCategoryMenu(categoryName) {
                                 </div>
                             </div>
                         `;
-
                         statsList.appendChild(statItem);
                     }
                 });
 
-
-                // ================================
-// СТРОКА «КРЕДИТЫ» В СТАТИСТИКЕ
-// ================================
+                // === ОДНА ОБЩАЯ СТРОКА «КРЕДИТЫ» ===
                 if (hasCredits) {
-
                     const creditStatItem = document.createElement('div');
                     creditStatItem.className = 'stat-item';
 
-                    // сколько осталось выплатить по кредитам
                     const remainingToPay = Math.max(0, totalFixedMonthlyPayments - totalCreditPaidThisMonth);
-
                     const remainingClass = remainingToPay > 0 ? 'positive' : 'negative';
 
                     creditStatItem.innerHTML = `
@@ -2593,48 +2779,29 @@ function openCategoryMenu(categoryName) {
                 }
             }
 
-            // ================================
-            // ДИАГРАММА РАСХОДОВ И СВОДКА
-            // ================================
-
+                      // Диаграмма и сводка
             const categorySums = {};
-
-            // суммирование категорий
             expenseCats.forEach(cat => categorySums[cat.name] = {amount: cat.amount || 0});
 
-            // построение круговой диаграммы
             renderChart(Object.keys(categorySums).map(name => ({name, amount: categorySums[name].amount})));
 
             let totalIncome = 0;
-
             const history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
-
-            // расчёт общего дохода
             history.forEach(item => {
                 if (item.type === 'income') totalIncome += Math.abs(item.amount);
             });
 
-            // ================================
-            // ОБЩИЕ РАСХОДЫ С УЧЁТОМ КРЕДИТОВ
-            // ================================
-
+            // НОВАЯ ЛОГИКА: учитываем платежи по кредитам в общей сумме расходов
             let totalExpense = expenseCats.reduce((sum, cat) => {
-
                 if (cat.type === 'credit') {
-                    // кредиты считаются по фактическим платежам
+                    // Для кредитов берём сумму всех внесённых платежей (а не cat.amount)
                     return sum + (cat.creditPayments ? cat.creditPayments.reduce((s, p) => s + (p.amount || 0), 0) : 0);
                 }
-
                 return sum + (cat.amount || 0);
             }, 0);
 
             let totalLimits = expenseCats.reduce((sum, cat) => sum + (cat.limit || 0), 0);
-
             let weekly = parseFloat(localStorage.getItem('weeklyTotal')) || 0;
-
-            // ================================
-            // HTML СВОДКИ СТАТИСТИКИ
-            // ================================
 
             const summaryHTML = `
                 <div class="stat-card weekly"><span class="icon">📅</span><div class="label">НЕДЕЛЬНЫЕ ТРАТЫ</div><div class="value">${weekly.toFixed(2)} ₽</div></div>
@@ -2644,28 +2811,17 @@ function openCategoryMenu(categoryName) {
             `;
 
             const summaryContainer = document.getElementById('statsSummary');
-
             if (summaryContainer) summaryContainer.innerHTML = summaryHTML;
         }
 
-        // ================================
-        // ПОСТРОЕНИЕ КРУГОВОЙ ДИАГРАММЫ
-        // ================================
         function renderChart(categories) {
-
             const ctx = document.getElementById('statsChart');
-
             if (!ctx) return;
-
-            // удаление предыдущего графика
             if (chartInstance) {
                 chartInstance.destroy();
             }
-
             const labels = categories.map(c => c.name);
             const data = categories.map(c => c.amount);
-
-            // создание новой диаграммы
             chartInstance = new Chart(ctx, {
                 type: 'pie',
                 data: {
@@ -2693,162 +2849,110 @@ function openCategoryMenu(categoryName) {
             });
         }
 
-        // ================================
-        // СОСТОЯНИЕ UI И МОДАЛЬНЫХ ОКОН
-        // ================================
-
         let currentModal = null;
-        let outsideClickHandler = null;
-        let dragEnabled = false;
-        let hawkMode = false;
+let outsideClickHandler = null;
+let dragEnabled = false;
+let hawkMode = false;
 
-        // ================================
-        // БОКОВОЕ МЕНЮ ДЕЙСТВИЙ КАТЕГОРИИ
-        // ================================
+        // Новое боковое меню справа (3 кнопки)
+// Показать простое меню при долгом нажатии на категорию
+// Большое боковое меню справа — как было раньше
+function showActionModal(button, index) {
+    if (hawkMode) return;
 
-        function showActionModal(button, index) {
+    const categoryName = button.textContent.trim();
 
-            // блокировка режима если включён hawkMode
-            if (hawkMode) return;
+    removeSideActionMenu();
 
-            const categoryName = button.textContent.trim();
+    const overlay = document.createElement('div');
+    overlay.className = 'side-action-overlay';
+    document.body.appendChild(overlay);
 
-            // удаление предыдущего меню
-            removeSideActionMenu();
+    const menu = document.createElement('div');
+    menu.className = 'side-action-menu';
 
-            // ================================
-            // ЗАТЕМНЯЮЩИЙ ОВЕРЛЕЙ
-            // ================================
-            const overlay = document.createElement('div');
-            overlay.className = 'side-action-overlay';
-            document.body.appendChild(overlay);
+    const actionText = currentMode === 'expense' ? 'Внести расход' : 'Внести доход';
 
-            // ================================
-            // БОКОВОЕ МЕНЮ
-            // ================================
-            const menu = document.createElement('div');
-            menu.className = 'side-action-menu';
+    menu.innerHTML = `
+        <div class="category-header">
+            <h2>${categoryName}</h2>
+        </div>
+        
+        <div class="menu-buttons">
+            <button class="primary" data-action="add-transaction">${actionText}</button>
+            <button data-action="category-card">Карточка категории</button>
+            <button data-action="settings">Настройки категории</button>
+        </div>
+    `;
 
-            const actionText = currentMode === 'expense' ? 'Внести расход' : 'Внести доход';
+    document.body.appendChild(menu);
 
-            menu.innerHTML = `
-                <div class="category-header">
-                    <h2>${categoryName}</h2>
-                </div>
-                
-                <div class="menu-buttons">
-                    <button class="primary" data-action="add-transaction">${actionText}</button>
-                    <button data-action="category-card">Карточка категории</button>
-                    <button data-action="settings">Настройки категории</button>
-                </div>
-            `;
+    setTimeout(() => {
+        overlay.classList.add('show');
+        menu.classList.add('show');
+    }, 10);
 
-            document.body.appendChild(menu);
-
-            // запуск анимации появления
-            setTimeout(() => {
-                overlay.classList.add('show');
-                menu.classList.add('show');
-            }, 10);
-
-    // ================================
-// ОБРАБОТЧИКИ КНОПОК БОКОВОГО МЕНЮ
-// ================================
+    // ==================== ОБРАБОТЧИКИ КНОПОК ====================
     const addBtn = menu.querySelector('[data-action="add-transaction"]');
     const cardBtn = menu.querySelector('[data-action="category-card"]');
     const settingsBtn = menu.querySelector('[data-action="settings"]');
 
-    // ================================
-    // КНОПКА: ДОБАВИТЬ ТРАНЗАКЦИЮ
-    // ================================
+    // Главная кнопка — внесение платежа
     addBtn.addEventListener('click', () => {
-
-        // закрытие бокового меню
         removeSideActionMenu();
 
-        // выбор хранилища категорий
         const key = currentMode === 'expense' ? 'expenseCategories' : 'incomeCategories';
-
-        // загрузка категорий
         let cats = JSON.parse(localStorage.getItem(key)) || [];
-
-        // поиск текущей категории
         const cat = cats.find(c => c.name === categoryName);
 
-        // если это кредит — открываем спец. модалку платежа
         if (cat && cat.type === 'credit') {
             openCreditPaymentModal(categoryName);
         } else {
-            // обычная транзакция
             openTransactionModal(categoryName, currentMode);
         }
     });
 
-    // ================================
-    // КНОПКА: КАРТОЧКА КАТЕГОРИИ
-    // ================================
     cardBtn.addEventListener('click', () => {
         removeSideActionMenu();
         showCategoryCard(categoryName);
     });
 
-    // ================================
-    // КНОПКА: НАСТРОЙКИ КАТЕГОРИИ
-    // ================================
     settingsBtn.addEventListener('click', () => {
         removeSideActionMenu();
         alert(`⚙️ Настройки категории «${categoryName}»\n\n(Здесь можно будет добавить переименование, лимит и т.д.)`);
     });
 
-    // закрытие меню по клику на фон
     overlay.addEventListener('click', removeSideActionMenu);
 }
-
-
-// ================================
-// УДАЛЕНИЕ БОКОВОГО МЕНЮ
-// ================================
+// Функция закрытия бокового меню
 function removeSideActionMenu() {
-
     const menu = document.querySelector('.side-action-menu');
     const overlay = document.querySelector('.side-action-overlay');
-
     if (menu) menu.classList.remove('show');
     if (overlay) overlay.classList.remove('show');
 
-    // удаление элементов после анимации
     setTimeout(() => {
         if (menu) menu.remove();
         if (overlay) overlay.remove();
     }, 450);
 }
 
-
-// ================================
-// ОКНО ДОБАВЛЕНИЯ ТРАНЗАКЦИИ
-// ================================
+// Вспомогательная функция открытия окна расхода
+// Вспомогательная функция открытия окна расхода
+// Вспомогательная функция открытия окна расхода
 function openTransactionModal(categoryName, mode) {
-
-    // установка режима транзакции
     currentTransactionMode = mode;
-
-    // сохранение текущей категории глобально
     window.currentTransactionCategory = categoryName;
-
     const selectedBank = localStorage.getItem('selectedBank') || "Другие";
 
     const now = new Date();
-
     const todayStr = now.toISOString().split('T')[0];
     const timeStr = now.toTimeString().slice(0, 5);
 
     const overlayEl = document.getElementById('expenseModalOverlay');
     const modalEl = document.getElementById('expenseModal');
-
-    // заголовок модалки в зависимости от режима
     modalEl.querySelector('h2').textContent = mode === 'expense' ? 'Новый расход' : 'Новый доход';
 
-    // заполнение UI
     document.getElementById('selectedBankBadge').textContent = selectedBank;
     document.getElementById('expenseDate').value = todayStr;
     document.getElementById('expenseTime').value = timeStr;
@@ -2856,22 +2960,14 @@ function openTransactionModal(categoryName, mode) {
     document.getElementById('expensePlace').value = '';
     document.getElementById('expenseComment').value = '';
 
-    // показ модального окна
     overlayEl.style.display = 'flex';
-
     setTimeout(() => {
         overlayEl.classList.add('active');
         modalEl.classList.add('active');
     }, 10);
 
-    // ================================
-    // СОХРАНЕНИЕ ТРАНЗАКЦИИ
-    // ================================
     document.getElementById('saveExpenseBtn').onclick = () => {
-
         const amount = parseFloat(document.getElementById('expenseAmount').value.replace(',', '.'));
-
-        // проверка суммы
         if (isNaN(amount) || amount <= 0) {
             alert("Введите корректную сумму");
             return;
@@ -2883,12 +2979,8 @@ function openTransactionModal(categoryName, mode) {
         const time = document.getElementById('expenseTime').value;
 
         const history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
-
         const dateISO = new Date(`${date}T${time}`).toISOString();
 
-        // ================================
-        // ДОБАВЛЕНИЕ В ИСТОРИЮ
-        // ================================
         history.push({
             amount: amount,
             dateISO: dateISO,
@@ -2903,130 +2995,110 @@ function openTransactionModal(categoryName, mode) {
 
         localStorage.setItem('expensesHistory', JSON.stringify(history));
 
-        // ================================
-        // ОБНОВЛЕНИЕ СУММ В КАТЕГОРИИ
-        // ================================
+        // Обновляем сумму в нужном типе категорий
         const key = currentTransactionMode === 'expense' ? 'expenseCategories' : 'incomeCategories';
-
         let cats = JSON.parse(localStorage.getItem(key)) || [];
-
         const cat = cats.find(c => c.name === categoryName);
-
         if (cat) {
             cat.amount = (cat.amount || 0) + amount;
             localStorage.setItem(key, JSON.stringify(cats));
         }
 
-        // закрытие модалки
         overlayEl.style.display = 'none';
         modalEl.classList.remove('active');
-
-        // перерисовка интерфейса
         renderCategories();
 
         alert(`✅ ${currentTransactionMode === 'expense' ? 'Расход' : 'Доход'} ${amount.toFixed(2)} ₽ добавлен`);
     };
 
-    // отмена
     document.getElementById('cancelExpenseBtn').onclick = () => {
         overlayEl.style.display = 'none';
         modalEl.classList.remove('active');
     };
 }
+        function removeActionModal() {
+            if (currentModal) currentModal.remove();
+            currentModal = null;
+            if (outsideClickHandler) document.removeEventListener('click', outsideClickHandler);
+            outsideClickHandler = null;
+        }
 
-
-// ================================
-// УДАЛЕНИЕ СТАРОГО ACTION MODAL
-// ================================
-function removeActionModal() {
-
-    if (currentModal) currentModal.remove();
-    currentModal = null;
-
-    if (outsideClickHandler) document.removeEventListener('click', outsideClickHandler);
-
-    outsideClickHandler = null;
-}
         
 
-        // функция очистки старых расходов (старше 12 месяцев)
-function cleanOldExpenses() {
-            const history = JSON.parse(localStorage.getItem('expensesHistory')) || []; // загрузка истории расходов
-            const twelveMonthsAgo = new Date(); // дата отсчёта (12 месяцев назад)
-            twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12); // смещение даты назад на 12 месяцев
-            const recent = history.filter(exp => new Date(exp.dateISO) >= twelveMonthsAgo); // фильтрация актуальных записей
-            localStorage.setItem('expensesHistory', JSON.stringify(recent)); // сохранение обновлённой истории
+        function cleanOldExpenses() {
+            const history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
+            const twelveMonthsAgo = new Date();
+            twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
+            const recent = history.filter(exp => new Date(exp.dateISO) >= twelveMonthsAgo);
+            localStorage.setItem('expensesHistory', JSON.stringify(recent));
         }
 
-// функция показа поля переименования категории
-function showRenameField(button, index) {
-            const existing = button.parentNode.querySelector('.rename-container'); // проверка существующего поля
-            if (existing) existing.remove(); // удаление если уже открыто
-            const container = document.createElement('div'); // контейнер ввода имени
+        function showRenameField(button, index) {
+            const existing = button.parentNode.querySelector('.rename-container');
+            if (existing) existing.remove();
+            const container = document.createElement('div');
             container.className = 'rename-container';
-            const input = document.createElement('input'); // поле ввода
-            const currentName = JSON.parse(localStorage.getItem('categories'))[index].name; // текущее имя категории
+            const input = document.createElement('input');
+            const currentName = JSON.parse(localStorage.getItem('categories'))[index].name;
             input.type = 'text';
-            input.value = currentName.length > 15 ? currentName.slice(0,15) : currentName; // ограничение отображаемой длины
-            input.maxLength = 15; // ограничение ввода
-            const saveBtn = document.createElement('button'); // кнопка сохранения
+            input.value = currentName.length > 15 ? currentName.slice(0,15) : currentName;
+            input.maxLength = 15;
+            const saveBtn = document.createElement('button');
             saveBtn.textContent = 'Сохранить';
-            saveBtn.onclick = () => { // обработка сохранения
+            saveBtn.onclick = () => {
                 let newName = input.value.trim();
-                if (newName.length > 15) newName = newName.slice(0,15); // защита длины
+                if (newName.length > 15) newName = newName.slice(0,15);
                 if (newName) {
-                    updateCategory(index, newName); // обновление категории
-                    renderCategories(); // перерисовка UI
+                    updateCategory(index, newName);
+                    renderCategories();
                 }
             };
-            container.appendChild(input); // добавление input
-            container.appendChild(saveBtn); // добавление кнопки
-            button.parentNode.insertBefore(container, button.nextSibling); // вставка после кнопки
+            container.appendChild(input);
+            container.appendChild(saveBtn);
+            button.parentNode.insertBefore(container, button.nextSibling);
         }
 
-// функция получения начала недели (понедельник)
-function getStartOfWeek() {
-            const now = new Date(); // текущая дата
-            const day = now.getDay(); // день недели
-            const diff = now.getDate() - day + (day === 0 ? -6 : 1); // расчёт до понедельника
-            const monday = new Date(now.setDate(diff)); // установка даты
-            monday.setHours(0,0,0,0); // обнуление времени
-            return monday; // возврат результата
+        function getStartOfWeek() {
+            const now = new Date();
+            const day = now.getDay();
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+            const monday = new Date(now.setDate(diff));
+            monday.setHours(0,0,0,0);
+            return monday;
         }
 
-// функция расчёта недельных расходов
-function calculateWeeklyExpenses() {
-    const filteredHistory = getFilteredHistory(); // отфильтрованная история
-    const startOfWeek = getStartOfWeek(); // начало недели
-    const categories = JSON.parse(localStorage.getItem('categories')) || []; // категории
-    let weeklyTotal = 0; // сумма недели
+        function calculateWeeklyExpenses() {
+    const filteredHistory = getFilteredHistory();
+    const startOfWeek = getStartOfWeek();
+    const categories = JSON.parse(localStorage.getItem('categories')) || [];
+    let weeklyTotal = 0;
 
-    filteredHistory.forEach(exp => { // проход по истории
-        const updateDate = new Date(exp.dateISO); // дата расхода
-        const category = categories.find(cat => cat.name === exp.category); // поиск категории
-        // учитываем только категории с включённым лимитом
+    filteredHistory.forEach(exp => {
+        const updateDate = new Date(exp.dateISO);
+        const category = categories.find(cat => cat.name === exp.category);
+        // Учитываем траты только если категория существует и limitEnabled включен
         if (updateDate >= startOfWeek && category && category.limitEnabled) {
-            weeklyTotal += exp.amount; // добавление суммы
+            weeklyTotal += exp.amount;
         }
     });
 
-    localStorage.setItem('weeklyTotal', weeklyTotal.toString()); // сохранение результата
-    const weeklyElem = document.getElementById('weeklyExpenses'); // UI элемент
+    localStorage.setItem('weeklyTotal', weeklyTotal.toString());
+    const weeklyElem = document.getElementById('weeklyExpenses');
     if (weeklyElem) {
-        weeklyElem.textContent = `недельные траты: ${weeklyTotal.toFixed(2)} ₽`; // вывод результата
+        weeklyElem.textContent = `недельные траты: ${weeklyTotal.toFixed(2)} ₽`;
     }
 }
 
 // ==================== ПОКАЗАТЬ КАРТОЧКУ КАТЕГОРИИ (ПРОСТОЙ ВИД) ====================
 function showCategoryCard(categoryName) {
-    const key = currentMode === 'expense' ? 'expenseCategories' : 'incomeCategories'; // выбор хранилища
-    let categories = JSON.parse(localStorage.getItem(key)) || []; // загрузка категорий
-    const catIndex = categories.findIndex(c => c.name === categoryName); // поиск категории
-    if (catIndex === -1) return; // если не найдено — выход
+    const key = currentMode === 'expense' ? 'expenseCategories' : 'incomeCategories';
+    let categories = JSON.parse(localStorage.getItem(key)) || [];
+    const catIndex = categories.findIndex(c => c.name === categoryName);
+    if (catIndex === -1) return;
 
-    const cat = categories[catIndex]; // текущая категория
+    const cat = categories[catIndex];
 
-        const modal = document.createElement('div'); // создание модального окна
+        const modal = document.createElement('div');
     modal.className = 'category-card-modal';
 
     modal.innerHTML = `
@@ -3036,8 +3108,8 @@ function showCategoryCard(categoryName) {
                 <button class="category-card-close">×</button>
             </div>
             <div class="category-card-body">
-                ${cat.type === 'credit' ? ` // ветка кредита
-                <!-- КРЕДИТНАЯ КАРТОЧКА -->
+                ${cat.type === 'credit' ? `
+                <!-- СПЕЦИАЛЬНЫЙ ВИД ДЛЯ КРЕДИТА -->
                 <div class="category-card-row">
                     <span class="category-card-label">Взял (основной долг):</span>
                     <span class="category-card-value">${(cat.creditAmount || 0).toFixed(2)} ₽</span>
@@ -3047,22 +3119,31 @@ function showCategoryCard(categoryName) {
                     <span class="category-card-value" style="color:#d32f2f; font-weight:700;">${(cat.totalRepaymentAmount || 0).toFixed(2)} ₽</span>
                 </div>
 
+
+
 <div class="category-card-row">
     <span class="category-card-label">Добавить штраф/пени:</span>
     <input type="number" step="0.01" class="penalty-input" style="padding:10px; border:1px solid #ccc;">
     <button class="add-penalty-btn">Добавить</button>
+
+
+
+
+
 </div>
 
-<div class="category-card-row">
-    <span class="category-card-label">Текущий остаток:</span>
-    <span class="category-card-value" style="color:#1976D2;">${(cat.currentBalance || 0).toFixed(2)} ₽</span>
-</div>
 
-<div class="category-card-row">
-    <span class="category-card-label">Уже внесено всего:</span>
-    <span class="category-card-value">${(cat.creditPayments ? cat.creditPayments.reduce((sum, p) => sum + (p.amount || 0), 0) : 0).toFixed(2)} ₽</span>
-</div>
-                ` : ` // обычная категория
+
+   <div class="category-card-row">
+                    <span class="category-card-label">Текущий остаток:</span>
+                    <span class="category-card-value" style="color:#1976D2;">${(cat.currentBalance || 0).toFixed(2)} ₽</span>
+                </div>
+                <div                 <div class="category-card-row">
+                    <span class="category-card-label">Уже внесено всего:</span>
+                    <span class="category-card-value">${(cat.creditPayments ? cat.creditPayments.reduce((sum, p) => sum + (p.amount || 0), 0) : 0).toFixed(2)} ₽</span>
+                </div>
+                ` : `
+                <!-- Обычная категория -->
                 <div class="category-card-row">
                     <span class="category-card-label">Всего потрачено:</span>
                     <span class="category-card-value">${(cat.amount || 0).toFixed(2)} ₽</span>
@@ -3085,38 +3166,41 @@ function showCategoryCard(categoryName) {
         </div>
     `;
 
-    document.body.appendChild(modal); // добавление в DOM
-    setTimeout(() => modal.classList.add('show'), 10); // анимация появления
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('show'), 10);
 
-    const penaltyBtn = modal.querySelector('.add-penalty-btn'); // кнопка штрафа
-    const penaltyInput = modal.querySelector('.penalty-input'); // input штрафа
+    const penaltyBtn = modal.querySelector('.add-penalty-btn');
+
+const penaltyInput = modal.querySelector('.penalty-input');
 
 if (penaltyBtn) {
-    penaltyBtn.onclick = () => { // добавление штрафа
-    const value = Number(penaltyInput.value); // значение
+
+    penaltyBtn.onclick = () => {
+    const value = Number(penaltyInput.value);
     if (!value) return;
 
-    cat.totalRepaymentAmount = (cat.totalRepaymentAmount || 0) + value; // обновление суммы
+    cat.totalRepaymentAmount = (cat.totalRepaymentAmount || 0) + value;
 
-    localStorage.setItem(key, JSON.stringify(categories)); // сохранение
+    localStorage.setItem(key, JSON.stringify(categories));
 
-    closeCategoryCard(modal); // закрытие
-    showCategoryCard(cat.name); // перерисовка
+    closeCategoryCard(modal);
+    showCategoryCard(cat.name);
 };
+
 }
 
-modal.querySelector('.category-card-close').onclick = () => closeCategoryCard(modal); // закрытие
+modal.querySelector('.category-card-close').onclick = () => closeCategoryCard(modal);
 
-    modal.querySelector('#saveCatBtn').onclick = () => { // сохранение
-        const newName = modal.querySelector('#catRenameInput').value.trim(); // новое имя
+    modal.querySelector('#saveCatBtn').onclick = () => {
+        const newName = modal.querySelector('#catRenameInput').value.trim();
         if (newName && newName !== categoryName) {
             if (categories.some(c => c.name === newName && c.name !== categoryName)) {
                 alert("Категория с таким названием уже существует!");
                 return;
             }
-            cat.name = newName; // обновление имени
+            cat.name = newName;
 
-            // обновление истории
+            // Обновляем имя в истории
             const allHistory = JSON.parse(localStorage.getItem('expensesHistory')) || [];
             allHistory.forEach(exp => {
                 if (exp.category === categoryName) exp.category = newName;
@@ -3124,31 +3208,30 @@ modal.querySelector('.category-card-close').onclick = () => closeCategoryCard(mo
             localStorage.setItem('expensesHistory', JSON.stringify(allHistory));
         }
 
-        localStorage.setItem(key, JSON.stringify(categories)); // сохранение категорий
-        closeCategoryCard(modal); // закрытие
-        renderCategories(); // обновление интерфейса
+        localStorage.setItem(key, JSON.stringify(categories));
+        closeCategoryCard(modal);
+        renderCategories();
     };
 
-    modal.querySelector('#deleteCatBtn').onclick = () => { // удаление категории
+    modal.querySelector('#deleteCatBtn').onclick = () => {
         if (confirm(`Удалить категорию «${categoryName}»?\nРасходы останутся в истории.`)) {
-            categories.splice(catIndex, 1); // удаление из массива
-            localStorage.setItem(key, JSON.stringify(categories)); // сохранение
-            closeCategoryCard(modal); // закрытие
-            renderCategories(); // обновление UI
+            categories.splice(catIndex, 1);
+            localStorage.setItem(key, JSON.stringify(categories));
+            closeCategoryCard(modal);
+            renderCategories();
         }
     };
 
-    modal.addEventListener('click', (e) => { // клик по фону
+    modal.addEventListener('click', (e) => {
         if (e.target === modal) closeCategoryCard(modal);
     });
 }
 
-// функция рендера истории
 function renderHistory() {
-    const container = document.getElementById('historyTableContainer'); // контейнер
+    const container = document.getElementById('historyTableContainer');
     if (!container) return;
 
-    // история и фильтры
+    // Берём историю напрямую из localStorage
     let history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
     const filters = JSON.parse(localStorage.getItem('historyFilters')) || {};
 
@@ -3165,32 +3248,26 @@ function renderHistory() {
         <table id="historyTable">
             <thead>
                 <tr>
-         <th>Банк</th>
-
-         <th>Дата</th>
-
-         <th>сумма</th>
-
-         <th style="text-align:left">категория</th> 
-                  
-          <th>Место</th>
-
-          <th style="text-align:left">день</th>
-                  
-      <th>комментарии</th>
+                    <th>Банк</th>
+                    <th>Дата</th>
+                    <th>День</th>
+                    <th style="text-align:right">Сумма</th>
+                    <th>Место</th>
+                    <th style="text-align:center">Комм.</th>
+                    <th>Категория</th>
                 </tr>
             </thead>
             <tbody id="historyTableBody"></tbody>
         </table>
     `;
 
-    const tbody = document.getElementById('historyTableBody'); // таблица
-    const yearSelect = document.getElementById('yearFilter'); // фильтр год
-    const monthSelect = document.getElementById('monthFilter'); // фильтр месяц
-    const daySelect = document.getElementById('dayFilter'); // фильтр день
-    const bankSelect = document.getElementById('bankFilter'); // фильтр банк
-    const categorySelect = document.getElementById('categoryFilter'); // фильтр категория
-    const resetBtn = document.getElementById('resetFiltersBtn'); // кнопка сброса;
+    const tbody = document.getElementById('historyTableBody');
+    const yearSelect = document.getElementById('yearFilter');
+    const monthSelect = document.getElementById('monthFilter');
+    const daySelect = document.getElementById('dayFilter');
+    const bankSelect = document.getElementById('bankFilter');
+    const categorySelect = document.getElementById('categoryFilter');
+    const resetBtn = document.getElementById('resetFiltersBtn');
 
     // Заполнение фильтров
     const years = [...new Set(history.map(exp => new Date(exp.dateISO).getFullYear()))].sort((a,b)=>b-a);
@@ -3228,23 +3305,14 @@ function renderHistory() {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${exp.bank}</td>
-
                 <td>${exp.dateStr}</td>
-
+                <td>${exp.dayOfWeek}</td>
                 <td style="text-align:right; font-weight:700; ${exp.type === 'income' ? 'color:#4CAF50;' : 'color:#e63946;'}">${exp.amount.toFixed(2)} ₽</td>
-
-   <td>${exp.category}</td>
-
-  <td>${exp.place || '—'}</td>
-
-  <td>${exp.dayOfWeek}</td>
-
-             
-
+                <td>${exp.place || '—'}</td>
                 <td style="text-align:center">
                     ${exp.comment ? `<span class="comment-doc" onclick="showCommentModal('${exp.comment.replace(/'/g, "\\'")}')">📄</span>` : '—'}
                 </td>
-
+                <td>${exp.category}</td>
             `;
             tbody.appendChild(row);
         });
@@ -3419,6 +3487,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!localStorage.getItem('weeklyTotal')) {
         localStorage.setItem('weeklyTotal', '0');
+
+// === ПЕРВЫЙ ЗАПУСК: создать новый или загрузить backup ===
+if (!localStorage.getItem('hasInitialized')) {
+    setTimeout(() => {
+        const choice = confirm(
+            'Добро пожаловать в деньГа! 👋\n\n' +
+            'Выберите действие:\n\n' +
+            '• OK — Создать новый аккаунт (пустой бюджет)\n' +
+            '• Отмена — Загрузить данные из резервной копии'
+        );
+
+        if (!choice) {
+            // Пользователь выбрал загрузить
+            importBackup();
+        } else {
+            // Новый аккаунт — просто помечаем как инициализированный
+            localStorage.setItem('hasInitialized', 'true');
+            alert('✅ Новый аккаунт создан. Начните добавлять категории расходов!');
+        }
+    }, 600);
+} else {
+    // Уже был запуск раньше — ничего не делаем
+}
+
+
     }
 
     cleanOldExpenses();
@@ -3787,416 +3880,294 @@ function showLoyaltyBarcode(index) {
 }
 
 
-        // ==================== УПРАВЛЕНИЕ ПОДМЕНЮ АДМИНА ====================
-// Переключает отображение админского подменю и скрывает настройки при необходимости
-function toggleAdminSubmenu() {
-    const adminSubmenu = document.getElementById('adminSubmenu'); // блок админ-меню
-    const submenu = document.getElementById('settingsSubmenu');    // блок настроек
-
-    if (adminSubmenu.style.display === 'block') {
-        // если уже открыто — закрываем
-        adminSubmenu.style.display = 'none';
-    } else {
-        // иначе открываем админ-меню
-        adminSubmenu.style.display = 'block';
-
-        // и прячем настройки, если они есть
-        if (submenu) submenu.style.display = 'none';
-    }
-}
-
-// ==================== ОБНУЛЕНИЕ ЛИМИТОВ КАТЕГОРИЙ ====================
-// Сбрасывает лимиты расходов у всех категорий
-function clearLimits() {
-    let categories = JSON.parse(localStorage.getItem('categories')) || [];
-
-    // обнуляем лимит каждой категории
-    categories.forEach(c => c.limit = 0);
-
-    // сохраняем обратно в localStorage
-    localStorage.setItem('categories', JSON.stringify(categories));
-
-    alert("Все лимиты удалены"); // уведомление
-    renderCategories(); // обновляем UI
-}
-
-// ==================== ОЧИСТКА ВСЕХ РАСХОДОВ ====================
-// Обнуляет суммы и историю расходов
-function clearExpenses() {
-    let categories = JSON.parse(localStorage.getItem('categories')) || [];
-
-    // обнуляем сумму трат
-    categories.forEach(c => c.amount = 0);
-
-    localStorage.setItem('categories', JSON.stringify(categories));
-
-    // очищаем историю
-    localStorage.setItem('expensesHistory', JSON.stringify([]));
-
-    alert("Все расходы удалены");
-    renderCategories();
-}
-
-// ==================== ОБНОВЛЕНИЕ ЧАСОВ ====================
-// Отображает текущие дату и время в интерфейсе
-function updateClock() {
-    const now = new Date();
-
-    const days = [
-        'Воскресенье','Понедельник','Вторник',
-        'Среда','Четверг','Пятница','Суббота'
-    ];
-
-    const weekday = days[now.getDay()];
-
-    const dateStr = now.toLocaleDateString('ru-RU', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
-
-    const timeStr = now.toLocaleTimeString('ru-RU', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-    });
-
-    // вывод в DOM
-    document.getElementById('clock').textContent =
-        `${weekday}, ${dateStr} ${timeStr}`;
-}
-
-// обновление каждую секунду
-setInterval(updateClock, 1000);
-updateClock();
-
-// ==================== АВТОСБРОС РАСХОДОВ ПО МЕСЯЦУ ====================
-// В первый день месяца обнуляет расходы
-function autoResetMonthlyExpenses() {
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-
-    const lastReset = JSON.parse(localStorage.getItem('lastResetMonth'));
-
-    if (
-        today.getDate() === 1 &&
-        (!lastReset || lastReset.month !== currentMonth || lastReset.year !== currentYear)
-    ) {
-        let categories = JSON.parse(localStorage.getItem('categories')) || [];
-
-        // обнуление расходов
-        categories.forEach(c => c.amount = 0);
-
-        localStorage.setItem('categories', JSON.stringify(categories));
-
-        // сохраняем дату сброса
-        localStorage.setItem('lastResetMonth', JSON.stringify({
-            month: currentMonth,
-            year: currentYear
-        }));
-
-        alert("Новый месяц! Все расходы обнулены.");
-        renderCategories();
-    }
-}
-
-// ==================== АВТОСБРОС РАСХОДОВ ПО НЕДЕЛЕ ====================
-// Каждую неделю (понедельник) сбрасывает недельную статистику
-function autoResetWeeklyExpenses() {
-    const today = new Date();
-    const day = today.getDay(); // 1 = понедельник
-
-    if (day === 1) {
-        const mondayDateStr = today.toISOString().slice(0,10);
-        const lastWeeklyReset = localStorage.getItem('lastWeeklyReset');
-
-        if (lastWeeklyReset !== mondayDateStr) {
-            localStorage.setItem('weeklyTotal', '0');
-            localStorage.setItem('lastWeeklyReset', mondayDateStr);
-
-            calculateWeeklyExpenses();
+        function toggleAdminSubmenu() {
+            const adminSubmenu = document.getElementById('adminSubmenu');
+            const submenu = document.getElementById('settingsSubmenu');
+            if (adminSubmenu.style.display === 'block') {
+                adminSubmenu.style.display = 'none';
+            } else {
+                adminSubmenu.style.display = 'block';
+                if (submenu) submenu.style.display = 'none';
+            }
         }
-    }
-}
 
-// ==================== ИНДИКАТОР ПРОКРУТКИ ====================
-// Отображает прогресс прокрутки страницы
-window.addEventListener('scroll', () => {
-    const scrollTop = window.scrollY;
-    const docHeight =
-        document.documentElement.scrollHeight - window.innerHeight;
+        function clearLimits() {
+            let categories = JSON.parse(localStorage.getItem('categories')) || [];
+            categories.forEach(c => c.limit = 0);
+            localStorage.setItem('categories', JSON.stringify(categories));
+            alert("Все лимиты удалены");
+            renderCategories();
+        }
 
-    const scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
-    const maxHeight = 50;
+        function clearExpenses() {
+            let categories = JSON.parse(localStorage.getItem('categories')) || [];
+            categories.forEach(c => c.amount = 0);
+            localStorage.setItem('categories', JSON.stringify(categories));
+            localStorage.setItem('expensesHistory', JSON.stringify([]));
+            alert("Все расходы удалены");
+            renderCategories();
+        }
 
-    const scrollBar = document.getElementById('scrollBar');
+        function updateClock() {
+            const now = new Date();
+            const days = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+            const weekday = days[now.getDay()];
+            const dateStr = now.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            document.getElementById('clock').textContent = `${weekday}, ${dateStr} ${timeStr}`;
+        }
 
-    if (scrollBar) {
-        scrollBar.style.height = `${scrollPercent * maxHeight}px`;
-    }
-});
+        setInterval(updateClock, 1000);
+        updateClock();
 
-// ==================== SERVICE WORKER (БАЗОВАЯ РЕГИСТРАЦИЯ) ====================
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(reg => {
+        function autoResetMonthlyExpenses() {
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            const lastReset = JSON.parse(localStorage.getItem('lastResetMonth'));
+            if (today.getDate() === 1 && (!lastReset || lastReset.month !== currentMonth || lastReset.year !== currentYear)) {
+                let categories = JSON.parse(localStorage.getItem('categories')) || [];
+                categories.forEach(c => c.amount = 0);
+                localStorage.setItem('categories', JSON.stringify(categories));
+                localStorage.setItem('lastResetMonth', JSON.stringify({month: currentMonth, year: currentYear}));
+                alert("Новый месяц! Все расходы обнулены.");
+                renderCategories();
+            }
+        }
 
-        reg.addEventListener('updatefound', () => {
-            const newWorker = reg.installing;
-
-            newWorker.addEventListener('statechange', () => {
-                if (
-                    newWorker.state === 'installed' &&
-                    navigator.serviceWorker.controller
-                ) {
-                    alert('Доступна новая версия приложения! Перезагрузите страницу.');
+        function autoResetWeeklyExpenses() {
+            const today = new Date();
+            const day = today.getDay();
+            if (day === 1) {
+                const mondayDateStr = today.toISOString().slice(0,10);
+                const lastWeeklyReset = localStorage.getItem('lastWeeklyReset');
+                if (lastWeeklyReset !== mondayDateStr) {
+                    localStorage.setItem('weeklyTotal', '0');
+                    localStorage.setItem('lastWeeklyReset', mondayDateStr);
+                    calculateWeeklyExpenses();
                 }
-            });
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = docHeight > 0 ? scrollTop / docHeight : 0;
+            const maxHeight = 50;
+            const scrollBar = document.getElementById('scrollBar');
+            if(scrollBar) scrollBar.style.height = `${scrollPercent * maxHeight}px`;
         });
 
-    });
-}
-
-// ==================== SERVICE WORKER (РАСШИРЕННОЕ ОБНОВЛЕНИЕ) ====================
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', async () => {
-        try {
-            const reg = await navigator.serviceWorker.register('/service-worker.js');
-
-            console.log('Service Worker зарегистрирован:', reg.scope);
-
-            // принудительная проверка обновлений
-            reg.update();
-
-            // обработка сообщений от SW
-            navigator.serviceWorker.addEventListener('message', (event) => {
-                if (event.data && event.data.type === 'NEW_VERSION_READY') {
-                    showUpdateBanner(reg);
-                }
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').then(reg => {
+                reg.addEventListener('updatefound', () => {
+                    const newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            alert('Доступна новая версия приложения! Перезагрузите страницу.');
+                        }
+                    });
+                });
             });
-
-        } catch (err) {
-            console.error('Ошибка регистрации SW:', err);
         }
-    });
+        // === 🚀 Регистрация и автообновление Service Worker ===
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('/service-worker.js');
+      console.log('✅ Service Worker зарегистрирован:', reg.scope);
+
+      // Проверяем обновления при запуске
+      reg.update();
+
+      // Когда приходит сообщение о новой версии
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'NEW_VERSION_READY') {
+          console.log('💫 Доступна новая версия приложения');
+          showUpdateBanner(reg);
+        }
+      });
+    } catch (err) {
+      console.error('❌ Ошибка регистрации SW:', err);
+    }
+  });
 }
 
-// ==================== UI УВЕДОМЛЕНИЕ ОБ ОБНОВЛЕНИИ ====================
+// === 🎨 Красивое уведомление об обновлении ===
 function showUpdateBanner(reg) {
-    const banner = document.createElement('div');
+  const banner = document.createElement('div');
+  banner.textContent = '💫 Доступна новая версия приложения. Обновить?';
+  Object.assign(banner.style, {
+    position: 'fixed',
+    bottom: '20px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    background: '#222',
+    color: '#fff',
+    padding: '12px 20px',
+    borderRadius: '8px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+    zIndex: '9999',
+    cursor: 'pointer',
+    fontFamily: 'sans-serif',
+    fontSize: '15px',
+  });
 
-    banner.textContent = 'Доступна новая версия приложения. Обновить?';
+  banner.addEventListener('click', () => {
+    banner.textContent = '🔄 Обновляем...';
+    reg.waiting?.postMessage({ type: 'SKIP_WAITING' });
+    setTimeout(() => window.location.reload(), 1000);
+  });
 
-    Object.assign(banner.style, {
-        position: 'fixed',
-        bottom: '20px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        background: '#222',
-        color: '#fff',
-        padding: '12px 20px',
-        borderRadius: '8px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-        zIndex: '9999',
-        cursor: 'pointer',
-        fontFamily: 'sans-serif',
-        fontSize: '15px'
-    });
-
-    banner.addEventListener('click', () => {
-        banner.textContent = 'Обновление...';
-
-        reg.waiting?.postMessage({ type: 'SKIP_WAITING' });
-
-        setTimeout(() => window.location.reload(), 1000);
-    });
-
-    document.body.appendChild(banner);
+  document.body.appendChild(banner);
 }
-
-// ==================== ЖЁСТКОЕ ОБНОВЛЕНИЕ ПРИЛОЖЕНИЯ ====================
 function forceUpdate() {
     if ('serviceWorker' in navigator) {
-
         navigator.serviceWorker.getRegistrations().then(registrations => {
             for (let registration of registrations) {
-                registration.unregister();
+                registration.unregister().then(() => {
+                    console.log('Service Worker успешно удален');
+                });
             }
-
             caches.keys().then(cacheNames => {
                 return Promise.all(
-                    cacheNames.map(cacheName => caches.delete(cacheName))
+                    cacheNames.map(cacheName => {
+                        return caches.delete(cacheName).then(() => {
+                            console.log(`Кэш ${cacheName} удален`);
+                        });
+                    })
                 );
             }).then(() => {
                 window.location.reload(true);
+            }).catch(err => {
+                console.error('Ошибка при очистке кэша:', err);
+                window.location.reload(true);
             });
-
+        }).catch(err => {
+            console.error('Ошибка при получении регистраций Service Worker:', err);
+            window.location.reload(true);
         });
-
     } else {
         window.location.reload(true);
     }
-
     alert('Приложение обновляется...');
 }
-
-// ==================== ЗАГРУЗКА ВЕРСИИ ПРИЛОЖЕНИЯ ====================
 function loadAppVersion() {
     fetch('/sw.js')
         .then(response => response.text())
         .then(text => {
-
-            const versionMatch =
-                text.match(/const CACHE_NAME = 'den-g-a-(v\d+)'/);
-
-            const versionElement =
-                document.getElementById('appVersion');
-
+            const versionMatch = text.match(/const CACHE_NAME = 'den-g-a-(v\d+)'/);
+            const versionElement = document.getElementById('appVersion');
             if (versionMatch && versionMatch[1]) {
-                versionElement.textContent = versionMatch[1];
+                versionElement.textContent = versionMatch[1]; // Отображаем, например, "v12"
             } else {
-                versionElement.textContent = 'v1.0.0';
+                versionElement.textContent = 'v1.0.0'; // Версия по умолчанию
             }
-
         })
         .catch(error => {
-            console.error('Ошибка загрузки SW:', error);
-            document.getElementById('appVersion').textContent = 'v1.0.0';
-        });
+            console.error('Ошибка загрузки service-worker.js:', error);
+            document.getElementById('appVersion').textContent = 'v1.0.0'; // Версия по умолчанию
+                        });
 }
 
-// запуск при загрузке страницы
+// Вызываем функцию при загрузке страницы
 document.addEventListener('DOMContentLoaded', loadAppVersion);
+        function setBudgetMode(mode) {
+            currentMode = mode;
 
-// ==================== ПЕРЕКЛЮЧЕНИЕ БЮДЖЕТНОГО РЕЖИМА ====================
-function setBudgetMode(mode) {
-    currentMode = mode;
+            const btnExpense = document.getElementById('modeExpenseBtn');
+            const btnIncome = document.getElementById('modeIncomeBtn');
 
-    const btnExpense = document.getElementById('modeExpenseBtn');
-    const btnIncome = document.getElementById('modeIncomeBtn');
+            if (!btnExpense || !btnIncome) return;
 
-    if (!btnExpense || !btnIncome) return;
+            if (mode === 'expense') {
+                btnExpense.style.background = '#4CAF50';
+                btnExpense.style.color = 'white';
+                btnIncome.style.background = 'transparent';
+                btnIncome.style.color = '#555';
+            } else {
+                btnIncome.style.background = '#4CAF50';
+                btnIncome.style.color = 'white';
+                btnExpense.style.background = 'transparent';
+                btnExpense.style.color = '#555';
+            }
 
-    if (mode === 'expense') {
-        btnExpense.style.background = '#4CAF50';
-        btnExpense.style.color = 'white';
-
-        btnIncome.style.background = 'transparent';
-        btnIncome.style.color = '#555';
-    } else {
-        btnIncome.style.background = '#4CAF50';
-        btnIncome.style.color = 'white';
-
-        btnExpense.style.background = 'transparent';
-        btnExpense.style.color = '#555';
-    }
-
-    renderCategories();
-}
-
-// ==================== РЕЖИМ ЯСТРЕБА ====================
-// Включает drag&drop режим редактирования категорий
+            renderCategories();
+        }
 function startHawkMode() {
     hawkMode = true;
     dragEnabled = true;
 
+    // Визуальная обратная связь
     document.body.style.cursor = 'move';
+    alert('🦅 РЕЖИМ ЯСТРЕБА ВКЛЮЧЁН!\n\n• Зажмите и перетаскивайте категории\n• Для выхода нажмите большую зелёную кнопку внизу справа');
 
-    alert('РЕЖИМ ЯСТРЕБА ВКЛЮЧЁН');
-
-    // затемнение фона
+    // Полупрозрачный оверлей
     let blocker = document.getElementById('hawkBlocker');
-
     if (!blocker) {
         blocker = document.createElement('div');
         blocker.id = 'hawkBlocker';
-
         blocker.style.cssText = `
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.4);
-            z-index: 9998;
-            pointer-events: none;
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+            z-index: 9998; pointer-events: none;
         `;
-
         document.body.appendChild(blocker);
     }
 
-    // кнопка выхода
+    // Кнопка выхода
     let exitBtn = document.getElementById('exitHawkBtn');
-
     if (!exitBtn) {
         exitBtn = document.createElement('button');
         exitBtn.id = 'exitHawkBtn';
         exitBtn.textContent = 'ЗАВЕРШИТЬ РЕЖИМ';
-
         exitBtn.style.cssText = `
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            padding: 16px 32px;
-            font-size: 18px;
-            font-weight: bold;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            z-index: 100000;
-            cursor: pointer;
+            position: fixed; bottom: 30px; right: 30px;
+            padding: 16px 32px; font-size: 18px; font-weight: bold;
+            background: #4CAF50; color: white; border: none;
+            border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            z-index: 100000; cursor: pointer;
         `;
-
         document.body.appendChild(exitBtn);
     }
 
     exitBtn.onclick = endHawkMode;
 }
 
-// ==================== ВЫКЛЮЧЕНИЕ РЕЖИМА ЯСТРЕБА ====================
-// Завершает специальный режим "hawk mode" и возвращает интерфейс в обычное состояние
 function endHawkMode() {
-    hawkMode = false;              // отключаем режим ястреба
-    dragEnabled = false;           // отключаем перетаскивание
-    document.body.style.cursor = 'default'; // возвращаем стандартный курсор
+    hawkMode = false;
+    dragEnabled = false;
+    document.body.style.cursor = 'default';
 
-    // удаляем затемняющий блок и кнопку выхода, если они есть
     document.getElementById('hawkBlocker')?.remove();
     document.getElementById('exitHawkBtn')?.remove();
 
-    alert('🦅 Режим Ястреба выключен'); // уведомление пользователю
+    alert('🦅 Режим Ястреба выключен');
 }
-
 // ==================== РАСЧЁТ РЕКОМЕНДУЕМОГО ПЛАТЕЖА ПО КРЕДИТУ ====================
-// Аннуитетный расчёт ежемесячного платежа по кредиту
 function calculateMonthlyPayment(creditAmount, termMonths, annualRate) {
-    if (!termMonths || termMonths <= 0) return 0; // защита от некорректного срока
+    if (!termMonths || termMonths <= 0) return 0;
+    const monthlyRate = (annualRate || 0) / 100 / 12;
+    if (monthlyRate === 0) return creditAmount / termMonths; // без процентов
 
-    const monthlyRate = (annualRate || 0) / 100 / 12; // перевод годовой ставки в месячную
-
-    if (monthlyRate === 0) return creditAmount / termMonths; // если % = 0
-
-    // Аннуитетная формула расчёта платежа
+    // Аннуитетная формула
     const power = Math.pow(1 + monthlyRate, termMonths);
     return creditAmount * (monthlyRate * power) / (power - 1);
 }
 
-// ==================== СКОЛЬКО УЖЕ ВНЕСЕНО В ТЕКУЩЕМ ПЛАТЁЖНОМ ЦИКЛЕ ====================
-// Считает сумму платежей с начала текущего расчетного периода (например с 18 числа)
+// Новый вспомогательный расчёт: сколько уже внесено в текущем платёжном цикле (с прошлого 18-го)
 function getCurrentCyclePaid(cat) {
     if (!cat || !cat.creditPayments || cat.creditPayments.length === 0) return 0;
     if (!cat.monthlyDueDay) return 0;
 
     const today = new Date();
     const dueDay = cat.monthlyDueDay;
-
-    // формируем дату текущего платежного цикла
     let lastDue = new Date(today.getFullYear(), today.getMonth(), dueDay);
 
-    // если текущая дата раньше дня платежа — берем прошлый цикл
+    // Если сегодня ещё не наступило 18-е — берём 18-е предыдущего месяца
     if (today.getDate() < dueDay) {
         lastDue.setMonth(lastDue.getMonth() - 1);
     }
 
-    // суммируем все платежи после даты начала цикла
     const paid = cat.creditPayments
         .filter(p => new Date(p.dateISO) >= lastDue)
         .reduce((sum, p) => sum + (p.amount || 0), 0);
@@ -4204,88 +4175,71 @@ function getCurrentCyclePaid(cat) {
     return paid;
 }
 
-// ==================== РЕКОМЕНДУЕМЫЙ ПЛАТЁЖ ПО КРЕДИТУ ====================
-// Возвращает сумму, которую нужно внести в текущем месяце
+// Получить текущий рекомендованный платёж для кредита
 function getRecommendedPayment(cat) {
     if (!cat || cat.type !== 'credit') return 0;
 
-    // Новая логика: фиксированный платёж + учёт уже внесённого
+    // Если у кредита задана фиксированная сумма и день платежа — считаем по твоей логике
     if (cat.fixedMonthlyPayment && cat.fixedMonthlyPayment > 0 && cat.monthlyDueDay) {
         const paidThisCycle = getCurrentCyclePaid(cat);
         const remaining = Math.max(0, cat.fixedMonthlyPayment - paidThisCycle);
         return remaining;
     }
 
-    // Старая логика (для старых кредитов)
+    // Старая логика (для старых кредитов без новых полей)
     const balance = cat.currentBalance || cat.creditAmount || 0;
     const remainingMonths = cat.creditTermMonths || 12;
-
     return calculateMonthlyPayment(balance, remainingMonths, cat.creditInterestRate || 0);
 }
+// === ИСПРАВЛЕННЫЕ ФУНКЦИИ ДЛЯ КРЕДИТА (кнопки теперь работают) ===
 
-// ==================== ОТКРЫТИЕ МОДАЛЬНОГО ОКНА ПЛАТЕЖА ПО КРЕДИТУ ====================
+// === ИСПРАВЛЕННЫЕ ФУНКЦИИ ДЛЯ КРЕДИТА (кнопки Сохранить и Отмена теперь работают) ===
+
 function openCreditPaymentModal(categoryName) {
     const key = currentMode === 'expense' ? 'expenseCategories' : 'incomeCategories';
-
-    // загружаем категории
     let categories = JSON.parse(localStorage.getItem(key)) || [];
-
     const catIndex = categories.findIndex(c => c.name === categoryName);
     if (catIndex === -1) return;
-
     const cat = categories[catIndex];
 
-    // если это не кредит — открываем обычную транзакцию
     if (cat.type !== 'credit') {
         openTransactionModal(categoryName, currentMode);
         return;
     }
 
-    const recommended = getRecommendedPayment(cat); // рассчитываем рекомендованный платёж
+    const recommended = getRecommendedPayment(cat);
 
-    // ==================== HTML МОДАЛЬНОГО ОКНА ====================
     const modalHTML = `
         <div class="expense-modal-overlay active" style="display:flex; align-items:center; justify-content:center;">
             <div class="expense-modal active">
-
-                <div class="bank-badge" id="selectedBankBadge">
-                    ${localStorage.getItem('selectedBank') || 'Другие'}
-                </div>
-
+                <div class="bank-badge" id="selectedBankBadge">${localStorage.getItem('selectedBank') || 'Другие'}</div>
                 <h2>Платёж по кредиту</h2>
-
                 <p style="text-align:center; color:#555; margin-bottom:20px;">
                     <strong>${cat.name}</strong><br>
                     Остаток: <strong>${(cat.currentBalance || cat.creditAmount || 0).toFixed(2)} ₽</strong>
                 </p>
 
                 <div style="flex: 1; overflow-y: auto; padding-right: 8px; margin-bottom: 16px;">
-
-                    <!-- рекомендованный платёж -->
                     <div class="form-group">
                         <label>Рекомендуемый платёж на этот месяц</label>
                         <input type="tel" id="creditRecommended" value="${recommended.toFixed(2)}" readonly style="background:#f0f0f0;">
                     </div>
 
-                    <!-- ввод суммы -->
                     <div class="form-group">
                         <label>Сумма платежа (можно больше)</label>
                         <input type="tel" inputmode="decimal" id="creditAmount" value="${recommended.toFixed(2)}" placeholder="0.00" autofocus>
                     </div>
 
-                    <!-- дата -->
                     <div class="form-group">
                         <label>Дата</label>
                         <input type="date" id="creditDate" value="${new Date().toISOString().split('T')[0]}">
                     </div>
 
-                    <!-- комментарий -->
                     <div class="form-group">
                         <label>Комментарий</label>
                         <textarea id="creditComment" rows="2" placeholder="Например: досрочный платёж..."></textarea>
                     </div>
 
-                    <!-- блок переплаты -->
                     <div id="overpaymentBlock" style="display:none; background:#fff3cd; padding:14px; border-radius:12px; margin:15px 0;">
                         <strong>Вы вносите больше рекомендованного!</strong><br>
                         <small id="overpaymentInfo"></small>
@@ -4298,20 +4252,16 @@ function openCreditPaymentModal(categoryName) {
                             </label>
                         </div>
                     </div>
-
                 </div>
 
-                <!-- кнопки -->
                 <div class="buttons">
                     <button class="btn-secondary" id="creditCancelBtn">Отмена</button>
                     <button class="btn-primary" id="creditSaveBtn">Сохранить платёж</button>
                 </div>
-
             </div>
         </div>
     `;
 
-    // вставляем модалку в DOM
     const wrapper = document.createElement('div');
     wrapper.innerHTML = modalHTML;
     document.body.appendChild(wrapper);
@@ -4320,14 +4270,14 @@ function openCreditPaymentModal(categoryName) {
     const cancelBtn = wrapper.querySelector('#creditCancelBtn');
     const saveBtn   = wrapper.querySelector('#creditSaveBtn');
 
-    // обработчики кнопок
+    // Правильная привязка кнопок
     cancelBtn.addEventListener('click', () => closeCreditModal(wrapper));
     saveBtn.addEventListener('click',   () => saveCreditPayment(wrapper));
 
     window.currentCreditModal = wrapper;
     window.currentCreditIndex = catIndex;
 
-    // ==================== ЛОГИКА ПЕРЕПЛАТЫ ====================
+    // Обработка переплаты
     const amountInput = wrapper.querySelector('#creditAmount');
     const overBlock = wrapper.querySelector('#overpaymentBlock');
     const overInfo = wrapper.querySelector('#overpaymentInfo');
@@ -4335,7 +4285,6 @@ function openCreditPaymentModal(categoryName) {
 
     amountInput.addEventListener('input', () => {
         const entered = parseFloat(amountInput.value.replace(',', '.')) || 0;
-
         if (entered > recommendedValue + 0.01) {
             const over = entered - recommendedValue;
             overInfo.textContent = `Переплата ≈ ${over.toFixed(2)} ₽`;
@@ -4346,17 +4295,16 @@ function openCreditPaymentModal(categoryName) {
     });
 }
 
-// ==================== ЗАКРЫТИЕ МОДАЛКИ КРЕДИТА ====================
+// Закрытие модалки
 function closeCreditModal(wrapper) {
     if (wrapper && wrapper.parentNode) {
         wrapper.remove();
     }
-
     delete window.currentCreditModal;
     delete window.currentCreditIndex;
 }
 
-// ==================== СОХРАНЕНИЕ ПЛАТЕЖА ПО КРЕДИТУ ====================
+// Сохранение платежа
 function saveCreditPayment(wrapper) {
     if (!wrapper) return;
 
@@ -4380,10 +4328,10 @@ function saveCreditPayment(wrapper) {
         return;
     }
 
-    // уменьшаем долг
+        // Обновляем остаток кредита
     cat.currentBalance = Math.max(0, (cat.currentBalance || cat.creditAmount || 0) - amount);
 
-    // добавляем платёж в историю кредита
+    // Добавляем запись платежа
     if (!cat.creditPayments) cat.creditPayments = [];
     cat.creditPayments.push({
         dateISO: date ? new Date(date).toISOString() : new Date().toISOString(),
@@ -4391,29 +4339,28 @@ function saveCreditPayment(wrapper) {
         comment: comment || null
     });
 
-    // обновляем сумму для статистики
+    // Обновляем cat.amount (для общей статистики расходов)
     cat.amount = (cat.amount || 0) + amount;
 
-    // ==================== ПЕРЕРАСЧЁТ ОБЩЕЙ СУММЫ К ВОЗВРАТУ ====================
+    // ====================== ПЕРЕСЧЁТ ПОЛНОЙ СУММЫ К ВОЗВРАТУ ======================
+    // При досрочном погашении уменьшаем оставшийся долг и пересчитываем проценты на оставшийся срок
     if (cat.creditTermMonths && cat.creditInterestRate !== undefined) {
-        const remainingMonths = cat.creditTermMonths;
-
+        const remainingMonths = cat.creditTermMonths; // можно улучшить позже, вычитая прошедшие месяцы
         const newTotalRepayment = calculateMonthlyPayment(
-            cat.currentBalance,
-            remainingMonths,
+            cat.currentBalance, 
+            remainingMonths, 
             cat.creditInterestRate
         ) * remainingMonths;
 
         cat.totalRepaymentAmount = newTotalRepayment;
     }
+    // =============================================================================
 
-    // сохраняем
     localStorage.setItem(key, JSON.stringify(categories));
 
-    // ==================== ИСТОРИЯ ОПЕРАЦИЙ ====================
+    // Добавляем в общую историю
     const history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
     const selectedBank = localStorage.getItem('selectedBank') || "Другие";
-
     history.push({
         amount: amount,
         dateISO: new Date(date || Date.now()).toISOString(),
@@ -4425,7 +4372,6 @@ function saveCreditPayment(wrapper) {
         comment: comment || null,
         type: 'expense'
     });
-
     localStorage.setItem('expensesHistory', JSON.stringify(history));
 
     closeCreditModal(wrapper);
@@ -4434,8 +4380,7 @@ function saveCreditPayment(wrapper) {
     alert(`✅ Платёж ${amount.toFixed(2)} ₽ по кредиту «${cat.name}» учтён!\nОстаток: ${cat.currentBalance.toFixed(2)} ₽`);
 }
 
-// ==================== ДОП. ЛОГИКА ШТРАФОВ (ИСПРАВЛЕНИЕ UI) ====================
-// (предполагается, что modal и cat объявлены в другом участке кода)
+// Добавляем обработчики после создания модального окна
 const penaltyInput = modal.querySelector('.penalty-input');
 const addPenaltyBtn = modal.querySelector('.add-penalty-btn');
 const totalRepaymentElement = modal.querySelector('.category-card-value');
@@ -4443,65 +4388,165 @@ const totalRepaymentElement = modal.querySelector('.category-card-value');
 addPenaltyBtn.addEventListener('click', () => {
     const penaltyAmount = parseFloat(penaltyInput.value);
     if (isNaN(penaltyAmount) || penaltyAmount <= 0) return;
-
-    // увеличиваем общий долг
+    
+    // Обновляем общую сумму
     cat.totalRepaymentAmount += penaltyAmount;
-
-    // обновляем UI
+    
+    // Обновляем отображение
     totalRepaymentElement.textContent = `${cat.totalRepaymentAmount.toFixed(2)} ₽`;
-
-    // очищаем ввод
+    
+    // Очищаем поле
     penaltyInput.value = '';
 });
 
-// ==================== КОНЕЦ ИСПРАВЛЕННЫХ ФУНКЦИЙ ====================
+
+
+// ====================== РЕЗЕРВНОЕ КОПИРОВАНИЕ ======================
+
+function getAllLocalStorageData() {
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        try {
+            data[key] = JSON.parse(localStorage.getItem(key));
+        } catch (e) {
+            data[key] = localStorage.getItem(key); // на случай строк
+        }
+    }
+    return data;
+}
+
+function exportBackup() {
+    const data = getAllLocalStorageData();
+    const jsonString = JSON.stringify(data, null, 2);
+    
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `den-ga-backup-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    alert('✅ Резервная копия сохранена в папку «Загрузки»!\n\nХрани файл в безопасном месте.');
+}
+
+
+// ====================== РЕЗЕРВНОЕ КОПИРОВАНИЕ deNga.json ======================
+
+function getAllLocalStorageData() {
+    const data = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        try {
+            data[key] = JSON.parse(localStorage.getItem(key));
+        } catch (e) {
+            data[key] = localStorage.getItem(key);
+        }
+    }
+    return data;
+}
+
+function exportBackup() {
+    const data = getAllLocalStorageData();
+    const jsonString = JSON.stringify(data, null, 2);
+    
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'deNga.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    alert('✅ Файл deNga.json успешно сохранён!\n\nНайдите его в папке «Загрузки».');
+}
+
+function importBackup() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,application/json';
+
+    input.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const importedData = JSON.parse(event.target.result);
+
+                if (!confirm('⚠️ ВНИМАНИЕ!\n\nВсе текущие данные будут заменены на данные из deNga.json.\n\nПродолжить?')) return;
+
+                localStorage.clear();
+
+                Object.keys(importedData).forEach(key => {
+                    const value = importedData[key];
+                    if (value !== null && typeof value === 'object') {
+                        localStorage.setItem(key, JSON.stringify(value));
+                    } else {
+                        localStorage.setItem(key, value);
+                    }
+                });
+
+                alert('✅ Данные успешно загружены!\nПриложение перезагружается...');
+                setTimeout(() => window.location.reload(true), 800);
+
+            } catch (err) {
+                alert('❌ Не удалось прочитать файл.\nУбедитесь, что это deNga.json');
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    input.click();
+}
+
+
     </script>
 </div>
-
-<!-- ==================== МОДАЛЬНОЕ ОКНО РАСХОДА ==================== -->
+<!-- Модальное окно внесения расхода -->
 <div id="expenseModalOverlay" class="expense-modal-overlay">
     <div class="expense-modal" id="expenseModal">
-
         <div class="bank-badge" id="selectedBankBadge">—</div>
-
+        
         <h2>Новый расход</h2>
 
-        <!-- сумма -->
         <div class="form-group">
             <label>Сумма (можно отрицательную)</label>
             <input type="tel" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" id="expenseAmount" placeholder="0.00" step="0.01" autofocus>
         </div>
 
-        <!-- место -->
         <div class="form-group">
             <label>Место трат</label>
             <input type="text" id="expensePlace" placeholder="Например: Пятёрочка, АЗС, Кафе">
         </div>
 
-        <!-- дата -->
         <div class="form-group">
             <label>Дата</label>
             <input type="date" id="expenseDate">
         </div>
 
-        <!-- время -->
         <div class="form-group">
             <label>Время</label>
             <input type="time" id="expenseTime">
         </div>
 
-        <!-- комментарий -->
         <div class="form-group">
             <label>Комментарий (необязательно)</label>
             <textarea id="expenseComment" rows="3" placeholder="Дополнительная информация..."></textarea>
         </div>
 
-        <!-- кнопки -->
         <div class="buttons">
             <button class="btn-secondary" id="cancelExpenseBtn">Отмена</button>
             <button class="btn-primary" id="saveExpenseBtn">Сохранить</button>
         </div>
-
     </div>
 </div>
 
