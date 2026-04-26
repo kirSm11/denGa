@@ -4459,86 +4459,101 @@ function exportBackup() {
 }
 
 
-// ====================== РЕЗЕРВНОЕ КОПИРОВАНИЕ deNga.json ======================
+// ====================== ОСНОВНАЯ ИНИЦИАЛИЗАЦИЯ ======================
+function initApp() {
+    cleanOldExpenses();
 
-function getAllLocalStorageData() {
-    const data = {};
-    for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        try {
-            data[key] = JSON.parse(localStorage.getItem(key));
-        } catch (e) {
-            data[key] = localStorage.getItem(key);
-        }
+    // Миграция старых данных
+    if (!localStorage.getItem('expenseCategories')) {
+        const oldCats = JSON.parse(localStorage.getItem('categories')) || [];
+        localStorage.setItem('expenseCategories', JSON.stringify(oldCats));
     }
-    return data;
+    if (!localStorage.getItem('incomeCategories')) {
+        localStorage.setItem('incomeCategories', JSON.stringify([]));
+    }
+
+    autoResetMonthlyExpenses();
+    autoResetWeeklyExpenses();
+    initCards();
+    initLoyaltyWalletButton();
+
+    showSection('expenses');
+    renderCategories();
+    
+    // Переключатель бюджета в режим расходов
+    setTimeout(() => {
+        setBudgetMode('expense');
+    }, 200);
+
+    renderLoyaltyCards();
 }
 
-function exportBackup() {
-    const data = getAllLocalStorageData();
-    const jsonString = JSON.stringify(data, null, 2);
-    
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'deNga.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+// ====================== ПЕРВЫЙ ЗАПУСК ======================
+document.addEventListener('DOMContentLoaded', () => {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('SW registered'))
+            .catch(err => console.log('SW error:', err));
+    }
 
-    alert('✅ Файл deNga.json успешно сохранён!\n\nНайдите его в папке «Загрузки».');
-}
+    if (!localStorage.getItem('weeklyTotal')) {
+        localStorage.setItem('weeklyTotal', '0');
+    }
 
-function importBackupEnhanced() {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'application/json,.json';
-    input.style.display = 'none';
+    // === ПЕРВЫЙ ЗАПУСК — красивая модалка ===
+    if (!localStorage.getItem('hasInitialized')) {
+        setTimeout(() => {
+            const welcomeModal = document.createElement('div');
+            welcomeModal.style.cssText = `
+                position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
+                display: flex; align-items: center; justify-content: center; 
+                z-index: 99999; font-family: system-ui;
+            `;
 
-    input.onchange = (e) => {
-        const file = e.target.files[0];
-        if (!file) {
-            if (confirm('Выбор файла отменён.\nСоздать новый аккаунт?')) {
+            welcomeModal.innerHTML = `
+                <div style="background: white; max-width: 340px; border-radius: 24px; padding: 28px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+                    <h2 style="margin: 0 0 16px 0; font-size: 24px;">Добро пожаловать в деньГа! 👋</h2>
+                    <p style="color: #555; margin-bottom: 28px; line-height: 1.5;">
+                        Хотите восстановить все данные из резервной копии deNga.json?
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <button id="restoreBtn" style="
+                            padding: 16px; font-size: 17px; font-weight: 600; 
+                            background: linear-gradient(135deg, #4CAF50, #45A049); 
+                            color: white; border: none; border-radius: 16px;">
+                            ✅ Восстановить из копии
+                        </button>
+                        <button id="newBtn" style="
+                            padding: 16px; font-size: 17px; font-weight: 600; 
+                            background: #f1f1f1; color: #333; border: none; border-radius: 16px;">
+                            Создать новый аккаунт
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(welcomeModal);
+
+            document.getElementById('restoreBtn').onclick = () => {
+                welcomeModal.remove();
+                importBackupEnhanced();
+            };
+
+            document.getElementById('newBtn').onclick = () => {
+                welcomeModal.remove();
                 localStorage.setItem('hasInitialized', 'true');
+                alert('✅ Новый аккаунт создан!\nТеперь добавляйте категории расходов.');
                 initApp();
-            }
-            return;
-        }
+            };
+        }, 400);
+    } else {
+        // Обычный запуск (данные уже есть)
+        initApp();
+    }
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            try {
-                const importedData = JSON.parse(event.target.result);
-
-                if (confirm(`Загрузить данные из файла:\n${file.name} ?`)) {
-                    localStorage.clear();
-
-                    Object.keys(importedData).forEach(key => {
-                        const val = importedData[key];
-                        localStorage.setItem(key, typeof val === 'object' ? JSON.stringify(val) : val);
-                    });
-
-                    localStorage.setItem('hasInitialized', 'true');
-                    alert('✅ Данные успешно восстановлены!\nПриложение перезагружается...');
-                    setTimeout(() => window.location.reload(true), 600);
-                }
-            } catch (err) {
-                alert('❌ Ошибка чтения файла.\nУбедитесь, что выбран правильный deNga.json');
-                setTimeout(importBackupEnhanced, 300);
-            }
-        };
-        reader.readAsText(file);
-    };
-
-    // Открываем проводник сразу
-    document.body.appendChild(input);
-    input.click();
-    setTimeout(() => input.remove(), 1000);
-}
-
+    // Загрузка версии приложения
+    loadAppVersion();
+});
 
     </script>
 </div>
