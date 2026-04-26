@@ -4555,6 +4555,72 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAppVersion();
 });
 
+// ====================== ИМПОРТ РЕЗЕРВНОЙ КОПИИ ======================
+function importBackup() {
+    importBackupEnhanced();   // просто перенаправляем на улучшенную версию
+}
+
+function importBackupEnhanced() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json, application/json';
+
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Проверка расширения (опционально)
+        if (!file.name.toLowerCase().endsWith('.json')) {
+            if (!confirm('Файл не .json. Всё равно попробовать загрузить?')) return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = async (ev) => {
+            try {
+                const backupData = JSON.parse(ev.target.result);
+
+                if (typeof backupData !== 'object' || backupData === null) {
+                    throw new Error('Неверный формат файла');
+                }
+
+                // Очищаем текущий localStorage (кроме некоторых системных ключей, если нужно)
+                localStorage.clear();
+
+                // Восстанавливаем все ключи из бэкапа
+                Object.keys(backupData).forEach(key => {
+                    try {
+                        localStorage.setItem(key, typeof backupData[key] === 'string' 
+                            ? backupData[key] 
+                            : JSON.stringify(backupData[key]));
+                    } catch (err) {
+                        console.warn(`Не удалось восстановить ключ ${key}:`, err);
+                    }
+                });
+
+                alert('✅ Резервная копия успешно загружена!\n\nСтраница будет перезагружена...');
+
+                // Перезагружаем приложение, чтобы все данные применились
+                setTimeout(() => {
+                    window.location.reload(true);
+                }, 800);
+
+            } catch (err) {
+                console.error('Ошибка импорта:', err);
+                alert('❌ Ошибка при загрузке файла.\n\nУбедитесь, что это корректный JSON-файл backup от деньГа.');
+            }
+        };
+
+        reader.onerror = () => {
+            alert('❌ Не удалось прочитать файл');
+        };
+
+        reader.readAsText(file);
+    };
+
+    input.click();
+}
+
+
     </script>
 </div>
 <!-- Модальное окно внесения расхода -->
