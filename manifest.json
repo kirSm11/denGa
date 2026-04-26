@@ -2,7 +2,7 @@
   "name": "деньГа",
   "short_name": "деньГа",
   "description": "Приложение для учета расходов",
-  "start_url": "https://github.com/твойлогин/denGa",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f2f2f2",
   "theme_color": "#4CAF50",
