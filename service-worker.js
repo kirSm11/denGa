@@ -1,5 +1,5 @@
 // === 🧱 Настройки кэша ===
-const CACHE_NAME = 'den-g-a-v0.111'; // ⬅️ меняй версию при каждом обновлении
+const CACHE_NAME = 'den-g-a-v0.112'; // ⬅️ меняй версию при каждом обновлении
 const urlsToCache = [
   '/',
   '/index.html',
