@@ -3207,7 +3207,6 @@ function renderHistory() {
     const container = document.getElementById('historyTableContainer');
     if (!container) return;
 
-    // Берём историю напрямую из localStorage
     let history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
     const filters = JSON.parse(localStorage.getItem('historyFilters')) || {};
 
@@ -3226,11 +3225,11 @@ function renderHistory() {
                 <tr>
                     <th>Банк</th>
                     <th>Дата</th>
-                    <th>День</th>
-                    <th style="text-align:right">Сумма</th>
-                    <th>Место</th>
-                    <th style="text-align:center">Комм.</th>
+                    <th style="text-align: left;">Сумма</th>
                     <th>Категория</th>
+                    <th>Место</th>
+                    <th>День</th>
+                    <th style="text-align:center">Комм.</th>
                 </tr>
             </thead>
             <tbody id="historyTableBody"></tbody>
@@ -3245,7 +3244,7 @@ function renderHistory() {
     const categorySelect = document.getElementById('categoryFilter');
     const resetBtn = document.getElementById('resetFiltersBtn');
 
-    // Заполнение фильтров
+    // Заполнение фильтров (оставляем как было)
     const years = [...new Set(history.map(exp => new Date(exp.dateISO).getFullYear()))].sort((a,b)=>b-a);
     yearSelect.innerHTML = '<option value="">Все годы</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
 
@@ -3268,27 +3267,26 @@ function renderHistory() {
     bankSelect.value = filters.bank || '';
     categorySelect.value = filters.category || '';
 
-    // ==================== ГЛАВНАЯ ФУНКЦИЯ ====================
     function renderTable(data) {
         tbody.innerHTML = '';
 
-        // Самая надёжная сортировка: новые ВСЕГДА сверху
-        data.sort((a, b) => {
-            return new Date(b.dateISO).getTime() - new Date(a.dateISO).getTime();
-        });
+        // Сортировка: новые сверху
+        data.sort((a, b) => new Date(b.dateISO).getTime() - new Date(a.dateISO).getTime());
 
         data.forEach(exp => {
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${exp.bank}</td>
                 <td>${exp.dateStr}</td>
-                <td>${exp.dayOfWeek}</td>
-                <td style="text-align:right; font-weight:700; ${exp.type === 'income' ? 'color:#4CAF50;' : 'color:#e63946;'}">${exp.amount.toFixed(2)} ₽</td>
+                <td style="text-align: left; font-weight:700; ${exp.type === 'income' ? 'color:#4CAF50;' : 'color:#e63946;'}">
+                    ${exp.amount.toFixed(2)} ₽
+                </td>
+                <td>${exp.category}</td>
                 <td>${exp.place || '—'}</td>
+                <td>${exp.dayOfWeek}</td>
                 <td style="text-align:center">
                     ${exp.comment ? `<span class="comment-doc" onclick="showCommentModal('${exp.comment.replace(/'/g, "\\'")}')">📄</span>` : '—'}
                 </td>
-                <td>${exp.category}</td>
             `;
             tbody.appendChild(row);
         });
@@ -3303,7 +3301,6 @@ function renderHistory() {
         if (bankSelect.value) filtered = filtered.filter(exp => exp.bank === bankSelect.value);
         if (categorySelect.value) filtered = filtered.filter(exp => exp.category === categorySelect.value);
 
-        // Сохраняем фильтры
         filters.year = yearSelect.value;
         filters.month = monthSelect.value;
         filters.day = daySelect.value;
@@ -3314,7 +3311,9 @@ function renderHistory() {
         renderTable(filtered);
     }
 
-    [yearSelect, monthSelect, daySelect, bankSelect, categorySelect].forEach(sel => sel.addEventListener('change', applyFilters));
+    [yearSelect, monthSelect, daySelect, bankSelect, categorySelect].forEach(sel => 
+        sel.addEventListener('change', applyFilters)
+    );
 
     resetBtn.addEventListener('click', () => {
         yearSelect.value = monthSelect.value = daySelect.value = bankSelect.value = categorySelect.value = '';
