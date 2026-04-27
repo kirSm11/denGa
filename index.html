@@ -3463,59 +3463,242 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!localStorage.getItem('weeklyTotal')) {
         localStorage.setItem('weeklyTotal', '0');
 
-// === УЛУЧШЕННЫЙ ПЕРВЫЙ ЗАПУСК ===
-if (!localStorage.getItem('hasInitialized')) {
-    setTimeout(() => {
-        const welcomeModal = document.createElement('div');
-        welcomeModal.style.cssText = `
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
-            display: flex; align-items: center; justify-content: center; 
-            z-index: 99999; font-family: system-ui;
-        `;
+// ====================== УЛУЧШЕННЫЙ ПЕРВЫЙ ЗАПУСК ======================
+function showWelcomeScreen() {
+    const welcomeModal = document.createElement('div');
+    welcomeModal.id = 'welcomeScreen';
+    welcomeModal.style.cssText = `
+        position: fixed; 
+        inset: 0; 
+        background: rgba(0,0,0,0.88); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        z-index: 99999; 
+        font-family: system-ui;
+        backdrop-filter: blur(12px);
+    `;
 
-        welcomeModal.innerHTML = `
-            <div style="background: white; max-width: 340px; border-radius: 24px; padding: 28px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-                <h2 style="margin: 0 0 16px 0; font-size: 24px;">Добро пожаловать в деньГа! 👋</h2>
-                <p style="color: #555; margin-bottom: 28px; line-height: 1.5;">
-                    Хотите восстановить все данные из резервной копии?
-                </p>
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <button id="restoreBtn" style="
-                        padding: 16px; font-size: 17px; font-weight: 600; 
-                        background: linear-gradient(135deg, #4CAF50, #45A049); 
-                        color: white; border: none; border-radius: 16px;">
-                        ✅ Восстановить из deNga.json
-                    </button>
-                    <button id="newBtn" style="
-                        padding: 16px; font-size: 17px; font-weight: 600; 
-                        background: #f1f1f1; color: #333; border: none; border-radius: 16px;">
-                        Создать новый аккаунт
-                    </button>
-                </div>
+    welcomeModal.innerHTML = `
+        <div style="background: white; max-width: 380px; width: 92%; border-radius: 28px; padding: 32px 24px; text-align: center; box-shadow: 0 25px 70px rgba(0,0,0,0.4);">
+            <div style="font-size: 64px; margin-bottom: 16px;">💰</div>
+            <h1 style="margin: 0 0 8px 0; font-size: 28px; font-weight: 700; color: #1c1c1e;">Добро пожаловать в деньГа</h1>
+            <p style="color: #555; margin-bottom: 32px; line-height: 1.5; font-size: 17px;">
+                Выберите, как начать работу с приложением
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+                <button id="newAccountBtn" style="
+                    padding: 18px; 
+                    font-size: 18px; 
+                    font-weight: 600; 
+                    background: linear-gradient(135deg, #4CAF50, #45A049); 
+                    color: white; 
+                    border: none; 
+                    border-radius: 18px;
+                    box-shadow: 0 6px 20px rgba(76,175,80,0.3);
+                ">
+                    ✨ Создать новый аккаунт
+                </button>
+
+                <button id="restoreAccountBtn" style="
+                    padding: 18px; 
+                    font-size: 18px; 
+                    font-weight: 600; 
+                    background: linear-gradient(135deg, #2196F3, #1976D2); 
+                    color: white; 
+                    border: none; 
+                    border-radius: 18px;
+                    box-shadow: 0 6px 20px rgba(33,150,243,0.3);
+                ">
+                    📂 Восстановить из резервной копии
+                </button>
             </div>
-        `;
 
-        document.body.appendChild(welcomeModal);
+            <p style="margin-top: 24px; font-size: 13px; color: #888;">
+                Резервная копия — это файл <strong>den-ga-backup-*.json</strong>
+            </p>
+        </div>
+    `;
 
-        document.getElementById('restoreBtn').onclick = () => {
-            welcomeModal.remove();
-            importBackupEnhanced();   // ← сразу открывает выбор файла
-        };
+    document.body.appendChild(welcomeModal);
 
-        document.getElementById('newBtn').onclick = () => {
-            welcomeModal.remove();
-            localStorage.setItem('hasInitialized', 'true');
-            alert('✅ Новый аккаунт создан!\nТеперь добавляйте категории расходов.');
-            initApp(); // твоя основная инициализация
-        };
-    }, 400);
+    // === Создать новый аккаунт ===
+    document.getElementById('newAccountBtn').addEventListener('click', () => {
+        welcomeModal.remove();
+        localStorage.setItem('hasInitialized', 'true');
+        alert('✅ Новый аккаунт успешно создан!\n\nТеперь добавляйте категории расходов.');
+        initApp();
+    });
+
+    // === Восстановить из копии ===
+    document.getElementById('restoreAccountBtn').addEventListener('click', () => {
+        welcomeModal.remove();
+        showRestoreModal();
+    });
 }
 
+// ====================== КРАСИВАЯ МОДАЛКА ВОССТАНОВЛЕНИЯ ======================
+function showRestoreModal() {
+    const restoreModal = document.createElement('div');
+    restoreModal.id = 'restoreModal';
+    restoreModal.style.cssText = `
+        position: fixed; 
+        inset: 0; 
+        background: rgba(0,0,0,0.85); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        z-index: 100000; 
+        backdrop-filter: blur(10px);
+    `;
+
+    restoreModal.innerHTML = `
+        <div style="background: white; max-width: 380px; width: 92%; border-radius: 28px; padding: 32px 24px; box-shadow: 0 25px 70px rgba(0,0,0,0.35);">
+            <h2 style="margin: 0 0 20px 0; text-align: center; font-size: 24px;">Восстановление данных</h2>
+            
+            <div id="restoreStep1" style="text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 20px;">📂</div>
+                <p style="margin-bottom: 24px; color: #555; line-height: 1.5;">
+                    Выберите файл резервной копии<br>
+                    <small>(den-ga-backup-*.json)</small>
+                </p>
+                <button id="selectBackupBtn" style="
+                    padding: 16px 32px; 
+                    font-size: 17px; 
+                    font-weight: 600; 
+                    background: linear-gradient(135deg, #FF9800, #F57C00); 
+                    color: white; 
+                    border: none; 
+                    border-radius: 16px;
+                    width: 100%;
+                ">
+                    Выбрать файл backup
+                </button>
+            </div>
+
+            <div id="restoreStep2" style="display: none; text-align: center;">
+                <div style="font-size: 48px; margin-bottom: 16px;">📄</div>
+                <p id="selectedFileName" style="font-weight: 600; color: #1c1c1e; margin-bottom: 8px;"></p>
+                <p style="color: #666; font-size: 14px; margin-bottom: 24px;">Файл выбран успешно</p>
+                
+                <div style="display: flex; gap: 12px;">
+                    <button id="cancelRestoreBtn" style="
+                        flex: 1; padding: 16px; font-size: 17px; font-weight: 600; 
+                        background: #f1f1f1; color: #333; border: none; border-radius: 16px;
+                    ">Отмена</button>
+                    <button id="confirmRestoreBtn" style="
+                        flex: 1; padding: 16px; font-size: 17px; font-weight: 600; 
+                        background: linear-gradient(135deg, #4CAF50, #45A049); color: white; 
+                        border: none; border-radius: 16px;
+                    ">Восстановить данные</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(restoreModal);
+
+    let selectedFile = null;
+    let selectedFileContent = null;
+
+    const selectBtn = restoreModal.querySelector('#selectBackupBtn');
+    const step1 = restoreModal.querySelector('#restoreStep1');
+    const step2 = restoreModal.querySelector('#restoreStep2');
+    const fileNameEl = restoreModal.querySelector('#selectedFileName');
+
+    selectBtn.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json,application/json';
+
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            selectedFile = file;
+
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    JSON.parse(ev.target.result); // проверка валидности JSON
+                    selectedFileContent = ev.target.result;
+                    
+                    fileNameEl.textContent = file.name;
+                    step1.style.display = 'none';
+                    step2.style.display = 'block';
+                } catch (err) {
+                    alert('❌ Файл повреждён или не является корректным JSON.');
+                }
+            };
+            reader.readAsText(file);
+        };
+
+        input.click();
+    });
+
+    restoreModal.querySelector('#cancelRestoreBtn').addEventListener('click', () => {
+        restoreModal.remove();
+        // Возвращаем пользователя на welcome screen
+        setTimeout(showWelcomeScreen, 300);
+    });
+
+    restoreModal.querySelector('#confirmRestoreBtn').addEventListener('click', () => {
+        if (!selectedFileContent) return;
+
+        try {
+            const backupData = JSON.parse(selectedFileContent);
+
+            localStorage.clear();
+
+            Object.keys(backupData).forEach(key => {
+                try {
+                    localStorage.setItem(key, typeof backupData[key] === 'string' 
+                        ? backupData[key] 
+                        : JSON.stringify(backupData[key]));
+                } catch (err) {
+                    console.warn(`Не удалось восстановить ключ ${key}`);
+                }
+            });
+
+            restoreModal.remove();
+            localStorage.setItem('hasInitialized', 'true');
+
+            alert('✅ Данные успешно восстановлены!\n\nПриложение будет перезагружено...');
+
+            setTimeout(() => {
+                window.location.reload(true);
+            }, 1200);
+
+        } catch (err) {
+            alert('❌ Ошибка при восстановлении данных.');
+            console.error(err);
+        }
+    });
+}
+
+// ====================== ЗАПУСК ПРИЛОЖЕНИЯ ======================
+document.addEventListener('DOMContentLoaded', () => {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('SW registered'))
+            .catch(err => console.log('SW error:', err));
     }
 
-    cleanOldExpenses();
+    if (!localStorage.getItem('weeklyTotal')) {
+        localStorage.setItem('weeklyTotal', '0');
+    }
 
-            cleanOldExpenses();
+    // Показываем красивое приветственное окно только при первом запуске
+    if (!localStorage.getItem('hasInitialized')) {
+        setTimeout(showWelcomeScreen, 300);
+    } else {
+        // Обычный запуск
+        initApp();
+    }
+
+    loadAppVersion();
+});
 
             // === МИГРАЦИЯ: старые категории становятся расходами ===
             if (!localStorage.getItem('expenseCategories')) {
