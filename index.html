@@ -3706,6 +3706,60 @@ document.addEventListener('DOMContentLoaded', () => {
             showWelcomeScreen();        // ← Сначала приветствие с двумя кнопками
         }, 400);
     } else {
+        
+        // ====================== МЕНЮ ВЫБОРА АККАУНТА ======================
+function showAccountSelectionMenu() {
+    const savedName = localStorage.getItem('userName') || 'Пользователь';
+
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed; inset: 0; background: rgba(0,0,0,0.92); 
+        display: flex; align-items: center; justify-content: center; 
+        z-index: 99999; font-family: system-ui; backdrop-filter: blur(12px);
+    `;
+
+    modal.innerHTML = `
+        <div style="background: white; max-width: 380px; width: 92%; border-radius: 28px; 
+                    padding: 40px 24px; text-align: center; box-shadow: 0 25px 80px rgba(0,0,0,0.5);">
+            
+            <div style="font-size: 54px; margin-bottom: 20px;">👤</div>
+            <h1 style="margin: 0 0 16px 0; font-size: 26px; font-weight: 700; color: #1c1c1e;">
+                Выберите аккаунт
+            </h1>
+            
+            <button id="existingAccountBtn" style="
+                width: 100%; padding: 20px; margin: 12px 0;
+                font-size: 19px; font-weight: 600; 
+                background: linear-gradient(135deg, #4CAF50, #45A049); 
+                color: white; border: none; border-radius: 18px; 
+                box-shadow: 0 6px 20px rgba(76,175,80,0.3);">
+                ${savedName}
+            </button>
+
+            <button id="createNewFromSelectionBtn" style="
+                width: 100%; padding: 16px; font-size: 17px; font-weight: 600; 
+                background: #f1f1f1; color: #333; border: none; border-radius: 16px;">
+                Создать новый аккаунт
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Войти в существующий аккаунт
+    modal.querySelector('#existingAccountBtn').addEventListener('click', () => {
+        modal.remove();
+        setTimeout(() => checkPinOnStart(), 250);
+    });
+
+    // Создать новый аккаунт
+    modal.querySelector('#createNewFromSelectionBtn').addEventListener('click', () => {
+        modal.remove();
+        setTimeout(() => showCreateAccountWithPin(), 250);
+    });
+}
+        
+        
         // Уже был создан аккаунт — проверяем PIN при запуске
         checkPinOnStart();
     }
@@ -4845,15 +4899,18 @@ function checkPinOnStart() {
         return;
     }
 
-    requestPin(`Введите PIN-код для аккаунта:\n${savedName}`, (enteredPin) => {
+    // Запрашиваем PIN с возможностью отмены
+    requestPin(`Введите PIN-код\nдля аккаунта:\n${savedName}`, (enteredPin) => {
         if (enteredPin === savedPin) {
             initApp();
-        } else if (enteredPin !== null) {   // null = отмена
+        } else if (enteredPin === null) {
+            // Пользователь нажал Отмена → показываем меню выбора аккаунта
+            showAccountSelectionMenu();
+        } else {
             alert('❌ Неверный PIN-код');
             setTimeout(() => checkPinOnStart(), 800);
         }
-        // если enteredPin === null — значит отмена, ничего не делаем, вернёмся в меню
-    }, true); // true = разрешаем кнопку "Отмена"
+    }, true); // true = разрешаем отмену
 }
 // ==================== СТИЛЬНЫЙ PIN-КОД КАК НА iPHONE (с отменой) ====================
 function requestPin(title, callback, allowCancel = false) {
