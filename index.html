@@ -3700,6 +3700,12 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAppVersion();
 });
 
+    }
+
+    cleanOldExpenses();
+
+            cleanOldExpenses();
+
             // === МИГРАЦИЯ: старые категории становятся расходами ===
             if (!localStorage.getItem('expenseCategories')) {
                 const oldCats = JSON.parse(localStorage.getItem('categories')) || [];
