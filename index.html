@@ -4768,37 +4768,51 @@ function importBackupEnhanced() {
     input.click();
 }
 
-// ====================== СОЗДАНИЕ АККАУНТА С PIN ======================
+// ====================== СОЗДАНИЕ НОВОГО АККАУНТА (Имя + 5-значный PIN) ======================
 function showCreateAccountWithPin() {
     const modal = document.createElement('div');
     modal.style.cssText = `
-        position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
+        position: fixed; inset: 0; background: rgba(0,0,0,0.92); 
         display: flex; align-items: center; justify-content: center; 
         z-index: 99999; font-family: system-ui; backdrop-filter: blur(12px);
     `;
 
     modal.innerHTML = `
-        <div style="background: white; max-width: 380px; width: 92%; border-radius: 28px; padding: 32px 24px; text-align: center; box-shadow: 0 25px 70px rgba(0,0,0,0.45);">
-            <div style="font-size: 64px; margin-bottom: 16px;">🔒</div>
-            <h1 style="margin: 0 0 8px 0; font-size: 26px; font-weight: 700;">Создание аккаунта</h1>
+        <div style="background: white; max-width: 400px; width: 92%; border-radius: 28px; 
+                    padding: 32px 24px; text-align: center; box-shadow: 0 25px 80px rgba(0,0,0,0.5);">
+            
+            <div style="font-size: 62px; margin-bottom: 20px;">👤</div>
+            <h1 style="margin: 0 0 6px 0; font-size: 26px; font-weight: 700; color: #1c1c1e;">
+                Новый аккаунт
+            </h1>
             <p style="color: #555; margin-bottom: 28px; line-height: 1.5;">
-                Придумайте 5-значный PIN-код<br>
-                для защиты ваших данных
+                Введите ваше имя и придумайте 5-значный PIN-код
             </p>
 
-            <div style="margin-bottom: 24px;">
-                <input type="password" id="pinInput" 
-                       maxlength="5" inputmode="numeric" 
-                       style="font-size: 32px; letter-spacing: 12px; text-align: center; 
+            <!-- Поле имени -->
+            <div style="margin-bottom: 20px; text-align: left;">
+                <label style="display:block; margin-bottom: 8px; font-weight:600; color:#333;">Ваше имя</label>
+                <input type="text" id="userNameInput" placeholder="Например: Александр" 
+                       style="width:100%; padding:16px; font-size:18px; border:2px solid #4CAF50; 
+                              border-radius:16px; background:#f8f9fa;">
+            </div>
+
+            <!-- Поле PIN -->
+            <div style="margin-bottom: 24px; text-align: left;">
+                <label style="display:block; margin-bottom: 8px; font-weight:600; color:#333;">
+                    5-значный PIN-код
+                </label>
+                <input type="password" id="pinInput" maxlength="5" inputmode="numeric"
+                       style="font-size: 32px; letter-spacing: 14px; text-align: center; 
                               width: 100%; padding: 16px; border: 2px solid #4CAF50; 
                               border-radius: 16px; background: #f8f9fa;">
             </div>
 
             <button id="confirmPinBtn" style="
-                padding: 18px; font-size: 18px; font-weight: 600; width: 100%;
+                padding: 18px; font-size: 18px; font-weight: 700; width: 100%;
                 background: linear-gradient(135deg, #4CAF50, #45A049); color: white; 
                 border: none; border-radius: 18px; margin-bottom: 12px;">
-                Подтвердить PIN
+                Создать аккаунт
             </button>
 
             <button id="cancelCreateBtn" style="
@@ -4807,21 +4821,28 @@ function showCreateAccountWithPin() {
                 Отмена
             </button>
 
-            <p id="pinError" style="color: #d32f2f; margin-top: 12px; min-height: 24px;"></p>
+            <p id="pinError" style="color: #d32f2f; margin-top: 16px; min-height: 24px; font-size: 15px;"></p>
         </div>
     `;
 
     document.body.appendChild(modal);
 
+    const nameInput = modal.querySelector('#userNameInput');
     const pinInput = modal.querySelector('#pinInput');
     const confirmBtn = modal.querySelector('#confirmPinBtn');
     const errorEl = modal.querySelector('#pinError');
 
-    pinInput.focus();
+    nameInput.focus();
 
     confirmBtn.addEventListener('click', () => {
+        const userName = nameInput.value.trim();
         const pin = pinInput.value.trim();
-        
+
+        if (!userName) {
+            errorEl.textContent = 'Введите ваше имя';
+            return;
+        }
+
         if (pin.length !== 5 || !/^\d{5}$/.test(pin)) {
             errorEl.textContent = 'PIN должен состоять ровно из 5 цифр';
             pinInput.classList.add('shake');
@@ -4829,29 +4850,31 @@ function showCreateAccountWithPin() {
             return;
         }
 
-        // Сохраняем PIN
+        // Сохраняем данные
+        localStorage.setItem('userName', userName);
         localStorage.setItem('pinCode', pin);
         localStorage.setItem('hasInitialized', 'true');
 
         modal.remove();
-        
-        alert('✅ Аккаунт успешно создан!\n\nPIN-код установлен.\n\nТеперь вы можете добавлять категории и расходы.');
-        
+
+        alert(`✅ Аккаунт успешно создан!\n\nИмя: ${userName}\nPIN-код установлен.\n\nДобро пожаловать в деньГа!`);
+
         initApp();
     });
 
     modal.querySelector('#cancelCreateBtn').addEventListener('click', () => {
         modal.remove();
-        // Можно вернуть на старое приветствие или просто закрыть
     });
 
-    // Простая анимация ошибки
+    // Анимация ошибки
     const style = document.createElement('style');
     style.textContent = `
-        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); }
+        @keyframes shake { 
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
             20%, 80% { transform: translate3d(4px, 0, 0); }
             30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
-            40%, 60% { transform: translate3d(6px, 0, 0); } }
+            40%, 60% { transform: translate3d(6px, 0, 0); } 
+        }
         .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
     `;
     document.head.appendChild(style);
