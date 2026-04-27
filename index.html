@@ -3526,39 +3526,65 @@ function showWelcomeScreen() {
     });
 }
 
-// ====================== КРАСИВАЯ МОДАЛКА ВОССТАНОВЛЕНИЯ ======================
+// ====================== КРАСИВАЯ МОДАЛКА ВОССТАНОВЛЕНИЯ (исправленная) ======================
 function showRestoreModal() {
     const restoreModal = document.createElement('div');
     restoreModal.id = 'restoreModal';
     restoreModal.style.cssText = `
-        position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
-        display: flex; align-items: center; justify-content: center; 
-        z-index: 100000; backdrop-filter: blur(10px);
+        position: fixed; 
+        inset: 0; 
+        background: rgba(0,0,0,0.85); 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        z-index: 100000; 
+        backdrop-filter: blur(12px);
     `;
 
     restoreModal.innerHTML = `
-        <div style="background: white; max-width: 380px; width: 92%; border-radius: 28px; padding: 32px 24px; box-shadow: 0 25px 70px rgba(0,0,0,0.35);">
-            <h2 style="margin: 0 0 20px 0; text-align: center; font-size: 24px;">Восстановление данных</h2>
+        <div style="background: white; max-width: 400px; width: 92%; border-radius: 28px; padding: 32px 24px; box-shadow: 0 25px 70px rgba(0,0,0,0.4);">
+            <h2 style="margin: 0 0 24px 0; text-align: center; font-size: 24px; color: #1c1c1e;">Восстановление данных</h2>
             
+            <!-- Шаг 1: Выбор файла -->
             <div id="restoreStep1" style="text-align: center;">
-                <div style="font-size: 48px; margin-bottom: 20px;">📂</div>
-                <p style="margin-bottom: 24px; color: #555; line-height: 1.5;">
+                <div style="font-size: 56px; margin-bottom: 20px;">📂</div>
+                <p style="margin-bottom: 28px; color: #555; line-height: 1.5; font-size: 17px;">
                     Выберите файл резервной копии<br>
-                    <small>(den-ga-backup-*.json)</small>
+                    <small style="color:#777;">den-ga-backup-*.json</small>
                 </p>
+                
                 <button id="selectBackupBtn" style="
-                    padding: 16px 32px; font-size: 17px; font-weight: 600; 
+                    padding: 18px 32px; 
+                    font-size: 17.5px; 
+                    font-weight: 600; 
                     background: linear-gradient(135deg, #FF9800, #F57C00); 
-                    color: white; border: none; border-radius: 16px; width: 100%;
+                    color: white; 
+                    border: none; 
+                    border-radius: 18px;
+                    width: 100%; margin-bottom: 12px;
                 ">
-                    Выбрать файл backup
+                    📁 Выбрать файл backup
+                </button>
+                
+                <button id="cancelToWelcomeBtn" style="
+                    padding: 16px; 
+                    font-size: 16px; 
+                    font-weight: 600; 
+                    background: #f1f1f1; 
+                    color: #555; 
+                    border: none; 
+                    border-radius: 16px;
+                    width: 100%;
+                ">
+                    Отмена
                 </button>
             </div>
 
+            <!-- Шаг 2: Подтверждение -->
             <div id="restoreStep2" style="display: none; text-align: center;">
-                <div style="font-size: 48px; margin-bottom: 16px;">📄</div>
-                <p id="selectedFileName" style="font-weight: 600; color: #1c1c1e; margin-bottom: 8px; word-break: break-all;"></p>
-                <p style="color: #666; font-size: 14px; margin-bottom: 24px;">Файл выбран успешно</p>
+                <div style="font-size: 52px; margin-bottom: 16px;">📄</div>
+                <p id="selectedFileName" style="font-weight: 600; color: #1c1c1e; margin-bottom: 8px; word-break: break-all; padding: 0 10px;"></p>
+                <p style="color: #666; font-size: 15px; margin-bottom: 28px;">Файл успешно выбран</p>
                 
                 <div style="display: flex; gap: 12px;">
                     <button id="cancelRestoreBtn" style="
@@ -3578,14 +3604,14 @@ function showRestoreModal() {
     document.body.appendChild(restoreModal);
 
     let selectedFileContent = null;
+    let selectedFileName = '';
 
-    const selectBtn = restoreModal.querySelector('#selectBackupBtn');
     const step1 = restoreModal.querySelector('#restoreStep1');
     const step2 = restoreModal.querySelector('#restoreStep2');
     const fileNameEl = restoreModal.querySelector('#selectedFileName');
 
-    // Надёжное прикрепление события
-    selectBtn.addEventListener('click', () => {
+    // Кнопка "Выбрать файл backup"
+    restoreModal.querySelector('#selectBackupBtn').addEventListener('click', () => {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = '.json,application/json';
@@ -3594,20 +3620,19 @@ function showRestoreModal() {
             const file = e.target.files[0];
             if (!file) return;
 
+            selectedFileName = file.name;
+
             const reader = new FileReader();
             reader.onload = (ev) => {
                 try {
-                    const parsed = JSON.parse(ev.target.result); // проверка
+                    JSON.parse(ev.target.result);           // проверяем, что это валидный JSON
                     selectedFileContent = ev.target.result;
-                    
-                    fileNameEl.textContent = file.name.length > 40 
-                        ? file.name.substring(0, 37) + '...' 
-                        : file.name;
-                    
+
+                    fileNameEl.textContent = selectedFileName;
                     step1.style.display = 'none';
                     step2.style.display = 'block';
                 } catch (err) {
-                    alert('❌ Файл повреждён или не является корректным JSON-файлом.');
+                    alert('❌ Этот файл не является корректной резервной копией (невалидный JSON).');
                 }
             };
             reader.readAsText(file);
@@ -3616,16 +3641,21 @@ function showRestoreModal() {
         input.click();
     });
 
-    restoreModal.querySelector('#cancelRestoreBtn').addEventListener('click', () => {
+    // Кнопка "Отмена" на первом шаге — возвращает в главное приветственное окно
+    restoreModal.querySelector('#cancelToWelcomeBtn').addEventListener('click', () => {
         restoreModal.remove();
-        setTimeout(showWelcomeScreen, 300);
+        setTimeout(showWelcomeScreen, 250);
     });
 
+    // Кнопка "Отмена" на втором шаге
+    restoreModal.querySelector('#cancelRestoreBtn').addEventListener('click', () => {
+        restoreModal.remove();
+        setTimeout(showWelcomeScreen, 250);
+    });
+
+    // Кнопка "Восстановить данные"
     restoreModal.querySelector('#confirmRestoreBtn').addEventListener('click', () => {
-        if (!selectedFileContent) {
-            alert('Выберите файл');
-            return;
-        }
+        if (!selectedFileContent) return;
 
         try {
             const backupData = JSON.parse(selectedFileContent);
@@ -3636,7 +3666,7 @@ function showRestoreModal() {
                 try {
                     const value = backupData[key];
                     localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value));
-                } catch (err) {
+                } catch (e) {
                     console.warn(`Не удалось восстановить ключ: ${key}`);
                 }
             });
@@ -3644,12 +3674,14 @@ function showRestoreModal() {
             restoreModal.remove();
             localStorage.setItem('hasInitialized', 'true');
 
-            alert('✅ Данные успешно восстановлены из файла!\n\nПриложение сейчас перезагрузится...');
+            alert('✅ Данные успешно восстановлены!\n\nПриложение сейчас будет перезагружено...');
 
-            setTimeout(() => window.location.reload(true), 1500);
+            setTimeout(() => {
+                window.location.reload(true);
+            }, 1400);
 
         } catch (err) {
-            alert('❌ Ошибка при обработке файла. Убедитесь, что это правильный backup от деньГа.');
+            alert('❌ Ошибка при восстановлении данных.');
             console.error(err);
         }
     });
