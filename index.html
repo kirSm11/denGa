@@ -4858,37 +4858,119 @@ function checkPinOnStart() {
     });
 }
 
-function requestPin(title, callback) {
+// ==================== СТИЛЬНЫЙ PIN-КОД КАК НА iPHONE ====================
+function requestPin(title, callback, isCreate = false) {
     const modal = document.createElement('div');
-    modal.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:99999;`;
+    modal.style.cssText = `
+        position: fixed; inset: 0; background: rgba(0,0,0,0.92); 
+        display: flex; align-items: center; justify-content: center; 
+        z-index: 99999; font-family: system-ui; backdrop-filter: blur(20px);
+    `;
 
     modal.innerHTML = `
-        <div style="background:white;max-width:360px;width:92%;border-radius:28px;padding:32px 24px;text-align:center;">
-            <h2 style="margin:0 0 20px 0;">${title}</h2>
-            <input type="password" id="pinRequestInput" maxlength="5" inputmode="numeric"
-                   style="font-size:32px;letter-spacing:12px;text-align:center;width:100%;padding:16px;border:2px solid #4CAF50;border-radius:16px;">
-            <div style="margin-top:20px;">
-                <button id="pinRequestConfirm" style="padding:16px 32px;background:#4CAF50;color:white;border:none;border-radius:16px;font-size:17px;">Подтвердить</button>
+        <div style="background: rgba(255,255,255,0.95); width: 100%; max-width: 380px; 
+                    border-radius: 28px; padding: 40px 20px 30px; text-align: center; 
+                    box-shadow: 0 30px 80px rgba(0,0,0,0.5);">
+            
+            <div style="font-size: 52px; margin-bottom: 12px;">🔒</div>
+            <h2 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 600; color: #1c1c1e;">
+                ${title}
+            </h2>
+            
+            <!-- Поле с точками вместо цифр -->
+            <div id="pinDots" style="display: flex; justify-content: center; gap: 16px; margin: 30px 0 40px;">
+                ${Array(5).fill(0).map(() => `
+                    <div class="pin-dot" style="width: 18px; height: 18px; border-radius: 50%; 
+                        background: #d1d1d6; border: 2px solid #8e8e93;"></div>
+                `).join('')}
             </div>
+
+            <!-- Клавиатура iPhone-style -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 280px; margin: 0 auto;">
+                ${[1,2,3,4,5,6,7,8,9].map(n => `
+                    <button class="pin-btn" data-value="${n}" 
+                        style="width: 74px; height: 74px; border-radius: 50%; border: none; 
+                               background: rgba(255,255,255,0.85); font-size: 32px; font-weight: 400; 
+                               box-shadow: 0 4px 12px rgba(0,0,0,0.1); color: #1c1c1e;">
+                        ${n}
+                    </button>
+                `).join('')}
+                
+                <div style="width:74px;height:74px;"></div>
+                
+                <button class="pin-btn" data-value="0" 
+                    style="width: 74px; height: 74px; border-radius: 50%; border: none; 
+                           background: rgba(255,255,255,0.85); font-size: 32px; font-weight: 400; 
+                           box-shadow: 0 4px 12px rgba(0,0,0,0.1); color: #1c1c1e;">
+                    0
+                </button>
+                
+                <button id="pinBackspace" 
+                    style="width: 74px; height: 74px; border-radius: 50%; border: none; 
+                           background: transparent; font-size: 28px; color: #ff3b30;">
+                    ⌫
+                </button>
+            </div>
+
+            ${isCreate ? `
+            <p style="margin-top: 30px; font-size: 15px; color: #8e8e93;">
+                Придумайте 5-значный код
+            </p>` : ''}
         </div>
     `;
 
     document.body.appendChild(modal);
 
-    const input = modal.querySelector('#pinRequestInput');
-    input.focus();
+    const dots = modal.querySelectorAll('.pin-dot');
+    let enteredPin = '';
 
-    modal.querySelector('#pinRequestConfirm').addEventListener('click', () => {
-        const val = input.value.trim();
-        if (val.length === 5) {
-            modal.remove();
-            callback(val);
-        } else {
-            alert('Введите 5 цифр');
+    function updateDots() {
+        dots.forEach((dot, i) => {
+            if (i < enteredPin.length) {
+                dot.style.background = '#34c759';
+                dot.style.borderColor = '#34c759';
+            } else {
+                dot.style.background = '#d1d1d6';
+                dot.style.borderColor = '#8e8e93';
+            }
+        });
+    }
+
+    // Обработка нажатий на цифры
+    modal.querySelectorAll('.pin-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (enteredPin.length >= 5) return;
+            
+            enteredPin += btn.dataset.value;
+            updateDots();
+
+            if (enteredPin.length === 5) {
+                setTimeout(() => {
+                    modal.remove();
+                    callback(enteredPin);
+                }, 180);
+            }
+        });
+    });
+
+    // Backspace
+    modal.querySelector('#pinBackspace').addEventListener('click', () => {
+        if (enteredPin.length > 0) {
+            enteredPin = enteredPin.slice(0, -1);
+            updateDots();
         }
     });
-}
 
+    // Закрытие по фону (только для ввода, не для создания)
+    if (!isCreate) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+                callback(null); // отмена
+            }
+        });
+    }
+}
 
     </script>
 </div>
