@@ -3703,10 +3703,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // === ПЕРВЫЙ ЗАПУСК — сначала приветственное окно ===
     if (!localStorage.getItem('hasInitialized')) {
         setTimeout(() => {
-            showWelcomeScreen();           // ← Важно! Сначала приветствие
+            showWelcomeScreen();        // ← Сначала приветствие с двумя кнопками
         }, 400);
     } else {
-        // Уже инициализирован — проверяем PIN
+        // Уже был создан аккаунт — проверяем PIN при запуске
         checkPinOnStart();
     }
 
@@ -4636,7 +4636,7 @@ function initApp() {
     renderLoyaltyCards();
 }
 
-// ====================== ПЕРВЫЙ ЗАПУСК ======================
+// ====================== ЗАПУСК ПРИЛОЖЕНИЯ (ИСПРАВЛЕННЫЙ) ======================
 document.addEventListener('DOMContentLoaded', () => {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js')
@@ -4648,55 +4648,14 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('weeklyTotal', '0');
     }
 
-    // === ПЕРВЫЙ ЗАПУСК — красивая модалка ===
+    // === ПЕРВЫЙ ЗАПУСК — приветственное окно ===
     if (!localStorage.getItem('hasInitialized')) {
         setTimeout(() => {
-            const welcomeModal = document.createElement('div');
-            welcomeModal.style.cssText = `
-                position: fixed; inset: 0; background: rgba(0,0,0,0.85); 
-                display: flex; align-items: center; justify-content: center; 
-                z-index: 99999; font-family: system-ui;
-            `;
-
-            welcomeModal.innerHTML = `
-                <div style="background: white; max-width: 340px; border-radius: 24px; padding: 28px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
-                    <h2 style="margin: 0 0 16px 0; font-size: 24px;">Добро пожаловать в деньГа! 👋</h2>
-                    <p style="color: #555; margin-bottom: 28px; line-height: 1.5;">
-                        Хотите восстановить все данные из резервной копии deNga.json?
-                    </p>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <button id="restoreBtn" style="
-                            padding: 16px; font-size: 17px; font-weight: 600; 
-                            background: linear-gradient(135deg, #4CAF50, #45A049); 
-                            color: white; border: none; border-radius: 16px;">
-                            ✅ Восстановить из копии
-                        </button>
-                        <button id="newBtn" style="
-                            padding: 16px; font-size: 17px; font-weight: 600; 
-                            background: #f1f1f1; color: #333; border: none; border-radius: 16px;">
-                            Создать новый аккаунт
-                        </button>
-                    </div>
-                </div>
-            `;
-
-            document.body.appendChild(welcomeModal);
-
-            document.getElementById('restoreBtn').onclick = () => {
-                welcomeModal.remove();
-                importBackupEnhanced();
-            };
-
-            document.getElementById('newBtn').onclick = () => {
-                welcomeModal.remove();
-                localStorage.setItem('hasInitialized', 'true');
-                alert('✅ Новый аккаунт создан!\nТеперь добавляйте категории расходов.');
-                initApp();
-            };
+            showWelcomeScreen();           // Сначала окно "Создать / Восстановить"
         }, 400);
     } else {
-        // Обычный запуск (данные уже есть)
-        initApp();
+        // Уже инициализирован — запрашиваем PIN
+        checkPinOnStart();
     }
 
     // Загрузка версии приложения
