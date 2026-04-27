@@ -3688,6 +3688,7 @@ function showRestoreModal() {
 }
 
 // ====================== ЗАПУСК ПРИЛОЖЕНИЯ ======================
+// ====================== ПЕРВЫЙ ЗАПУСК С PIN-КОДОМ ======================
 document.addEventListener('DOMContentLoaded', () => {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js')
@@ -3699,13 +3700,17 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('weeklyTotal', '0');
     }
 
-    // Показываем приветственное окно только при первом запуске
+    // === НОВАЯ ЛОГИКА ПЕРВОГО ЗАПУСКА С PIN ===
     if (!localStorage.getItem('hasInitialized')) {
-        setTimeout(showWelcomeScreen, 400);
+        setTimeout(() => {
+            showCreateAccountWithPin();
+        }, 400);
     } else {
-        initApp();
+        // Уже был создан аккаунт — проверяем PIN при запуске
+        checkPinOnStart();
     }
 
+    // Загрузка версии приложения
     loadAppVersion();
 });
         const canvas = document.getElementById('sparkCanvas');
@@ -4761,6 +4766,148 @@ function importBackupEnhanced() {
     };
 
     input.click();
+}
+
+// ====================== СОЗДАНИЕ АККАУНТА С PIN ======================
+function showCreateAccountWithPin() {
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+        position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
+        display: flex; align-items: center; justify-content: center; 
+        z-index: 99999; font-family: system-ui; backdrop-filter: blur(12px);
+    `;
+
+    modal.innerHTML = `
+        <div style="background: white; max-width: 380px; width: 92%; border-radius: 28px; padding: 32px 24px; text-align: center; box-shadow: 0 25px 70px rgba(0,0,0,0.45);">
+            <div style="font-size: 64px; margin-bottom: 16px;">🔒</div>
+            <h1 style="margin: 0 0 8px 0; font-size: 26px; font-weight: 700;">Создание аккаунта</h1>
+            <p style="color: #555; margin-bottom: 28px; line-height: 1.5;">
+                Придумайте 5-значный PIN-код<br>
+                для защиты ваших данных
+            </p>
+
+            <div style="margin-bottom: 24px;">
+                <input type="password" id="pinInput" 
+                       maxlength="5" inputmode="numeric" 
+                       style="font-size: 32px; letter-spacing: 12px; text-align: center; 
+                              width: 100%; padding: 16px; border: 2px solid #4CAF50; 
+                              border-radius: 16px; background: #f8f9fa;">
+            </div>
+
+            <button id="confirmPinBtn" style="
+                padding: 18px; font-size: 18px; font-weight: 600; width: 100%;
+                background: linear-gradient(135deg, #4CAF50, #45A049); color: white; 
+                border: none; border-radius: 18px; margin-bottom: 12px;">
+                Подтвердить PIN
+            </button>
+
+            <button id="cancelCreateBtn" style="
+                padding: 16px; font-size: 16px; font-weight: 600; width: 100%;
+                background: #f1f1f1; color: #555; border: none; border-radius: 16px;">
+                Отмена
+            </button>
+
+            <p id="pinError" style="color: #d32f2f; margin-top: 12px; min-height: 24px;"></p>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const pinInput = modal.querySelector('#pinInput');
+    const confirmBtn = modal.querySelector('#confirmPinBtn');
+    const errorEl = modal.querySelector('#pinError');
+
+    pinInput.focus();
+
+    confirmBtn.addEventListener('click', () => {
+        const pin = pinInput.value.trim();
+        
+        if (pin.length !== 5 || !/^\d{5}$/.test(pin)) {
+            errorEl.textContent = 'PIN должен состоять ровно из 5 цифр';
+            pinInput.classList.add('shake');
+            setTimeout(() => pinInput.classList.remove('shake'), 600);
+            return;
+        }
+
+        // Сохраняем PIN
+        localStorage.setItem('pinCode', pin);
+        localStorage.setItem('hasInitialized', 'true');
+
+        modal.remove();
+        
+        alert('✅ Аккаунт успешно создан!\n\nPIN-код установлен.\n\nТеперь вы можете добавлять категории и расходы.');
+        
+        initApp();
+    });
+
+    modal.querySelector('#cancelCreateBtn').addEventListener('click', () => {
+        modal.remove();
+        // Можно вернуть на старое приветствие или просто закрыть
+    });
+
+    // Простая анимация ошибки
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); } }
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+    `;
+    document.head.appendChild(style);
+}
+
+function checkPinOnStart() {
+    const savedPin = localStorage.getItem('pinCode');
+    if (!savedPin) {
+        // На всякий случай — если PIN не был установлен раньше
+        showCreateAccountWithPin();
+        return;
+    }
+
+    // Можно сделать запрос PIN при каждом запуске (по желанию)
+    // Или только при определённых действиях (например, просмотр всех данных, экспорт и т.д.)
+    // Для начала сделаем запрос при запуске:
+
+    requestPin('Введите PIN для входа в приложение', (enteredPin) => {
+        if (enteredPin === savedPin) {
+            initApp();
+        } else {
+            alert('❌ Неверный PIN');
+            setTimeout(() => checkPinOnStart(), 800); // повторный запрос
+        }
+    });
+}
+
+function requestPin(title, callback) {
+    const modal = document.createElement('div');
+    modal.style.cssText = `position:fixed;inset:0;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:99999;`;
+
+    modal.innerHTML = `
+        <div style="background:white;max-width:360px;width:92%;border-radius:28px;padding:32px 24px;text-align:center;">
+            <h2 style="margin:0 0 20px 0;">${title}</h2>
+            <input type="password" id="pinRequestInput" maxlength="5" inputmode="numeric"
+                   style="font-size:32px;letter-spacing:12px;text-align:center;width:100%;padding:16px;border:2px solid #4CAF50;border-radius:16px;">
+            <div style="margin-top:20px;">
+                <button id="pinRequestConfirm" style="padding:16px 32px;background:#4CAF50;color:white;border:none;border-radius:16px;font-size:17px;">Подтвердить</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const input = modal.querySelector('#pinRequestInput');
+    input.focus();
+
+    modal.querySelector('#pinRequestConfirm').addEventListener('click', () => {
+        const val = input.value.trim();
+        if (val.length === 5) {
+            modal.remove();
+            callback(val);
+        } else {
+            alert('Введите 5 цифр');
+        }
+    });
 }
 
 
