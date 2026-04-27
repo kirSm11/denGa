@@ -2732,27 +2732,41 @@ function openCategoryMenu(categoryName) {
                 });
 
                 // === ОДНА ОБЩАЯ СТРОКА «КРЕДИТЫ» ===
-                if (hasCredits) {
-                    const creditStatItem = document.createElement('div');
-                    creditStatItem.className = 'stat-item';
+if (hasCredits) {
+    const creditStatItem = document.createElement('div');
+    creditStatItem.className = 'stat-item';
 
-                    const remainingToPay = Math.max(0, totalFixedMonthlyPayments - totalCreditPaidThisMonth);
-                    const remainingClass = remainingToPay > 0 ? 'positive' : 'negative';
+    let totalMonthlyPayment = 0;
 
-                    creditStatItem.innerHTML = `
-                        <div class="stat-top">
-                            <span class="stat-name">🏦 Кредиты</span>
-                            <div class="stat-right">
-                                <span class="stat-spent">${totalCreditPaidThisMonth.toFixed(2)} ₽</span>
-                                <div class="stat-remaining ${remainingClass}">
-                                    ${remainingToPay.toFixed(2)} ₽
-                                </div>
-                            </div>
-                        </div>
-                    `;
+    expenseCats.forEach(cat => {
+        if (cat.type === 'credit') {
+            const payment = cat.fixedMonthlyPayment || 
+                calculateMonthlyPayment(
+                    cat.currentBalance || cat.creditAmount || 0,
+                    cat.creditTermMonths || 12,
+                    cat.creditInterestRate || 0
+                );
+            totalMonthlyPayment += payment;
+            totalCreditPaidThisMonth += getCurrentCyclePaid(cat);
+        }
+    });
 
-                    statsList.appendChild(creditStatItem);
-                }
+    const remainingToPay = Math.max(0, totalMonthlyPayment - totalCreditPaidThisMonth);
+
+    creditStatItem.innerHTML = `
+        <div class="stat-top">
+            <span class="stat-name">🏦 Кредиты</span>
+            <div class="stat-right">
+                <span class="stat-spent">${totalCreditPaidThisMonth.toFixed(2)} ₽</span>
+                <div class="stat-remaining ${remainingToPay > 0 ? 'positive' : 'negative'}">
+                    ${remainingToPay.toFixed(2)} ₽
+                </div>
+            </div>
+        </div>
+    `;
+
+    statsList.appendChild(creditStatItem);
+}
             }
 
                       // Диаграмма и сводка
@@ -3065,7 +3079,7 @@ function openTransactionModal(categoryName, mode) {
     }
 }
 
-// ==================== ПОКАЗАТЬ КАРТОЧКУ КАТЕГОРИИ (ПРОСТОЙ ВИД) ====================
+// ==================== ПОКАЗАТЬ КАРТОЧКУ КАТЕГОРИИ — ИСПРАВЛЕНА ====================
 function showCategoryCard(categoryName) {
     const key = currentMode === 'expense' ? 'expenseCategories' : 'incomeCategories';
     let categories = JSON.parse(localStorage.getItem(key)) || [];
@@ -3073,10 +3087,96 @@ function showCategoryCard(categoryName) {
     if (catIndex === -1) return;
 
     const cat = categories[catIndex];
+    const isCredit = cat.type === 'credit';
 
-        const modal = document.createElement('div');
+    let bodyHTML = '';
+
+    if (isCredit) {
+        let currentBalance = Math.max(0, cat.currentBalance || cat.creditAmount || 0);
+        let remainingMonths = cat.creditTermMonths || 12;
+        let monthlyPayment = cat.fixedMonthlyPayment || 0;
+        const annualRate = cat.creditInterestRate || 0;
+        const totalRepaid = cat.creditPayments ? cat.creditPayments.reduce((sum, p) => sum + (p.amount || 0), 0) : 0;
+
+        // === КРИТИЧНО ВАЖНО: НЕ пересчитываем автоматически при открытии карточки ===
+        // Используем сохранённые значения (они уже пересчитаны в saveCreditPayment)
+        // Только если фиксированного платежа нет — считаем по остатку
+        if (monthlyPayment <= 0 && currentBalance > 0) {
+            monthlyPayment = calculateMonthlyPayment(currentBalance, remainingMonths, annualRate);
+        }
+
+        // Если срок не сохранён — пересчитываем только в крайнем случае
+        if (remainingMonths <= 0 && currentBalance > 0 && monthlyPayment > 0) {
+            remainingMonths = calculateRemainingMonths(currentBalance, monthlyPayment, annualRate);
+        }
+
+        bodyHTML = `
+            <div class="category-card-row">
+                <span class="category-card-label">Взятый кредит:</span>
+                <span class="category-card-value">${(cat.creditAmount || 0).toFixed(2)} ₽</span>
+            </div>
+            <div class="category-card-row">
+                <span class="category-card-label">Должен вернуть всего:</span>
+                <span class="category-card-value" style="color:#d32f2f; font-weight:700;">
+                    ${(cat.totalRepaymentAmount || 0).toFixed(2)} ₽
+                </span>
+            </div>
+            <div class="category-card-row">
+                <span class="category-card-label">Уже внесено:</span>
+                <span class="category-card-value">${totalRepaid.toFixed(2)} ₽</span>
+            </div>
+
+            <div class="category-card-row">
+                <span class="category-card-label">Осталось месяцев:</span>
+                <span class="category-card-value" id="remainingMonthsDisplay">${remainingMonths}</span>
+            </div>
+
+            <div class="category-card-row">
+                <span class="category-card-label">Ежемесячный платёж:</span>
+                <input type="number" id="monthlyPaymentInput" 
+                       value="${Math.round(monthlyPayment)}" step="1" 
+                       style="width: 120px; text-align: right; font-weight:700; font-size:17px; 
+                              border: 2px solid #4CAF50; border-radius: 10px; padding: 6px 10px;">
+                <span style="margin-left:8px; color:#555;">₽</span>
+            </div>
+
+            <div class="category-card-row">
+                <span class="category-card-label">Годовая ставка:</span>
+                <input type="number" id="annualRateInput" 
+                       value="${annualRate}" step="0.1" 
+                       style="width: 90px; text-align: right; font-weight:700; font-size:17px; 
+                              border: 2px solid #4CAF50; border-radius: 10px; padding: 6px 10px;">
+                <span style="margin-left:8px; color:#555;">%</span>
+            </div>
+
+            <!-- Штраф/пени в самом низу -->
+            <div class="category-card-row" style="margin-top: 25px; border-top: 2px dashed #eee; padding-top: 18px;">
+                <span class="category-card-label">Добавить штраф / пени:</span>
+                <div style="display:flex; gap:8px; align-items:center; flex:1; justify-content:flex-end;">
+                    <input type="number" id="penaltyInput" step="0.01" placeholder="0.00" 
+                           style="width:130px; padding:8px 12px; border:1px solid #ddd; border-radius:10px; font-size:16px;">
+                    <button id="addPenaltyBtn" style="padding:8px 18px; font-size:15px; background:#ef5350; color:white; border:none; border-radius:10px;">
+                        Добавить
+                    </button>
+                </div>
+            </div>
+        `;
+    } else {
+        bodyHTML = `
+            <div class="category-card-row">
+                <span class="category-card-label">Всего потрачено:</span>
+                <span class="category-card-value">${(cat.amount || 0).toFixed(2)} ₽</span>
+            </div>
+            <div class="category-card-row">
+                <span class="category-card-label">Лимит:</span>
+                <span class="category-card-value">${(cat.limit || 0).toFixed(2)} ₽</span>
+            </div>
+        `;
+    }
+
+    // Создаём модалку
+    const modal = document.createElement('div');
     modal.className = 'category-card-modal';
-
     modal.innerHTML = `
         <div class="category-card-content">
             <div class="category-card-header">
@@ -3084,55 +3184,10 @@ function showCategoryCard(categoryName) {
                 <button class="category-card-close">×</button>
             </div>
             <div class="category-card-body">
-                ${cat.type === 'credit' ? `
-                <!-- СПЕЦИАЛЬНЫЙ ВИД ДЛЯ КРЕДИТА -->
-                <div class="category-card-row">
-                    <span class="category-card-label">Взял (основной долг):</span>
-                    <span class="category-card-value">${(cat.creditAmount || 0).toFixed(2)} ₽</span>
-                </div>
-                <div class="category-card-row">
-                    <span class="category-card-label">Должен вернуть банку всего:</span>
-                    <span class="category-card-value" style="color:#d32f2f; font-weight:700;">${(cat.totalRepaymentAmount || 0).toFixed(2)} ₽</span>
-                </div>
-
-
-
-<div class="category-card-row">
-    <span class="category-card-label">Добавить штраф/пени:</span>
-    <input type="number" step="0.01" class="penalty-input" style="padding:10px; border:1px solid #ccc;">
-    <button class="add-penalty-btn">Добавить</button>
-
-
-
-
-
-</div>
-
-
-
-   <div class="category-card-row">
-                    <span class="category-card-label">Текущий остаток:</span>
-                    <span class="category-card-value" style="color:#1976D2;">${(cat.currentBalance || 0).toFixed(2)} ₽</span>
-                </div>
-                <div                 <div class="category-card-row">
-                    <span class="category-card-label">Уже внесено всего:</span>
-                    <span class="category-card-value">${(cat.creditPayments ? cat.creditPayments.reduce((sum, p) => sum + (p.amount || 0), 0) : 0).toFixed(2)} ₽</span>
-                </div>
-                ` : `
-                <!-- Обычная категория -->
-                <div class="category-card-row">
-                    <span class="category-card-label">Всего потрачено:</span>
-                    <span class="category-card-value">${(cat.amount || 0).toFixed(2)} ₽</span>
-                </div>
-                <div class="category-card-row">
-                    <span class="category-card-label">Лимит:</span>
-                    <span class="category-card-value">${(cat.limit || 0).toFixed(2)} ₽</span>
-                </div>
-                `}
-
-                <div style="margin: 25px 0 10px;">
+                ${bodyHTML}
+                <div style="margin: 30px 0 15px;">
                     <strong>Переименовать категорию:</strong>
-                    <input type="text" id="catRenameInput" class="rename-input" value="${categoryName}" maxlength="20">
+                    <input type="text" id="catRenameInput" class="rename-input" value="${categoryName}" maxlength="35">
                 </div>
             </div>
             <div class="category-card-footer">
@@ -3145,52 +3200,67 @@ function showCategoryCard(categoryName) {
     document.body.appendChild(modal);
     setTimeout(() => modal.classList.add('show'), 10);
 
-    const penaltyBtn = modal.querySelector('.add-penalty-btn');
+    if (isCredit) {
+        const monthlyInput = modal.querySelector('#monthlyPaymentInput');
+        const rateInput = modal.querySelector('#annualRateInput');
+        const penaltyInput = modal.querySelector('#penaltyInput');
+        const addPenaltyBtn = modal.querySelector('#addPenaltyBtn');
 
-const penaltyInput = modal.querySelector('.penalty-input');
+        monthlyInput.addEventListener('change', () => {
+            const val = parseFloat(monthlyInput.value);
+            if (!isNaN(val) && val > 0) {
+                cat.fixedMonthlyPayment = val;
+                localStorage.setItem(key, JSON.stringify(categories));
+            }
+        });
 
-if (penaltyBtn) {
+        rateInput.addEventListener('change', () => {
+            const val = parseFloat(rateInput.value);
+            if (!isNaN(val) && val >= 0) {
+                cat.creditInterestRate = val;
+                if (cat.creditTermMonths && cat.currentBalance) {
+                    const newTotal = calculateMonthlyPayment(cat.currentBalance, cat.creditTermMonths, val) * cat.creditTermMonths;
+                    cat.totalRepaymentAmount = newTotal;
+                }
+                localStorage.setItem(key, JSON.stringify(categories));
+            }
+        });
 
-    penaltyBtn.onclick = () => {
-    const value = Number(penaltyInput.value);
-    if (!value) return;
+        addPenaltyBtn.addEventListener('click', () => {
+            const penalty = parseFloat(penaltyInput.value);
+            if (isNaN(penalty) || penalty <= 0) return;
+            cat.totalRepaymentAmount = (cat.totalRepaymentAmount || 0) + penalty;
+            localStorage.setItem(key, JSON.stringify(categories));
+            alert(`✅ Штраф ${penalty.toFixed(2)} ₽ добавлен`);
+            penaltyInput.value = '';
+            closeCategoryCard(modal);
+            setTimeout(() => showCategoryCard(categoryName), 200);
+        });
+    }
 
-    cat.totalRepaymentAmount = (cat.totalRepaymentAmount || 0) + value;
-
-    localStorage.setItem(key, JSON.stringify(categories));
-
-    closeCategoryCard(modal);
-    showCategoryCard(cat.name);
-};
-
-}
-
-modal.querySelector('.category-card-close').onclick = () => closeCategoryCard(modal);
+    // Общие кнопки
+    modal.querySelector('.category-card-close').onclick = () => closeCategoryCard(modal);
 
     modal.querySelector('#saveCatBtn').onclick = () => {
         const newName = modal.querySelector('#catRenameInput').value.trim();
         if (newName && newName !== categoryName) {
             if (categories.some(c => c.name === newName && c.name !== categoryName)) {
-                alert("Категория с таким названием уже существует!");
+                alert("Такая категория уже существует!");
                 return;
             }
             cat.name = newName;
-
-            // Обновляем имя в истории
-            const allHistory = JSON.parse(localStorage.getItem('expensesHistory')) || [];
-            allHistory.forEach(exp => {
-                if (exp.category === categoryName) exp.category = newName;
-            });
-            localStorage.setItem('expensesHistory', JSON.stringify(allHistory));
+            // обновляем историю
+            const hist = JSON.parse(localStorage.getItem('expensesHistory')) || [];
+            hist.forEach(item => { if (item.category === categoryName) item.category = newName; });
+            localStorage.setItem('expensesHistory', JSON.stringify(hist));
         }
-
         localStorage.setItem(key, JSON.stringify(categories));
         closeCategoryCard(modal);
         renderCategories();
     };
 
     modal.querySelector('#deleteCatBtn').onclick = () => {
-        if (confirm(`Удалить категорию «${categoryName}»?\nРасходы останутся в истории.`)) {
+        if (confirm(`Удалить «${categoryName}»?`)) {
             categories.splice(catIndex, 1);
             localStorage.setItem(key, JSON.stringify(categories));
             closeCategoryCard(modal);
@@ -3198,9 +3268,7 @@ modal.querySelector('.category-card-close').onclick = () => closeCategoryCard(mo
         }
     };
 
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) closeCategoryCard(modal);
-    });
+    modal.addEventListener('click', e => { if (e.target === modal) closeCategoryCard(modal); });
 }
 
 function renderHistory() {
@@ -4479,80 +4547,144 @@ function closeCreditModal(wrapper) {
     delete window.currentCreditIndex;
 }
 
-// Сохранение платежа
+// Пересчёт оставшегося срока при фиксированном платеже (сокращение срока)
+function calculateRemainingMonths(balance, monthlyPayment, annualRate) {
+    if (monthlyPayment <= 0 || balance <= 0) return 0;
+    const monthlyRate = (annualRate || 0) / 100 / 12;
+    if (monthlyRate === 0) return Math.ceil(balance / monthlyPayment);
+
+    // Формула для оставшегося срока при аннуитете
+    const n = Math.log(monthlyPayment / (monthlyPayment - balance * monthlyRate)) / Math.log(1 + monthlyRate);
+    return Math.ceil(n);
+}
+
+// Пересчёт нового ежемесячного платежа при фиксированном оставшемся сроке
+function calculateNewMonthlyPayment(balance, remainingMonths, annualRate) {
+    return calculateMonthlyPayment(balance, remainingMonths, annualRate);
+}
+
+// 1. Улучшенный расчёт оставшихся месяцев (самая важная фикса)
+function calculateRemainingMonths(balance, monthlyPayment, annualRate) {
+    if (monthlyPayment <= 0 || balance <= 0) return 1;
+
+    const monthlyRate = (annualRate || 0) / 100 / 12;
+
+    if (monthlyRate === 0) {
+        return Math.ceil(balance / monthlyPayment);
+    }
+
+    // Стабильная формула аннуитета для оставшегося срока
+    const numerator = monthlyPayment;
+    const denominator = monthlyPayment - balance * monthlyRate;
+
+    if (denominator <= 0) return 1; // если платёж слишком мал
+
+    let n = Math.log(numerator / denominator) / Math.log(1 + monthlyRate);
+
+    if (isNaN(n) || !isFinite(n) || n < 1) {
+        return Math.ceil(balance / monthlyPayment);
+    }
+
+    return Math.max(1, Math.ceil(n));
+}
+
+// 2. Новый рекомендованный платёж — теперь учитывает текущий остаток правильно
+function getRecommendedPayment(cat) {
+    if (!cat || cat.type !== 'credit') return 0;
+
+    const balance = cat.currentBalance || cat.creditAmount || 0;
+    if (balance <= 0) return 0;
+
+    // Если есть фиксированный платёж — используем его (минус уже оплаченное в цикле)
+    if (cat.fixedMonthlyPayment && cat.fixedMonthlyPayment > 0 && cat.monthlyDueDay) {
+        const paidThisCycle = getCurrentCyclePaid(cat);
+        return Math.max(0, cat.fixedMonthlyPayment - paidThisCycle);
+    }
+
+    // Иначе считаем аннуитетный платёж от текущего остатка
+    const months = cat.creditTermMonths || 12;
+    const rate = cat.creditInterestRate || 0;
+    return calculateMonthlyPayment(balance, months, rate);
+}
+
+// 3. Пересчёт нового платежа (оставляем как было, но с защитой)
+function calculateNewMonthlyPayment(balance, remainingMonths, annualRate) {
+    if (remainingMonths <= 0) return balance;
+    return calculateMonthlyPayment(balance, remainingMonths, annualRate);
+}
+
+// ==================== КЛАССИЧЕСКИЙ ДОСРочный ПЛАТЁЖ — СОКРАЩЕНИЕ СРОКА ====================
 function saveCreditPayment(wrapper) {
     if (!wrapper) return;
 
-    const amountStr = wrapper.querySelector('#creditAmount').value.replace(',', '.');
-    const amount = parseFloat(amountStr);
-
-    if (isNaN(amount) || amount <= 0) {
-        alert('Введите корректную сумму платежа');
+    const amount = parseFloat(wrapper.querySelector('#creditAmount').value.replace(',', '.')) || 0;
+    if (amount <= 0) {
+        alert('Введите сумму платежа');
         return;
     }
 
-    const date = wrapper.querySelector('#creditDate').value;
-    const comment = wrapper.querySelector('#creditComment').value.trim();
+    const date = wrapper.querySelector('#creditDate').value || new Date().toISOString().split('T')[0];
+    const comment = wrapper.querySelector('#creditComment').value.trim() || '';
+
+    const overpayAction = wrapper.querySelector('input[name="overpayAction"]:checked')?.value || 'shorten';
 
     const key = currentMode === 'expense' ? 'expenseCategories' : 'incomeCategories';
     let categories = JSON.parse(localStorage.getItem(key)) || [];
-    const cat = categories[window.currentCreditIndex];
+    const catIndex = window.currentCreditIndex;
+    const cat = categories[catIndex];
 
     if (!cat || cat.type !== 'credit') {
         closeCreditModal(wrapper);
         return;
     }
 
-        // Обновляем остаток кредита
-    cat.currentBalance = Math.max(0, (cat.currentBalance || cat.creditAmount || 0) - amount);
+    const oldBalance = cat.currentBalance || cat.creditAmount || 0;
+    cat.currentBalance = Math.max(0, oldBalance - amount);
 
     // Добавляем запись платежа
     if (!cat.creditPayments) cat.creditPayments = [];
     cat.creditPayments.push({
-        dateISO: date ? new Date(date).toISOString() : new Date().toISOString(),
+        dateISO: new Date(date).toISOString(),
         amount: amount,
-        comment: comment || null
+        comment: comment
     });
 
-    // Обновляем cat.amount (для общей статистики расходов)
     cat.amount = (cat.amount || 0) + amount;
 
-    // ====================== ПЕРЕСЧЁТ ПОЛНОЙ СУММЫ К ВОЗВРАТУ ======================
-    // При досрочном погашении уменьшаем оставшийся долг и пересчитываем проценты на оставшийся срок
-    if (cat.creditTermMonths && cat.creditInterestRate !== undefined) {
-        const remainingMonths = cat.creditTermMonths; // можно улучшить позже, вычитая прошедшие месяцы
-        const newTotalRepayment = calculateMonthlyPayment(
-            cat.currentBalance, 
-            remainingMonths, 
-            cat.creditInterestRate
-        ) * remainingMonths;
+    // === ГЛАВНОЕ: СОКРАЩЕНИЕ СРОКА ПРИ ВЫБОРЕ "shorten" ===
+    if (overpayAction === 'shorten' && amount > 10) {
+        const oldMonths = cat.creditTermMonths || 12;
+        const monthlyPayment = cat.fixedMonthlyPayment || 9; // берём текущий платёж (или 9 по умолчанию)
 
-        cat.totalRepaymentAmount = newTotalRepayment;
+        // Простой и надёжный расчёт нового срока
+        if (monthlyPayment > 0) {
+            const newMonths = Math.ceil(cat.currentBalance / monthlyPayment);
+            cat.creditTermMonths = Math.max(1, newMonths);
+        }
+
+        alert(`✅ Срок сокращён!\nБыло: ${oldMonths} месяцев\nСтало: ${cat.creditTermMonths} месяцев\nПлатёж остаётся ~${monthlyPayment.toFixed(2)} ₽`);
     }
-    // =============================================================================
 
     localStorage.setItem(key, JSON.stringify(categories));
 
-    // Добавляем в общую историю
+    // Добавляем в историю
     const history = JSON.parse(localStorage.getItem('expensesHistory')) || [];
-    const selectedBank = localStorage.getItem('selectedBank') || "Другие";
     history.push({
         amount: amount,
-        dateISO: new Date(date || Date.now()).toISOString(),
-        dateStr: date || new Date().toISOString().split('T')[0],
-        dayOfWeek: new Date().toLocaleDateString('ru-RU', { weekday: 'long' }),
-        bank: selectedBank,
+        dateISO: new Date(date).toISOString(),
+        dateStr: date,
+        dayOfWeek: new Date(date).toLocaleDateString('ru-RU', { weekday: 'long' }),
+        bank: localStorage.getItem('selectedBank') || "Другие",
         category: cat.name,
         place: 'Погашение кредита',
-        comment: comment || null,
+        comment: comment || 'Досрочный платёж (сокращение срока)',
         type: 'expense'
     });
     localStorage.setItem('expensesHistory', JSON.stringify(history));
 
     closeCreditModal(wrapper);
     renderCategories();
-
-    alert(`✅ Платёж ${amount.toFixed(2)} ₽ по кредиту «${cat.name}» учтён!\nОстаток: ${cat.currentBalance.toFixed(2)} ₽`);
+    setTimeout(() => showCategoryCard(cat.name), 100);
 }
 
 // Добавляем обработчики после создания модального окна
