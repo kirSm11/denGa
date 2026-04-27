@@ -1,6 +1,6 @@
 // service-worker.js для деньГа
 
-const CACHE_NAME = 'den-g-a-v0.1.2.4';   // ← меняй версию при обновлении (v13, v14 и т.д.)
+const CACHE_NAME = 'den-g-a-v0.1.2.5';   // ← меняй версию при обновлении (v13, v14 и т.д.)
 
 const urlsToCache = [
     '/',
