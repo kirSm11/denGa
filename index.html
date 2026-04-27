@@ -3514,11 +3514,12 @@ function showWelcomeScreen() {
     document.body.appendChild(welcomeModal);
 
     document.getElementById('newAccountBtn').addEventListener('click', () => {
-        welcomeModal.remove();
-        localStorage.setItem('hasInitialized', 'true');
-        alert('✅ Новый аккаунт успешно создан!\n\nТеперь добавляйте категории расходов.');
-        initApp();
-    });
+    welcomeModal.remove();
+    // Вместо прямого создания — открываем окно с именем и PIN
+    setTimeout(() => {
+        showCreateAccountWithPin();
+    }, 300);
+});
 
     document.getElementById('restoreAccountBtn').addEventListener('click', () => {
         welcomeModal.remove();
@@ -3688,7 +3689,6 @@ function showRestoreModal() {
 }
 
 // ====================== ЗАПУСК ПРИЛОЖЕНИЯ ======================
-// ====================== ПЕРВЫЙ ЗАПУСК С PIN-КОДОМ ======================
 document.addEventListener('DOMContentLoaded', () => {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/service-worker.js')
@@ -3700,13 +3700,13 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('weeklyTotal', '0');
     }
 
-    // === НОВАЯ ЛОГИКА ПЕРВОГО ЗАПУСКА С PIN ===
+    // === ПЕРВЫЙ ЗАПУСК — сначала приветственное окно ===
     if (!localStorage.getItem('hasInitialized')) {
         setTimeout(() => {
-            showWelcomeScreen();
+            showWelcomeScreen();           // ← Важно! Сначала приветствие
         }, 400);
     } else {
-        // Уже был создан аккаунт — проверяем PIN при запуске
+        // Уже инициализирован — проверяем PIN
         checkPinOnStart();
     }
 
