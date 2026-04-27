@@ -4838,28 +4838,25 @@ function showCreateAccountWithPin() {
 
 function checkPinOnStart() {
     const savedPin = localStorage.getItem('pinCode');
+    const savedName = localStorage.getItem('userName') || 'Пользователь';
+
     if (!savedPin) {
-        // На всякий случай — если PIN не был установлен раньше
         showCreateAccountWithPin();
         return;
     }
 
-    // Можно сделать запрос PIN при каждом запуске (по желанию)
-    // Или только при определённых действиях (например, просмотр всех данных, экспорт и т.д.)
-    // Для начала сделаем запрос при запуске:
-
-    requestPin('Введите PIN для входа в приложение', (enteredPin) => {
+    requestPin(`Введите PIN-код для аккаунта:\n${savedName}`, (enteredPin) => {
         if (enteredPin === savedPin) {
             initApp();
-        } else {
-            alert('❌ Неверный PIN');
-            setTimeout(() => checkPinOnStart(), 800); // повторный запрос
+        } else if (enteredPin !== null) {   // null = отмена
+            alert('❌ Неверный PIN-код');
+            setTimeout(() => checkPinOnStart(), 800);
         }
-    });
+        // если enteredPin === null — значит отмена, ничего не делаем, вернёмся в меню
+    }, true); // true = разрешаем кнопку "Отмена"
 }
-
-// ==================== СТИЛЬНЫЙ PIN-КОД КАК НА iPHONE ====================
-function requestPin(title, callback, isCreate = false) {
+// ==================== СТИЛЬНЫЙ PIN-КОД КАК НА iPHONE (с отменой) ====================
+function requestPin(title, callback, allowCancel = false) {
     const modal = document.createElement('div');
     modal.style.cssText = `
         position: fixed; inset: 0; background: rgba(0,0,0,0.92); 
@@ -4873,11 +4870,11 @@ function requestPin(title, callback, isCreate = false) {
                     box-shadow: 0 30px 80px rgba(0,0,0,0.5);">
             
             <div style="font-size: 52px; margin-bottom: 12px;">🔒</div>
-            <h2 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 600; color: #1c1c1e;">
+            <h2 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 600; color: #1c1c1e; white-space: pre-line;">
                 ${title}
             </h2>
             
-            <!-- Поле с точками вместо цифр -->
+            <!-- Поле с точками -->
             <div id="pinDots" style="display: flex; justify-content: center; gap: 16px; margin: 30px 0 40px;">
                 ${Array(5).fill(0).map(() => `
                     <div class="pin-dot" style="width: 18px; height: 18px; border-radius: 50%; 
@@ -4885,7 +4882,7 @@ function requestPin(title, callback, isCreate = false) {
                 `).join('')}
             </div>
 
-            <!-- Клавиатура iPhone-style -->
+            <!-- Клавиатура -->
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 280px; margin: 0 auto;">
                 ${[1,2,3,4,5,6,7,8,9].map(n => `
                     <button class="pin-btn" data-value="${n}" 
@@ -4912,10 +4909,11 @@ function requestPin(title, callback, isCreate = false) {
                 </button>
             </div>
 
-            ${isCreate ? `
-            <p style="margin-top: 30px; font-size: 15px; color: #8e8e93;">
-                Придумайте 5-значный код
-            </p>` : ''}
+            ${allowCancel ? `
+            <button id="pinCancelBtn" style="margin-top: 30px; padding: 14px 32px; font-size: 17px; 
+                background: #f1f1f1; color: #555; border: none; border-radius: 16px; width: 100%;">
+                Отмена
+            </button>` : ''}
         </div>
     `;
 
@@ -4926,21 +4924,15 @@ function requestPin(title, callback, isCreate = false) {
 
     function updateDots() {
         dots.forEach((dot, i) => {
-            if (i < enteredPin.length) {
-                dot.style.background = '#34c759';
-                dot.style.borderColor = '#34c759';
-            } else {
-                dot.style.background = '#d1d1d6';
-                dot.style.borderColor = '#8e8e93';
-            }
+            dot.style.background = (i < enteredPin.length) ? '#34c759' : '#d1d1d6';
+            dot.style.borderColor = (i < enteredPin.length) ? '#34c759' : '#8e8e93';
         });
     }
 
-    // Обработка нажатий на цифры
+    // Цифры
     modal.querySelectorAll('.pin-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             if (enteredPin.length >= 5) return;
-            
             enteredPin += btn.dataset.value;
             updateDots();
 
@@ -4955,21 +4947,26 @@ function requestPin(title, callback, isCreate = false) {
 
     // Backspace
     modal.querySelector('#pinBackspace').addEventListener('click', () => {
-        if (enteredPin.length > 0) {
-            enteredPin = enteredPin.slice(0, -1);
-            updateDots();
-        }
+        enteredPin = enteredPin.slice(0, -1);
+        updateDots();
     });
 
-    // Закрытие по фону (только для ввода, не для создания)
-    if (!isCreate) {
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.remove();
-                callback(null); // отмена
-            }
+    // Отмена
+    const cancelBtn = modal.querySelector('#pinCancelBtn');
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            modal.remove();
+            callback(null); // null = отмена
         });
     }
+
+    // Закрытие по фону (только если не создание)
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.remove();
+            callback(null);
+        }
+    });
 }
 
     </script>
