@@ -817,6 +817,9 @@ section,
 #statsCategories,
 #settingsSubmenu,
 #adminSubmenu {
+<button onclick="if(confirm('Ты УВЕРЕН? Это удалит ВСЮ историю навсегда!')) clearAllHistory();">
+    Удалить ВСЮ историю расходов
+</button>
     background: transparent !important;
     box-shadow: none !important;
 }
@@ -4276,14 +4279,37 @@ function showLoyaltyBarcode(index) {
         }
 
         function clearExpenses() {
-            let categories = JSON.parse(localStorage.getItem('categories')) || [];
-            categories.forEach(c => c.amount = 0);
-            localStorage.setItem('categories', JSON.stringify(categories));
-            localStorage.setItem('expensesHistory', JSON.stringify([]));
-            alert("Все расходы удалены");
-            renderCategories();
-        }
+    const expenseKey = 'expenseCategories';
+    let expenseCats = JSON.parse(localStorage.getItem(expenseKey)) || [];
 
+    expenseCats.forEach(cat => {
+        // Обнуляем для всех категорий
+        cat.amount = 0;
+
+        if (cat.type === 'credit') {
+            // Полностью очищаем все платежи по кредиту
+            cat.creditPayments = [];
+            
+            // Сбрасываем дополнительные поля кредита
+            cat.penalties = 0;
+            cat.currentBalance = cat.creditAmount || 0;   // возвращаем остаток к начальному
+            // Если хочешь полностью обнулить и остаток кредита — раскомментируй строку ниже:
+            // cat.currentBalance = 0;
+        }
+    });
+
+    // Обнуляем доходы
+    const incomeKey = 'incomeCategories';
+    let incomeCats = JSON.parse(localStorage.getItem(incomeKey)) || [];
+    incomeCats.forEach(cat => cat.amount = 0);
+    localStorage.setItem(incomeKey, JSON.stringify(incomeCats));
+
+    localStorage.setItem(expenseKey, JSON.stringify(expenseCats));
+
+    alert("✅ ВСЕ расходы удалены, включая платежи по кредитам.\n\nСтатистика обновлена.");
+
+    renderCategories();
+}
         function updateClock() {
             const now = new Date();
             const days = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
@@ -4296,20 +4322,48 @@ function showLoyaltyBarcode(index) {
         setInterval(updateClock, 1000);
         updateClock();
 
-        function autoResetMonthlyExpenses() {
-            const today = new Date();
-            const currentMonth = today.getMonth();
-            const currentYear = today.getFullYear();
-            const lastReset = JSON.parse(localStorage.getItem('lastResetMonth'));
-            if (today.getDate() === 1 && (!lastReset || lastReset.month !== currentMonth || lastReset.year !== currentYear)) {
-                let categories = JSON.parse(localStorage.getItem('categories')) || [];
-                categories.forEach(c => c.amount = 0);
-                localStorage.setItem('categories', JSON.stringify(categories));
-                localStorage.setItem('lastResetMonth', JSON.stringify({month: currentMonth, year: currentYear}));
-                alert("Новый месяц! Все расходы обнулены.");
-                renderCategories();
+ function autoResetMonthlyExpenses() {
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+
+    const lastResetStr = localStorage.getItem('lastResetMonth');
+    const lastReset = lastResetStr ? JSON.parse(lastResetStr) : { month: -1, year: -1 };
+
+    if (today.getDate() === 1 && 
+        (lastReset.month !== currentMonth || lastReset.year !== currentYear)) {
+
+        const expenseCats = JSON.parse(localStorage.getItem('expenseCategories')) || [];
+        const incomeCats = JSON.parse(localStorage.getItem('incomeCategories')) || [];
+
+        expenseCats.forEach(cat => {
+            cat.amount = 0;
+
+            if (cat.type === 'credit') {
+                // При автосбросе месяца — очищаем только платежи текущего месяца
+                if (Array.isArray(cat.creditPayments)) {
+                    cat.creditPayments = cat.creditPayments.filter(payment => {
+                        const pDate = new Date(payment.dateISO);
+                        return pDate.getMonth() !== currentMonth || 
+                               pDate.getFullYear() !== currentYear;
+                    });
+                }
             }
-        }
+        });
+
+        incomeCats.forEach(cat => cat.amount = 0);
+
+        localStorage.setItem('expenseCategories', JSON.stringify(expenseCats));
+        localStorage.setItem('incomeCategories', JSON.stringify(incomeCats));
+
+        localStorage.setItem('lastResetMonth', JSON.stringify({
+            month: currentMonth,
+            year: currentYear
+        }));
+
+        renderCategories();
+    }
+}
 
         function autoResetWeeklyExpenses() {
             const today = new Date();
@@ -5465,7 +5519,15 @@ function saveAllLimits() {
         renderCategories();      // обновляем основную страницу расходов
     }
 }
-
+function clearAllHistory() {
+    if (confirm('Это действие НЕОБРАТИМО.\n\nУдалить абсолютно всю историю операций?')) {
+        localStorage.setItem('expensesHistory', JSON.stringify([]));
+        alert('История полностью очищена.');
+        if (document.getElementById('history').style.display === 'block') {
+            renderHistory();
+        }
+    }
+}
     </script>
 </div>
 <!-- Модальное окно внесения расхода -->
